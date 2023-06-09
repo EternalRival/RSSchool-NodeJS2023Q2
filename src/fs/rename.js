@@ -1,6 +1,7 @@
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 import fs, { access } from 'fs/promises';
+import { getDirname } from '../helpers/get-dirname.js';
+import { handleError } from '../helpers/handle-error.js';
 
 const rename = async () => {
   const TASK_OBJECTIVE = {
@@ -18,17 +19,11 @@ const rename = async () => {
     },
   };
 
-  const helpers = {
-    __dirname: dirname(fileURLToPath(import.meta.url)),
-    handleError(error, objectiveError) {
-      if (error.code === objectiveError?.code) Object.assign(error, objectiveError);
-      throw error;
-    },
-  };
+  const __dirname = getDirname(import.meta.url);
 
   const { source, destination, errors } = TASK_OBJECTIVE;
-  const srcFilePath = resolve(helpers.__dirname, source.dirName, source.fileName);
-  const destFilePath = resolve(helpers.__dirname, destination.dirName, destination.fileName);
+  const srcFilePath = resolve(__dirname, source.dirName, source.fileName);
+  const destFilePath = resolve(__dirname, destination.dirName, destination.fileName);
 
   const isDestFileExists = await access(destFilePath)
     .then(() => true)
@@ -39,7 +34,7 @@ const rename = async () => {
   }
 
   return fs.rename(srcFilePath, destFilePath).catch((error) => {
-    return helpers.handleError(error, errors.doesNotExists);
+    return handleError(error, errors.doesNotExists);
   });
 };
 

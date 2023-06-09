@@ -1,6 +1,7 @@
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 import { readdir } from 'fs/promises';
+import { handleError } from '../helpers/handle-error.js';
+import { getDirname } from '../helpers/get-dirname.js';
 
 const list = async () => {
   const TASK_OBJECTIVE = {
@@ -12,17 +13,11 @@ const list = async () => {
     },
   };
 
-  const helpers = {
-    __dirname: dirname(fileURLToPath(import.meta.url)),
-    handleError(error, objectiveError) {
-      if (error.code === objectiveError?.code) Object.assign(error, objectiveError);
-      throw error;
-    },
-  };
+  const __dirname = getDirname(import.meta.url);
 
-  const dirPath = resolve(helpers.__dirname, TASK_OBJECTIVE.source.dirName);
+  const dirPath = resolve(__dirname, TASK_OBJECTIVE.source.dirName);
   const dirents = await readdir(dirPath, { withFileTypes: true }).catch((error) => {
-    return helpers.handleError(error, TASK_OBJECTIVE.errors.doesNotExists);
+    return handleError(error, TASK_OBJECTIVE.errors.doesNotExists);
   });
 
   const getFileNames = (fileList, { filter = 'all', print = true } = { filter: 'all', print: true }) => {

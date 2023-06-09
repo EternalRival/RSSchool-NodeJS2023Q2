@@ -1,6 +1,7 @@
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 import { writeFile } from 'fs/promises';
+import { handleError } from '../helpers/handle-error.js';
+import { getDirname } from '../helpers/get-dirname.js';
 
 const create = async () => {
   const TASK_OBJECTIVE = {
@@ -14,20 +15,14 @@ const create = async () => {
     },
   };
 
-  const helpers = {
-    __dirname: dirname(fileURLToPath(import.meta.url)),
-    handleError(error, objectiveError) {
-      if (error.code === objectiveError?.code) Object.assign(error, objectiveError);
-      throw error;
-    },
-  };
+  const __dirname = getDirname(import.meta.url);
 
   return writeFile(
-    resolve(helpers.__dirname, TASK_OBJECTIVE.destination.dirName, TASK_OBJECTIVE.destination.fileName),
+    resolve(__dirname, TASK_OBJECTIVE.destination.dirName, TASK_OBJECTIVE.destination.fileName),
     TASK_OBJECTIVE.destination.fileContent,
     { flag: 'wx' },
   ).catch((error) => {
-    return helpers.handleError(error, TASK_OBJECTIVE.errors.fileExists);
+    return handleError(error, TASK_OBJECTIVE.errors.fileExists);
   });
 };
 

@@ -1,6 +1,7 @@
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 import { rm } from 'fs/promises';
+import { getDirname } from '../helpers/get-dirname.js';
+import { handleError } from '../helpers/handle-error.js';
 
 const remove = async () => {
   const TASK_OBJECTIVE = {
@@ -13,17 +14,11 @@ const remove = async () => {
     },
   };
 
-  const helpers = {
-    __dirname: dirname(fileURLToPath(import.meta.url)),
-    handleError(error, objectiveError) {
-      if (error.code === objectiveError?.code) Object.assign(error, objectiveError);
-      throw error;
-    },
-  };
+  const __dirname = getDirname(import.meta.url);
 
-  const filePath = resolve(helpers.__dirname, TASK_OBJECTIVE.source.dirName, TASK_OBJECTIVE.source.fileName);
+  const filePath = resolve(__dirname, TASK_OBJECTIVE.source.dirName, TASK_OBJECTIVE.source.fileName);
   return rm(filePath).catch((error) => {
-    return helpers.handleError(error, TASK_OBJECTIVE.errors.doesNotExists);
+    return handleError(error, TASK_OBJECTIVE.errors.doesNotExists);
   });
 };
 

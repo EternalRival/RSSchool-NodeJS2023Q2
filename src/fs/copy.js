@@ -1,6 +1,10 @@
-import { dirname, relative, resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { copyFile, mkdir, readdir, stat } from 'fs/promises';
+import { relative, resolve } from 'path';
+import { mkdir } from 'fs/promises';
+import { getDirname } from '../helpers/get-dirname.js';
+import { getFilePaths } from '../helpers/get-filepaths.js';
+import { cloneFile } from '../helpers/clone-file.js';
+import { getFulfilled } from '../helpers/get-fulfilled.js';
+import { handleError } from '../helpers/handle-error.js';
 
 const copy = async () => {
   const TASK_OBJECTIVE = {
@@ -16,51 +20,25 @@ const copy = async () => {
     },
   };
 
-  const helpers = {
-    __dirname: dirname(fileURLToPath(import.meta.url)),
-    handleError(error, objectiveError) {
-      if (error.code === objectiveError?.code) Object.assign(error, objectiveError);
-      throw error;
-    },
-    async getFullfilled(promises) {
-      const settled = await Promise.allSettled(promises);
-      const fulfilled = settled.filter(({ status }) => status === 'fulfilled');
-      return fulfilled.map(({ value }) => value);
-    },
-    async getFilePaths(dirPath) {
-      const dirents = await readdir(dirPath, { withFileTypes: true });
-      const promises = dirents.map(async (file) => {
-        const filePath = resolve(dirPath, file.name);
-        return file.isDirectory() ? [filePath, ...(await this.getFilePaths(filePath))] : filePath;
-      });
-      return (await helpers.getFullfilled(promises)).flat();
-    },
-    async cloneFile(srcPath, destPath) {
-      await mkdir(dirname(destPath), { recursive: true });
-      const stats = await stat(srcPath);
-      return (stats.isFile() ? copyFile(srcPath, destPath) : mkdir(destPath, { recursive: true }))
-        .then(() => `new file: ${destPath}`)
-        .catch((e) => console.error(e.message));
-    },
-  };
+  const __dirname = getDirname(import.meta.url);
 
-  const srcDirPath = resolve(helpers.__dirname, TASK_OBJECTIVE.source.dirName);
-  const destDirPath = resolve(helpers.__dirname, TASK_OBJECTIVE.destination.dirName);
+  const srcDirPath = resolve(__dirname, TASK_OBJECTIVE.source.dirName);
+  const destDirPath = resolve(__dirname, TASK_OBJECTIVE.destination.dirName);
 
-  const filePaths = await helpers.getFilePaths(srcDirPath).catch((error) => {
-    return helpers.handleError(error, TASK_OBJECTIVE.errors.doesNotExists);
+  const filePaths = await getFilePaths(srcDirPath).catch((error) => {
+    return handleError(error, TASK_OBJECTIVE.errors.doesNotExists);
   });
 
   await mkdir(destDirPath).catch((error) => {
-    return helpers.handleError(error, TASK_OBJECTIVE.errors.fileExists);
+    return handleError(error, TASK_OBJECTIVE.errors.fileExists);
   });
 
   const copyPromises = filePaths.map((filePath) => {
     const relativePath = relative(srcDirPath, filePath);
-    return helpers.cloneFile(filePath, resolve(destDirPath, relativePath));
+    return cloneFile(filePath, resolve(destDirPath, relativePath));
   });
 
-  return await helpers.getFullfilled(copyPromises);
+  return await getFulfilled(copyPromises);
 };
 
 await copy();
