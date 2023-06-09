@@ -1,6 +1,6 @@
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 import { createWriteStream } from 'fs';
+import { getDirname } from '../helpers/get-dirname.js';
 
 const write = async () => {
   const TASK_OBJECTIVE = {
@@ -9,11 +9,9 @@ const write = async () => {
       fileName: 'fileToWrite.txt',
     },
   };
-  const helpers = {
-    __dirname: dirname(fileURLToPath(import.meta.url)),
-  };
+  const __dirname = getDirname(import.meta.url);
 
-  const filePath = resolve(helpers.__dirname, TASK_OBJECTIVE.destination.dirName, TASK_OBJECTIVE.destination.fileName);
+  const filePath = resolve(__dirname, TASK_OBJECTIVE.destination.dirName, TASK_OBJECTIVE.destination.fileName);
   const writeStream = createWriteStream(filePath, { encoding: 'utf-8' });
 
   process.stdin.pipe(writeStream);

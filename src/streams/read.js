@@ -1,6 +1,6 @@
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 import { createReadStream } from 'fs';
+import { getDirname } from '../helpers/get-dirname.js';
 
 const read = async () => {
   const TASK_OBJECTIVE = {
@@ -9,11 +9,10 @@ const read = async () => {
       fileName: 'fileToRead.txt',
     },
   };
-  const helpers = {
-    __dirname: dirname(fileURLToPath(import.meta.url)),
-  };
 
-  const filePath = resolve(helpers.__dirname, TASK_OBJECTIVE.source.dirName, TASK_OBJECTIVE.source.fileName);
+  const __dirname = getDirname(import.meta.url);
+
+  const filePath = resolve(__dirname, TASK_OBJECTIVE.source.dirName, TASK_OBJECTIVE.source.fileName);
   const readStream = createReadStream(filePath, { encoding: 'utf-8' });
 
   readStream.pipe(process.stdout);
