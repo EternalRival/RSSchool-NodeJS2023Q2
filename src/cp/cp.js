@@ -1,6 +1,6 @@
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 import { spawn } from 'child_process';
+import { getDirname } from '../helpers/get-dirname.js';
 
 const spawnChildProcess = async (args) => {
   const TASK_OBJECTIVE = {
@@ -10,11 +10,9 @@ const spawnChildProcess = async (args) => {
     },
   };
 
-  const helpers = {
-    __dirname: dirname(fileURLToPath(import.meta.url)),
-  };
+  const __dirname = getDirname(import.meta.url);
 
-  const filePath = resolve(helpers.__dirname, TASK_OBJECTIVE.source.dirName, TASK_OBJECTIVE.source.fileName);
+  const filePath = resolve(__dirname, TASK_OBJECTIVE.source.dirName, TASK_OBJECTIVE.source.fileName);
 
   spawn(process.execPath, [filePath, ...(args ?? [])], { stdio: 'inherit' });
 };
