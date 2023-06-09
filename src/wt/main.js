@@ -1,6 +1,6 @@
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
-import { cpus } from 'os';
+import { availableParallelism } from 'os';
 import { Worker } from 'worker_threads';
 
 const performCalculations = async () => {
@@ -18,7 +18,7 @@ const performCalculations = async () => {
 
   const workerFilePath = resolve(helpers.__dirname, TASK_OBJECTIVE.worker.fileName);
 
-  const coresNumber = cpus().length;
+  const coresNumber = availableParallelism();
 
   const calculate = (workerIndex) => {
     return new Promise((res, rej) => {
