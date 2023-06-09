@@ -1,7 +1,7 @@
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 import { createReadStream, createWriteStream } from 'fs';
 import { createGunzip } from 'zlib';
+import { getDirname } from '../helpers/get-dirname.js';
 
 const decompress = async () => {
   const TASK_OBJECTIVE = {
@@ -15,13 +15,11 @@ const decompress = async () => {
     },
   };
 
-  const helpers = {
-    __dirname: dirname(fileURLToPath(import.meta.url)),
-  };
+  const __dirname = getDirname(import.meta.url);
 
   const { source, destination } = TASK_OBJECTIVE;
-  const srcFilePath = resolve(helpers.__dirname, source.dirName, source.fileName);
-  const destFilePath = resolve(helpers.__dirname, destination.dirName, destination.fileName);
+  const srcFilePath = resolve(__dirname, source.dirName, source.fileName);
+  const destFilePath = resolve(__dirname, destination.dirName, destination.fileName);
 
   const gunzip = createGunzip();
   const readStream = createReadStream(srcFilePath);
