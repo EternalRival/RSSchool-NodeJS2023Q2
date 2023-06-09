@@ -1,7 +1,7 @@
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 import { availableParallelism } from 'os';
 import { Worker } from 'worker_threads';
+import { getDirname } from '../helpers/get-dirname.js';
 
 const performCalculations = async () => {
   const TASK_OBJECTIVE = {
@@ -12,11 +12,9 @@ const performCalculations = async () => {
     statusDict: { fulfilled: 'resolved', rejected: 'error' },
   };
 
-  const helpers = {
-    __dirname: dirname(fileURLToPath(import.meta.url)),
-  };
+  const __dirname = getDirname(import.meta.url);
 
-  const workerFilePath = resolve(helpers.__dirname, TASK_OBJECTIVE.worker.fileName);
+  const workerFilePath = resolve(__dirname, TASK_OBJECTIVE.worker.fileName);
 
   const coresNumber = availableParallelism();
 
