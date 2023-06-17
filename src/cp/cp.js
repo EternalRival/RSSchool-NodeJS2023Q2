@@ -14,7 +14,7 @@ const spawnChildProcess = async (args) => {
 
   const filePath = resolve(__dirname, TASK_OBJECTIVE.source.dirName, TASK_OBJECTIVE.source.fileName);
 
-  spawn(process.execPath, [filePath, ...(args ?? [])], { stdio: 'inherit' });
+  spawn(process.execPath, [filePath, ...(args ?? [])], { stdio: ['inherit', 'inherit', 'inherit', 'ipc'] });
 };
 
 // Put your arguments in function call to test this functionality
