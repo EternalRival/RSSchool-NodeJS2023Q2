@@ -1,6 +1,6 @@
-import { CommandService } from './command.service.js';
-import { ReplService } from './repl.service.js';
-import { StateService } from './state.service.js';
+import { CommandService } from './command/command.service.js';
+import { ReplService } from './repl/repl.service.js';
+import { StateService } from './state/state.service.js';
 import { colorize } from './utils/colorize.js';
 import { parseProcessArgs } from './utils/parse-process-args.js';
 import { EOL, homedir } from 'os';

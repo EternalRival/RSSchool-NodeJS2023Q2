@@ -1,4 +1,33 @@
-import { colorize } from './utils/colorize.js';
+import { colorize } from '../utils/colorize.js';
+
+/*
+* Navigation & working directory (nwd)
+up
+cd path_to_directory
+ls
+
+* Basic operation with files
+cat
+add
+rn
+cp
+mv
+rm
+
+* Operating system info
+os --EOL
+os --cpus
+os --homedir
+os --username
+os --archutecture
+
+* Hash calculation
+hash
+
+* Compress and decompress operations
+compress
+decompress
+*/
 
 export class CommandService {
   #exit = null;
