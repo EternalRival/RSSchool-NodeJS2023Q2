@@ -1,1 +1,1 @@
-export class  NavigationService {}
+export class NavigationService {}

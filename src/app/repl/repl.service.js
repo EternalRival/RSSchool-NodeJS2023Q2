@@ -1,25 +1,24 @@
 import { createInterface } from 'readline';
+import { colorize } from '../utils/colorize.js';
 
 export class ReplService {
   #rl;
 
-  constructor({ exit, input, output, prompt }) {
-    this.#rl = createInterface({ input, output, prompt });
-    this.exit = exit;
-  }
-
-  init({ helloMessage, exitMessage, handleInput }) {
-    this.#rl.on('close', () => {
+  init({ process, helloMessage, exitMessage, handleInput }) {
+    const rl = createInterface({ input: process.stdin, output: process.stdout, prompt: colorize('purple', '> ') });
+    rl.on('close', () => {
       console.log(exitMessage);
-      this.exit();
+      process.exit();
     });
-    this.#rl.on('line', (line) => {
-      handleInput(line);
-      this.#rl.prompt();
+    rl.on('line', (line) => {
+      handleInput(line.trim());
+      rl.prompt();
     });
 
     console.log(helloMessage);
-    this.#rl.prompt();
+    rl.prompt();
+
+    this.#rl = rl;
   }
 
   close() {

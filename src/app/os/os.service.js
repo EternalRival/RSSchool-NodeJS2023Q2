@@ -1,1 +1,1 @@
-export class OperationSystemService {}
+export class OSService {}
