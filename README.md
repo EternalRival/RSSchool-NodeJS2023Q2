@@ -5,8 +5,8 @@
 ### Basic Scope
 
 - General
-  - [ ] **+6** Application accepts username and prints proper message
-  - [ ] **+10** Application exits if user pressed `ctrl+c` or sent `.exit` command and proper message is printed
+  - [x] **+6** Application accepts username and prints proper message
+  - [x] **+10** Application exits if user pressed `ctrl+c` or sent `.exit` command and proper message is printed
 - Operations fail
   - [ ] **+20** Attempts to perform an operation on a non-existent file or work on a non-existent path result in the operation fail
   - [ ] **+10** Operation fail doesn't crash application
@@ -35,10 +35,10 @@
 
 ### Advanced Scope
 
-- [ ] **+30** All operations marked as to be implemented using certain streams should be performed using Streams API
-- [ ] **+20** No synchronous Node.js API with asynchronous analogues is used (e.g. not used `readFileSync` instead of `readFile`)
-- [ ] **+20** Codebase is written in ESM modules instead of CommonJS
-- [ ] **+20** Codebase is separated (at least 7 modules)
+- [x] **+30** All operations marked as to be implemented using certain streams should be performed using Streams API
+- [x] **+20** No synchronous Node.js API with asynchronous analogues is used (e.g. not used `readFileSync` instead of `readFile`)
+- [x] **+20** Codebase is written in ESM modules instead of CommonJS
+- [x] **+20** Codebase is separated (at least 7 modules)
 
 ### Forfeits
 
