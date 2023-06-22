@@ -43,15 +43,20 @@ export class AppController {
       ['cwd', () => echo(stateService.get('cwd'))],
     ]);
 
+    const getCurrentCwd = () => this.buildMessage(`You are currently in ${stateService.get('cwd')}`);
+
     const handleInput = (input) => {
       if (!input) return;
       const [command, ...args] = input.split(' ');
       const handler = commands.get(command);
       if (handler) handler(...args);
       else console.error(colorize('red', 'Invalid input'));
+      console.log(getCurrentCwd());
     };
-    const helloMessage = this.buildMessage(`Welcome to the File Manager, ${username}!`, username);
+
     const exitMessage = this.buildMessage(`${EOL}Thank you for using File Manager, ${username}, goodbye!`, username);
+    let helloMessage = this.buildMessage(`Welcome to the File Manager, ${username}!`, username);
+    helloMessage += `${EOL}${getCurrentCwd()}`;
     replService.init({ process, handleInput, helloMessage, exitMessage });
   }
 
