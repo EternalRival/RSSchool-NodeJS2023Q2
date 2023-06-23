@@ -10,8 +10,8 @@ export class ReplService {
       console.log(exitMessage);
       process.exit();
     });
-    rl.on('line', (line) => {
-      handleInput(line.trim());
+    rl.on('line', async (line) => {
+      await handleInput(line.trim());
       rl.prompt();
     });
 

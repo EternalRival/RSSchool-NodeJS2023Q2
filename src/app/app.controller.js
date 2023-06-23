@@ -33,27 +33,47 @@ decompress
 export class AppController {
   constructor(process, stateService, services) {
     const { replService, filesService, hashService, navigationService, osService, zipService } = services;
-    const username = stateService.get('username') ?? 'Username';
 
-    const echo = (...args) => console.log(colorize('yellow', args.join(' ')));
+    navigationService.init(stateService);
+
+    /** @type { (args: string[]) => void } */
+    const echo = (args) => console.log(colorize('yellow', args.join(' ')));
+
+    /** @type { Map<string, (args?: string[]) => void|Promise<void>> } */
     const commands = new Map([
       ['.exit', () => replService.close()],
       ['echo', echo],
-      ['kek', () => echo('someone keked!')],
-      ['cwd', () => echo(stateService.get('cwd'))],
+      ['kek', () => echo(['someone keked!'])],
+      ['cwd', () => echo(navigationService.cwd)],
+      ['up', () => navigationService.upperDir()],
+      ['cd', (args) => navigationService.changeDir(args.join(' '))],
+      ['ls', () => echo('executed ls!')],
+      ['cat', () => echo('executed cat!')],
+      ['add', () => echo('executed add!')],
+      ['rn', () => echo('executed rn!')],
+      ['cp', () => echo('executed cp!')],
+      ['mv', () => echo('executed mv!')],
+      ['rm', () => echo('executed rm!')],
+      ['os', () => echo('executed os!')],
+      ['hash', () => echo('executed hash!')],
+      ['compress', () => echo('executed compress!')],
+      ['decompress', () => echo('executed decompress!')],
     ]);
 
-    const getCurrentCwd = () => this.buildMessage(`You are currently in ${stateService.get('cwd')}`);
-
-    const handleInput = (input) => {
+    const username = stateService.get('username') ?? 'Username';
+    const getCurrentCwd = () => this.buildMessage(`You are currently in ${navigationService.cwd}`);
+    const handleInput = async (input) => {
       if (!input) return;
-      const [command, ...args] = input.split(' ');
+      const [command, ...args] = input.split(/\s+/);
       const handler = commands.get(command);
-      if (handler) handler(...args);
-      else console.error(colorize('red', 'Invalid input'));
+      try {
+        if (handler) await handler(args);
+        else throw new Error('Invalid input');
+      } catch (error) {
+        console.error(colorize('red', error.message));
+      }
       console.log(getCurrentCwd());
     };
-
     const exitMessage = this.buildMessage(`${EOL}Thank you for using File Manager, ${username}, goodbye!`, username);
     let helloMessage = this.buildMessage(`Welcome to the File Manager, ${username}!`, username);
     helloMessage += `${EOL}${getCurrentCwd()}`;
