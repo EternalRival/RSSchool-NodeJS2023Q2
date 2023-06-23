@@ -11,7 +11,7 @@ export class ReplService {
       process.exit();
     });
     rl.on('line', async (line) => {
-      await handleInput(line.trim());
+      await handleInput(line);
       rl.prompt();
     });
 

@@ -9,11 +9,11 @@
   - [x] **+10** Application exits if user pressed `ctrl+c` or sent `.exit` command and proper message is printed
 - Operations fail
   - [ ] **+20** Attempts to perform an operation on a non-existent file or work on a non-existent path result in the operation fail
-  - [ ] **+10** Operation fail doesn't crash application
+  - [x] **+10** Operation fail doesn't crash application
 - Navigation & working directory operations implemented properly
-  - [ ] **+10** Go upper from current directory
-  - [ ] **+10** Go to dedicated folder from current directory
-  - [ ] **+20** List all files and folders in current directory
+  - [x] **+10** Go upper from current directory
+  - [x] **+10** Go to dedicated folder from current directory
+  - [x] **+20** List all files and folders in current directory
 - Basic operations with files implemented properly
   - [ ] **+10** Read file and print it's content in console
   - [ ] **+10** Create empty file

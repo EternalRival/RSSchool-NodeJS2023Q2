@@ -36,18 +36,18 @@ export class AppController {
 
     navigationService.init(stateService);
 
-    /** @type { (args: string[]) => void } */
-    const echo = (args) => console.log(colorize('yellow', args.join(' ')));
+    /** @type { (args: string) => void } */
+    const echo = (args) => console.log(colorize('yellow', args));
 
-    /** @type { Map<string, (args?: string[]) => void|Promise<void>> } */
+    /** @type { Map<string, (args?: string) => void|Promise<void>> } */
     const commands = new Map([
       ['.exit', () => replService.close()],
       ['echo', echo],
-      ['kek', () => echo(['someone keked!'])],
+      ['kek', () => echo('someone keked!')],
       ['cwd', () => echo(navigationService.cwd)],
       ['up', () => navigationService.upperDir()],
-      ['cd', (args) => navigationService.changeDir(args.join(' '))],
-      ['ls', () => echo('executed ls!')],
+      ['cd', (args) => navigationService.changeDir(args)],
+      ['ls', () => navigationService.list()],
       ['cat', () => echo('executed cat!')],
       ['add', () => echo('executed add!')],
       ['rn', () => echo('executed rn!')],
@@ -63,11 +63,12 @@ export class AppController {
     const username = stateService.get('username') ?? 'Username';
     const getCurrentCwd = () => this.buildMessage(`You are currently in ${navigationService.cwd}`);
     const handleInput = async (input) => {
-      if (!input) return;
-      const [command, ...args] = input.split(/\s+/);
+      const trimmedInput = input.trim();
+      if (!trimmedInput) return;
+      const [command, ...args] = trimmedInput.split(' ');
       const handler = commands.get(command);
       try {
-        if (handler) await handler(args);
+        if (handler) await handler(args.join(' ').trim());
         else throw new Error('Invalid input');
       } catch (error) {
         console.error(colorize('red', error.message));

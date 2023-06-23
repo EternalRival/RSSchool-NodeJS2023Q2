@@ -1,4 +1,4 @@
-import { statfs, stat } from 'fs/promises';
+import { readdir, stat } from 'fs/promises';
 import { resolve } from 'path';
 import { parsePathList } from '../utils/parse-path-list.js';
 
@@ -24,8 +24,28 @@ export class NavigationService {
     try {
       const stats = await stat(targetPath);
       if (stats.isDirectory()) this.cwd = targetPath;
+      else throw new Error('Operation failed');
     } catch (error) {
       throw new Error('Operation failed');
     }
+  }
+
+  async list() {
+    const dirents = await readdir(this.cwd, { withFileTypes: true });
+
+    const list = dirents
+      .map((dirent) => ({
+        Name: dirent.name,
+        Type: dirent.isFile()
+          ? 'file'
+          : dirent.isDirectory()
+          ? 'directory'
+          : dirent.isSymbolicLink()
+          ? 'symbolic-link'
+          : '',
+      }))
+      .sort((a, b) => a.Type.localeCompare(b.Type) || a.Name.localeCompare(b.Name));
+
+    console.table(list);
   }
 }
