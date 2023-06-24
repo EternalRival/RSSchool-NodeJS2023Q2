@@ -1,26 +1,37 @@
+import { EOL, arch, cpus, homedir, userInfo } from 'os';
+import { parseArgs } from '../utils/parse-args.js';
+
 export class OSService {
-  init(stateService) {
-    this.stateService = stateService;
+  commands = new Map([
+    ['--EOL', () => this.eol()],
+    ['--cpus', () => this.cpus()],
+    ['--homedir', () => this.homedir()],
+    ['--username', () => this.username()],
+    ['--architecture', () => this.architecture()],
+  ]);
+
+  os(args) {
+    parseArgs(args).forEach((arg) => {
+      const callback = this.commands.get(arg);
+      if (callback) callback();
+    });
   }
-  set cwd(path) {
-    this.stateService.set('cwd', path);
-  }
-  get cwd() {
-    return this.stateService.get('cwd');
-  }
+
   eol() {
-    throw new Error('Not implemented');
+    console.log(`Default system EOL: ${JSON.stringify(EOL)}`);
   }
   cpus() {
-    throw new Error('Not implemented');
+    const cpuList = cpus().map((cpu) => ({ 'Model': cpu.model, 'Clock rate (GHz)': cpu.speed / 1000 }));
+    console.log(`Overall amount of CPUS: ${cpuList.length}`);
+    console.table(cpuList);
   }
   homedir() {
-    throw new Error('Not implemented');
+    console.log(`Home directory: ${homedir()}`);
   }
   username() {
-    throw new Error('Not implemented');
+    console.log(`System User Name: ${userInfo().username}`);
   }
   architecture() {
-    throw new Error('Not implemented');
+    console.log(`CPU architecture: ${arch()}`);
   }
 }
