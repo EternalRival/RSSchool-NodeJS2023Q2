@@ -34,7 +34,7 @@ export class AppController {
   constructor(process, stateService, services) {
     const { replService, filesService, hashService, navigationService, osService, zipService } = services;
 
-    navigationService.init(stateService);
+    [navigationService, filesService, hashService, zipService].forEach((service) => service.init(stateService));
 
     /** @type { (args: string) => void } */
     const echo = (args) => console.log(colorize('yellow', args));
@@ -43,21 +43,21 @@ export class AppController {
     const commands = new Map([
       ['.exit', () => replService.close()],
       ['echo', echo],
-      ['kek', () => echo('someone keked!')],
+      ['kek', () => echo('someone keked!')], // todo remove
       ['cwd', () => echo(navigationService.cwd)],
       ['up', () => navigationService.upperDir()],
       ['cd', (args) => navigationService.changeDir(args)],
       ['ls', () => navigationService.list()],
-      ['cat', () => echo('executed cat!')],
-      ['add', () => echo('executed add!')],
-      ['rn', () => echo('executed rn!')],
-      ['cp', () => echo('executed cp!')],
-      ['mv', () => echo('executed mv!')],
-      ['rm', () => echo('executed rm!')],
-      ['os', () => echo('executed os!')],
-      ['hash', () => echo('executed hash!')],
-      ['compress', () => echo('executed compress!')],
-      ['decompress', () => echo('executed decompress!')],
+      ['cat', (args) => filesService.concatenate(args)], // todo implement
+      ['add', (args) => filesService.addFile(args)], // todo implement
+      ['rn', (args) => filesService.renameFile(args)], // todo implement
+      ['cp', (args) => filesService.copyFile(args)], // todo implement
+      ['mv', (args) => filesService.moveFile(args)], // todo implement
+      ['rm', (args) => filesService.removeFile(args)], // todo implement
+      ['os', () => echo('executed os!')], // todo implement
+      ['hash', () => echo('executed hash!')], // todo implement
+      ['compress', () => echo('executed compress!')], // todo implement
+      ['decompress', () => echo('executed decompress!')], // todo implement
     ]);
 
     const username = stateService.get('username') ?? 'Username';
