@@ -1,3 +1,7 @@
+import { createHash } from 'crypto';
+import { createReadStream } from 'fs';
+import { resolve } from 'path';
+
 export class HashService {
   init(stateService) {
     this.stateService = stateService;
@@ -8,7 +12,19 @@ export class HashService {
   get cwd() {
     return this.stateService.get('cwd');
   }
+
   hash(args) {
-    throw new Error('Not implemented');
+    return new Promise((res, rej) => {
+      const hash = createHash('sha256');
+      const filePath = resolve(this.cwd, args);
+      const readStream = createReadStream(filePath);
+
+      readStream.on('error', () => rej(new Error('Operation failed')));
+      readStream.on('data', (chunk) => hash.update(chunk));
+      readStream.on('end', () => {
+        console.log(hash.digest('hex'));
+        res();
+      });
+    });
   }
 }

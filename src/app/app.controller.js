@@ -48,16 +48,16 @@ export class AppController {
       ['up', () => navigationService.upperDir()],
       ['cd', (args) => navigationService.changeDir(args)],
       ['ls', () => navigationService.list()],
-      ['cat', (args) => filesService.concatenate(args)], // todo implement
-      ['add', (args) => filesService.addFile(args)], // todo implement
-      ['rn', (args) => filesService.renameFile(args)], // todo implement
-      ['cp', (args) => filesService.copyFile(args)], // todo implement
-      ['mv', (args) => filesService.moveFile(args)], // todo implement
-      ['rm', (args) => filesService.removeFile(args)], // todo implement
-      ['os', () => echo('executed os!')], // todo implement
-      ['hash', () => echo('executed hash!')], // todo implement
-      ['compress', () => echo('executed compress!')], // todo implement
-      ['decompress', () => echo('executed decompress!')], // todo implement
+      ['cat', (args) => filesService.concatenate(args)],
+      ['add', (args) => filesService.addFile(args)],
+      ['rn', (args) => filesService.renameFile(args)],
+      ['cp', (args) => filesService.copyFile(args)],
+      ['mv', (args) => filesService.moveFile(args)],
+      ['rm', (args) => filesService.removeFile(args)],
+      ['os', (args) => osService.os(args)], // todo implement
+      ['hash', (args) => hashService.hash(args)], // todo implement
+      ['compress', (args) => zipService.compress(args)], // todo implement
+      ['decompress', (args) => zipService.decompress(args)], // todo implement
     ]);
 
     const username = stateService.get('username') ?? 'Username';
