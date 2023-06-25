@@ -7,6 +7,7 @@ export class FilesService {
   init(stateService) {
     this.stateService = stateService;
   }
+
   get cwd() {
     return this.stateService.get('cwd');
   }
@@ -20,6 +21,7 @@ export class FilesService {
       readStream.pipe(process.stdout);
     });
   }
+
   addFile(args) {
     return new Promise((res, rej) => {
       const filePath = resolve(this.cwd, args);
@@ -29,6 +31,7 @@ export class FilesService {
       writeStream.close();
     });
   }
+
   async renameFile(args) {
     try {
       const [pathToFile, newFileName] = parsePathList(args);
@@ -41,6 +44,7 @@ export class FilesService {
       throw new Error('Operation failed');
     }
   }
+
   copyFile(args) {
     return new Promise(async (res, rej) => {
       try {
@@ -58,11 +62,12 @@ export class FilesService {
         writeStream.on('close', res);
 
         readStream.pipe(writeStream);
-      } catch (error) {
+      } catch {
         rej(new Error('Operation failed'));
       }
     });
   }
+
   async moveFile(args) {
     try {
       await this.copyFile(args);
@@ -71,6 +76,7 @@ export class FilesService {
       throw new Error('Operation failed');
     }
   }
+
   async removeFile(args) {
     const [pathToFile] = parsePathList(args);
     const filePath = resolve(this.cwd, pathToFile);
