@@ -1,6 +1,7 @@
 import { createHash } from 'crypto';
 import { createReadStream } from 'fs';
 import { resolve } from 'path';
+import { parsePathList } from '../utils/parse-path-list.js';
 
 export class HashService {
   init(stateService) {
@@ -14,7 +15,8 @@ export class HashService {
   hash(args) {
     return new Promise((res, rej) => {
       const hash = createHash('sha256');
-      const filePath = resolve(this.cwd, args);
+      const [pathToFile] = parsePathList(args);
+      const filePath = resolve(this.cwd, pathToFile);
       const readStream = createReadStream(filePath);
 
       readStream.on('error', () => rej(new Error('Operation failed')));

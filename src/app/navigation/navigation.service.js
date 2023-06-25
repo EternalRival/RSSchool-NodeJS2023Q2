@@ -19,8 +19,8 @@ export class NavigationService {
   }
 
   async changeDir(args) {
-    const [relativePath] = parsePathList(args);
-    const targetPath = resolve(this.cwd, relativePath);
+    const [pathToDirectory] = parsePathList(args);
+    const targetPath = resolve(this.cwd, pathToDirectory);
     try {
       const stats = await stat(targetPath);
       if (stats.isDirectory()) this.cwd = targetPath;

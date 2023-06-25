@@ -14,7 +14,8 @@ export class FilesService {
 
   concatenate(args) {
     return new Promise((res, rej) => {
-      const filePath = resolve(this.cwd, args);
+      const [pathToFile] = parsePathList(args);
+      const filePath = resolve(this.cwd, pathToFile);
       const readStream = createReadStream(filePath);
       readStream.on('end', res);
       readStream.on('error', () => rej(new Error('Operation failed')));
@@ -24,7 +25,8 @@ export class FilesService {
 
   addFile(args) {
     return new Promise((res, rej) => {
-      const filePath = resolve(this.cwd, args);
+      const [newFileName] = parsePathList(args);
+      const filePath = resolve(this.cwd, newFileName);
       const writeStream = createWriteStream(filePath, { flags: 'wx' });
       writeStream.on('close', res);
       writeStream.on('error', () => rej(new Error('Operation failed')));

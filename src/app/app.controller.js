@@ -1,50 +1,15 @@
 import { colorize } from './utils/colorize.js';
 import { EOL } from 'os';
 
-/*
-* Navigation & working directory (nwd)
-up
-cd path_to_directory
-ls
-
-* Basic operation with files
-cat
-add
-rn
-cp
-mv
-rm
-
-* Operating system info
-os --EOL
-os --cpus
-os --homedir
-os --username
-os --archutecture
-
-* Hash calculation
-hash
-
-* Compress and decompress operations
-compress
-decompress
-*/
-
 export class AppController {
   constructor(process, stateService, services) {
     const { replService, filesService, hashService, navigationService, osService, zipService } = services;
 
     [navigationService, filesService, hashService, zipService].forEach((service) => service.init(stateService));
 
-    /** @type { (args: string) => void } */
-    const echo = (args) => console.log(colorize('yellow', args));
-
     /** @type { Map<string, (args?: string) => void|Promise<void>> } */
     const commands = new Map([
       ['.exit', () => replService.close()],
-      ['echo', echo],
-      ['kek', () => echo('someone keked!')], // todo remove
-      ['cwd', () => echo(navigationService.cwd)],
       ['up', () => navigationService.upperDir()],
       ['cd', (args) => navigationService.changeDir(args)],
       ['ls', () => navigationService.list()],
@@ -54,14 +19,14 @@ export class AppController {
       ['cp', (args) => filesService.copyFile(args)],
       ['mv', (args) => filesService.moveFile(args)],
       ['rm', (args) => filesService.removeFile(args)],
-      ['os', (args) => osService.os(args)], // todo implement
-      ['hash', (args) => hashService.hash(args)], // todo implement
-      ['compress', (args) => zipService.compress(args)], // todo implement
-      ['decompress', (args) => zipService.decompress(args)], // todo implement
+      ['os', (args) => osService.os(args)],
+      ['hash', (args) => hashService.hash(args)],
+      ['compress', (args) => zipService.compress(args)],
+      ['decompress', (args) => zipService.decompress(args)],
     ]);
 
     const username = stateService.get('username') ?? 'Username';
-    const getCurrentCwd = () => this.buildMessage(`You are currently in ${navigationService.cwd}`);
+    const getCurrentCwd = () => this.buildMessage(`${EOL}You are currently in ${navigationService.cwd}`);
     const handleInput = async (input) => {
       const trimmedInput = input.trim();
       if (!trimmedInput) return;
