@@ -11,6 +11,7 @@ export class App {
     const username = args.get('username') ?? 'Username';
 
     this.stateService = new StateService();
+    this.stateService.set('platform', process.platform);
     this.stateService.set('cwd', homedir());
     this.stateService.set('username', username);
 

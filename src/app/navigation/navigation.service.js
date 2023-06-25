@@ -1,5 +1,5 @@
 import { readdir, stat } from 'fs/promises';
-import { resolve } from 'path';
+import { isAbsolute, resolve } from 'path';
 import { parsePathList } from '../utils/parse-path-list.js';
 
 export class NavigationService {
@@ -20,7 +20,9 @@ export class NavigationService {
 
   async changeDir(args) {
     const [pathToDirectory] = parsePathList(args);
-    const targetPath = resolve(this.cwd, pathToDirectory);
+    const isWin32 = this.stateService.get('platform') === 'win32';
+    const isWin32RootPath = pathToDirectory.includes(':') && !isAbsolute(pathToDirectory);
+    const targetPath = resolve(isWin32 && isWin32RootPath ? '/' : this.cwd, pathToDirectory);
     try {
       const stats = await stat(targetPath);
       if (stats.isDirectory()) this.cwd = targetPath;
