@@ -1,5 +1,22 @@
 # Task 2 File Manager
 
+## Notes
+
+- Use 18 LTS version of Node.js
+- The program is started by npm-script `start` in following way:
+
+```bash
+npm run start -- --username=your_username
+```
+
+- If the path contains whitespaces in the folder/file name, use backslash escaping
+
+```bash
+# example
+cat filename\ with\ whitespaces.md
+rn ./filename\ with\ whitespaces.md ./filename_with_underscore.md
+```
+
 ## Scoring: File Manager
 
 ### Basic Scope
