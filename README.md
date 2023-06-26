@@ -5,16 +5,69 @@
 - Use 18 LTS version of Node.js
 - The program is started by npm-script `start` in following way:
 
-```bash
+```sh
 npm run start -- --username=your_username
 ```
 
-- If the path contains whitespaces in the folder/file name, use backslash escaping
+- If the path contains whitespaces in the folder/file name, use backslash escaping (not quotes)
 
-```bash
+```sh
 # example
 cat filename\ with\ whitespaces.md
 rn ./filename\ with\ whitespaces.md ./filename_with_underscore.md
+```
+
+- For compress/decompress use full file pathes
+
+```sh
+compress ./file-to-compress.md ./file-to-compress.md.br
+compress ./file-to-decompress.md.br ./file-to-decompress.md
+```
+
+- Examples:
+
+```sh
+# exit
+.exit
+
+# upper
+up
+
+# change current working directory
+cd ./some\ directory
+
+# list current working directory
+ls
+
+# concatenate filepath
+cat ./some\ directory/file-to-read.md
+
+# create filepath
+add ./some\ directory/file-to-create.md
+
+# rename filepath1 to filepath2
+rn ./some\ directory/file-to-rename.md ./some\ directory/filename-renamed.md
+
+# copy filepath to another directory
+cp ./some\ directory/file-to-copy.md ./second\ directory
+
+# move filepath to another directory
+mv ./some\ directory/file-to-move.md ./third\ directory
+
+# delete filepath
+rm ./some\ directory/file-to-delete.md
+
+# os info (u can use single or multiple params)
+os --EOL --cpus --homedir --username --architecture
+
+# hash filepath
+hash ./some\ directory/file-to-hash.md
+
+# compress filepath1 to filepath2 with brotli
+compress ./some\ directory/file-to-compress.md ./some\ directory/compressed-file.md.br
+
+# decompress filepath1 to filepath2 with brotli
+decompress ./some\ directory/file-to-decompress.md.br ./some\ directory/decompressed-file.md
 ```
 
 ## Scoring: File Manager
