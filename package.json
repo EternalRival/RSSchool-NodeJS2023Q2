@@ -1,0 +1,23 @@
+{
+  "name": "crud-api",
+  "version": "1.0.0",
+  "description": "rsschool node crud api task",
+  "main": "src/index.ts",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/EternalRival/node-CRUD-API.git"
+  },
+  "keywords": [
+    "rsschool-task"
+  ],
+  "author": "erdev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EternalRival/node-CRUD-API/issues"
+  },
+  "homepage": "https://github.com/EternalRival/node-CRUD-API#readme"
+}
