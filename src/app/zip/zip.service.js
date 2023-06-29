@@ -28,7 +28,7 @@ export class ZipService {
         writeStream.on('close', res);
         readStream.pipe(brotli).pipe(writeStream);
       } catch {
-        throw new Error('Operation failed');
+        rej(new Error('Operation failed'));
       }
     });
   }
