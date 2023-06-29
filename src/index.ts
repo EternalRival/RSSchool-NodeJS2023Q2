@@ -1,8 +1,8 @@
-import http from 'http';
+import 'dotenv/config';
+import { App } from './app/app.module';
 
-const message = 'Hello';
+const port = Number(process.env.SERVER_PORT) || null;
 
-const server = http.createServer((req, res) => {
-  res.end(`${message}`);
-});
-server.listen(3000);
+const app = new App({ port });
+
+app.run();
