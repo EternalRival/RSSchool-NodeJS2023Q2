@@ -28,9 +28,11 @@
   },
   "homepage": "https://github.com/EternalRival/node-CRUD-API#readme",
   "dependencies": {
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/uuid": "^9.0.2",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "eslint": "^8.43.0",
     "eslint-config-airbnb-base": "^15.0.0",

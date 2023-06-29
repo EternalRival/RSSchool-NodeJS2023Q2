@@ -1,4 +1,4 @@
-import { AppProperties } from './app-properties.interface';
+import { AppProperties } from './interfaces/app-properties.interface';
 import { AppController } from './app.controller';
 
 export class App {
