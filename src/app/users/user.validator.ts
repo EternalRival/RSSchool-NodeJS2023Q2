@@ -1,5 +1,7 @@
 export function isValidUser(obj: unknown): boolean {
-  if (typeof obj !== 'object' || obj === null) return false;
+  if (typeof obj !== 'object' || obj === null) {
+    return false;
+  }
   return (
     'username' in obj &&
     typeof obj.username === 'string' &&

@@ -5,24 +5,24 @@ import { User } from '../entities/user.entity';
 export class UserRepository {
   private static users: Map<string, User> = new Map();
 
-  save(user: User): User {
+  public save(user: User): User {
     UserRepository.users.set(user.id, user);
     return user;
   }
 
-  getAll() {
+  public getAll(): User[] {
     return Array.from(UserRepository.users.values());
   }
 
-  findOneById(id: string) {
+  public findOneById(id: string): User | null {
     return UserRepository.users.get(id) ?? null;
   }
 
-  removeById(id: string) {
+  public removeById(id: string): boolean {
     return UserRepository.users.delete(id);
   }
 
-  createUUID(): string {
+  public createUUID(): string {
     const uuid = uuidv4();
     return UserRepository.users.has(uuid) ? this.createUUID() : uuid;
   }

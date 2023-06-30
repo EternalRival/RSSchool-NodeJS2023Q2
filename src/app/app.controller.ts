@@ -16,17 +16,17 @@ import { InvalidUserDataError } from './errors/invalid-user-data.error';
 import { parseId } from '../helpers/parse-id';
 
 export class AppController {
-  private defaultPort = 3000;
+  private defaultPort: number = 3000;
 
-  port?: number;
+  private port?: number;
 
-  appService = new AppService();
+  private appService = new AppService();
 
   constructor(props: AppProperties) {
     inject(this, props);
   }
 
-  createServer() {
+  public createServer(): void {
     const requestListener: RequestListener = (request, response) => {
       const { method, url } = request;
       const endpoint = '/api/users';
@@ -68,22 +68,7 @@ export class AppController {
           throw new InvalidEndpointError();
         }
       } catch (error) {
-        console.error(error);
-        if (error instanceof InvalidUuidError) {
-          this.send(response, StatusCode.BAD_REQUEST, error.message);
-        } else if (error instanceof InvalidUserDataError) {
-          this.send(response, StatusCode.BAD_REQUEST, error.message);
-        } else if (error instanceof UserNotFoundError) {
-          this.send(response, StatusCode.NOT_FOUND, error.message);
-        } else if (error instanceof InvalidEndpointError) {
-          this.send(response, StatusCode.NOT_FOUND, error.message);
-        } else {
-          this.send(
-            response,
-            StatusCode.INTERNAL_SERVER_ERROR,
-            ResponseMessage.INTERNAL_SERVER_ERROR,
-          );
-        }
+        this.handleRequestErrors(error, response);
       }
     };
 
@@ -92,22 +77,41 @@ export class AppController {
     server.listen(port, () => console.log('Server started!'));
   }
 
-  send(response: ServerResponse, statusCode: StatusCode, data?: unknown) {
+  private send(response: ServerResponse, statusCode: StatusCode, data?: unknown): this {
     response.writeHead(statusCode);
-    if (data) response.end(JSON.stringify(data));
-    else response.end();
+    if (data) {
+      response.end(JSON.stringify(data));
+    } else {
+      response.end();
+    }
+
     return this;
   }
 
-  handleGetUserList(response: ServerResponse) {
+  private handleRequestErrors(error: unknown, response: ServerResponse): void {
+    console.error(error);
+    if (error instanceof InvalidUuidError) {
+      this.send(response, StatusCode.BAD_REQUEST, error.message);
+    } else if (error instanceof InvalidUserDataError) {
+      this.send(response, StatusCode.BAD_REQUEST, error.message);
+    } else if (error instanceof UserNotFoundError) {
+      this.send(response, StatusCode.NOT_FOUND, error.message);
+    } else if (error instanceof InvalidEndpointError) {
+      this.send(response, StatusCode.NOT_FOUND, error.message);
+    } else {
+      this.send(response, StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  private handleGetUserList(response: ServerResponse): void {
     this.send(response, StatusCode.OK, this.appService.findAll());
   }
 
-  handleGetUser(response: ServerResponse, user: User) {
+  private handleGetUser(response: ServerResponse, user: User): void {
     this.send(response, StatusCode.OK, user);
   }
 
-  async handleCreateUser(response: ServerResponse, request: IncomingMessage) {
+  private async handleCreateUser(response: ServerResponse, request: IncomingMessage): Promise<void> {
     const body: unknown = await getRequestBody(request);
     if (isValidUser(body)) {
       const { username, age, hobbies } = body as User;
@@ -119,7 +123,7 @@ export class AppController {
     }
   }
 
-  async handleUpdateUser(response: ServerResponse, request: IncomingMessage, id: string) {
+  private async handleUpdateUser(response: ServerResponse, request: IncomingMessage, id: string): Promise<void> {
     const body: unknown = await getRequestBody(request);
     if (isValidUser(body)) {
       const { username, age, hobbies } = body as User;
@@ -131,7 +135,7 @@ export class AppController {
     }
   }
 
-  handleDeleteUser(response: ServerResponse, id: string) {
+  private handleDeleteUser(response: ServerResponse, id: string): void {
     this.appService.remove(id);
     this.send(response, StatusCode.NO_CONTENT);
   }

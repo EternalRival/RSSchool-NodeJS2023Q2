@@ -2,13 +2,13 @@ import { AppProperties } from './interfaces/app-properties.interface';
 import { AppController } from './app.controller';
 
 export class App {
-  appController: AppController;
+  private appController: AppController;
 
   constructor(props: AppProperties) {
     this.appController = new AppController(props);
   }
 
-  run(): void {
+  public run(): void {
     this.appController.createServer();
   }
 }
