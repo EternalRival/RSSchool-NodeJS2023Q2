@@ -22,8 +22,10 @@ export class AppController {
 
   private appService = new AppService();
 
-  constructor(props: AppProperties) {
-    inject(this, props);
+  constructor(props?: AppProperties) {
+    if (props) {
+      inject(this, props);
+    }
   }
 
   public createServer(): void {
