@@ -2,7 +2,7 @@
   "arrowParens": "always",
   "bracketSameLine": true,
   "bracketSpacing": true,
-  "embeddedLanguageFormatting": "auto",
+  "embeddedLanguageFormatting": "off",
   "endOfLine": "lf",
   "htmlWhitespaceSensitivity": "strict",
   "insertPragma": false,
