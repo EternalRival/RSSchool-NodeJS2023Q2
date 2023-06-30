@@ -6,6 +6,7 @@ import { RequestMethod } from './enums/request-method.enum';
 import { StatusCode } from './enums/status-code.enum';
 import { AppService } from './app.service';
 import { User } from './entities/user.entity';
+import { isUser } from './users/user.validator';
 
 export class AppController {
   port = 3000;
@@ -46,7 +47,7 @@ export class AppController {
           if (method === RequestMethod.POST) {
             getBody()
               .then((body) => {
-                if (User.isUser(body)) {
+                if (isUser(body)) {
                   const { id, username, age, hobbies } = body as User;
                   const newUser = new User(id, username, age, hobbies);
                   const createdUser = this.appService.create(newUser);
@@ -71,7 +72,7 @@ export class AppController {
           else if (method === RequestMethod.PUT) {
             getBody()
               .then((body) => {
-                if (User.isUser(body)) {
+                if (isUser(body)) {
                   const { id, username, age, hobbies } = body as User;
                   const newUser = new User(id, username, age, hobbies);
                   const updatedUser = this.appService.update(newUser);
