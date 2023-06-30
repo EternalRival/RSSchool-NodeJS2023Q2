@@ -6,10 +6,13 @@ import { RequestMethod } from './enums/request-method.enum';
 import { StatusCode } from './enums/status-code.enum';
 import { AppService } from './app.service';
 import { User } from './entities/user.entity';
-import { isUser } from './users/user.validator';
+import { isValidUser } from './users/user.validator';
+import { ResponseMessage } from './enums/response-message.enum';
 
 export class AppController {
-  port = 3000;
+  private defaultPort = 3000;
+
+  port?: number;
 
   appService = new AppService();
 
@@ -35,11 +38,11 @@ export class AppController {
           });
         });
 
-      try {
-        const { method, url } = req;
-        const usersPath = '/api/users';
+      const { method, url } = req;
+      const endpoint = '/api/users';
 
-        if (url === usersPath) {
+      try {
+        if (url === endpoint) {
           if (method === RequestMethod.GET) {
             const result = this.appService.findAll();
             send(StatusCode.OK, result);
@@ -47,7 +50,7 @@ export class AppController {
           if (method === RequestMethod.POST) {
             getBody()
               .then((body) => {
-                if (isUser(body)) {
+                if (isValidUser(body)) {
                   const { id, username, age, hobbies } = body as User;
                   const newUser = new User(id, username, age, hobbies);
                   const createdUser = this.appService.create(newUser);
@@ -55,24 +58,29 @@ export class AppController {
                 } else
                   send(
                     StatusCode.BAD_REQUEST,
-                    'request body does not contain required fields with proper types',
+                    ResponseMessage.INVALID_USER_DATA,
                   );
               })
               .catch((error) => {
                 console.error(error);
-                send(StatusCode.INTERNAL_SERVER_ERROR, 'internal server error');
+                send(
+                  StatusCode.INTERNAL_SERVER_ERROR,
+                  ResponseMessage.INTERNAL_SERVER_ERROR,
+                );
               });
           }
-        } else if (url?.startsWith(`${usersPath}/`)) {
-          const [userId] = url.slice(usersPath.length + 1).split('/');
+        } else if (url?.startsWith(`${endpoint}/`)) {
+          const [userId] = url.slice(endpoint.length + 1).split('/');
           const user = this.appService.findOneById(userId);
-          if (!validate(userId)) send(StatusCode.BAD_REQUEST, 'invalid id');
-          else if (!user) send(StatusCode.NOT_FOUND, "user doesn't exist");
+          if (!validate(userId))
+            send(StatusCode.BAD_REQUEST, ResponseMessage.INVALID_UUID);
+          else if (!user)
+            send(StatusCode.NOT_FOUND, ResponseMessage.USER_DOESNT_EXIST);
           else if (method === RequestMethod.GET) send(StatusCode.OK, user);
           else if (method === RequestMethod.PUT) {
             getBody()
               .then((body) => {
-                if (isUser(body)) {
+                if (isValidUser(body)) {
                   const { id, username, age, hobbies } = body as User;
                   const newUser = new User(id, username, age, hobbies);
                   const updatedUser = this.appService.update(newUser);
@@ -80,25 +88,33 @@ export class AppController {
                 } else
                   send(
                     StatusCode.BAD_REQUEST,
-                    'request body does not contain required fields with proper types',
+                    ResponseMessage.INVALID_USER_DATA,
                   );
               })
               .catch((error) => {
                 console.error(error);
-                send(StatusCode.INTERNAL_SERVER_ERROR, 'internal server error');
+                send(
+                  StatusCode.INTERNAL_SERVER_ERROR,
+                  ResponseMessage.INTERNAL_SERVER_ERROR,
+                );
               });
           } else if (method === RequestMethod.DELETE) {
             this.appService.remove(userId);
             send(StatusCode.NO_CONTENT);
           }
         } else {
-          send(StatusCode.NOT_FOUND, 'wrong url');
+          send(StatusCode.NOT_FOUND, ResponseMessage.WRONG_URL);
         }
       } catch (error) {
         console.error(error);
-        send(StatusCode.INTERNAL_SERVER_ERROR, 'internal server error');
+        send(
+          StatusCode.INTERNAL_SERVER_ERROR,
+          ResponseMessage.INTERNAL_SERVER_ERROR,
+        );
       }
     });
-    server.listen(this.port);
+    server.listen(this.port ?? this.defaultPort, () => {
+      console.log('Server started!');
+    });
   }
 }

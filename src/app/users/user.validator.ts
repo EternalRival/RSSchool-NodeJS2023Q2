@@ -1,4 +1,4 @@
-export function isUser(obj: unknown): boolean {
+export function isValidUser(obj: unknown): boolean {
   if (typeof obj !== 'object' || obj === null) return false;
   return (
     'username' in obj &&
