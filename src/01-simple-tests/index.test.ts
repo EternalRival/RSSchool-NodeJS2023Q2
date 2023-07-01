@@ -65,26 +65,26 @@ describe('simpleCalculator tests', () => {
   });
 
   test('should return null for invalid action', () => {
-    const testCases: [RawInput, unknown][] = [
-      [{ a: 55, b: 55, action: null }, null],
-      [{ a: 88005553535, b: 88007005050, action: [] }, null],
-      [{ a: 8888, b: 8888, action: 8888 }, null],
+    const testCases = [
+      { a: 88005553535, b: 88007005050, action: [] },
+      { a: 8888, b: 8888, action: 8888 },
+      { a: 55, b: 55, action: null },
     ];
 
-    testCases.forEach(([rawInput, expected]) => {
-      expect(simpleCalculator(rawInput)).toBe(expected);
+    testCases.forEach((rawInput) => {
+      expect(simpleCalculator(rawInput)).toBeNull();
     });
   });
 
   test('should return null for invalid arguments', () => {
-    const testCases: [RawInput, unknown][] = [
-      [{ a: [55], b: 55, action: Action.Add }, null],
-      [{ a: 88005553535, b: null, action: Action.Divide }, null],
-      [{ a: 8888, b: ['eight'], action: Action.Multiply }, null],
+    const testCases = [
+      { a: 88005553535, b: null, action: Action.Divide },
+      { a: 8888, b: ['eight'], action: Action.Multiply },
+      { a: [55], b: 55, action: Action.Add },
     ];
 
-    testCases.forEach(([rawInput, expected]) => {
-      expect(simpleCalculator(rawInput)).toBe(expected);
+    testCases.forEach((rawInput) => {
+      expect(simpleCalculator(rawInput)).toBeNull();
     });
   });
 });
