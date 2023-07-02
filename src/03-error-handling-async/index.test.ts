@@ -9,28 +9,31 @@ import {
 
 describe('resolveValue', () => {
   test('should resolve provided value', async () => {
-    expect(resolveValue('kek')).resolves.toBe('kek');
+    const providedValue = 'kek';
+    await expect(resolveValue(providedValue)).resolves.toBe(providedValue);
   });
 });
 
 describe('throwError', () => {
   test('should throw error with provided message', () => {
-    expect(() => throwError('kek')).toThrow('kek');
+    const providedMessage = 'kek';
+    expect(() => throwError(providedMessage)).toThrow(providedMessage);
   });
 
   test('should throw error with default message if message is not provided', () => {
-    expect(() => throwError()).toThrow('Oops!');
+    const defaultMessage = 'Oops!';
+    expect(() => throwError()).toThrow(defaultMessage);
   });
 });
 
 describe('throwCustomError', () => {
   test('should throw custom error', () => {
-    expect(() => throwCustomError()).toThrow('');
+    expect(() => throwCustomError()).toThrowError(MyAwesomeError);
   });
 });
 
 describe('rejectCustomError', () => {
   test('should reject custom error', async () => {
-    expect(() => rejectCustomError()).rejects.toThrowError(MyAwesomeError);
+    await expect(rejectCustomError()).rejects.toThrowError(MyAwesomeError);
   });
 });
