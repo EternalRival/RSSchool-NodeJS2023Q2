@@ -9,7 +9,7 @@ function isValidMessage(message: unknown): message is SocketMessage {
   if (message !== null && typeof message === 'object') {
     const obj = message as Record<string, unknown>;
     const { type, data, id } = obj;
-    return typeof type === 'string' && isMessageType(type) && typeof data === 'string' && typeof id === 'number';
+    return typeof type === 'string' && isMessageType(type) && typeof data === 'string' && id === 0;
   }
   return false;
 }

@@ -1,5 +1,5 @@
-import { WebSocket, WebSocketServer } from 'ws';
-import { validateClientMessage } from '../socket-message/validate-socket-message';
+import { WebSocketServer } from 'ws';
+import { handleClientMessage } from '../commands';
 
 const WSS_PORT = 3000;
 
@@ -11,14 +11,9 @@ wss.on('listening', function cb(): void {
   console.log('websocket parameters:', this.address());
 });
 
-function handleClientMessage(server: WebSocketServer, client: WebSocket, message: unknown): void {
-  console.log('received:', validateClientMessage(message));
-}
-
 wss.on('connection', (client) => {
   client.on('error', console.error);
   client.on('message', function handleMessage(data): void {
     handleClientMessage(wss, this, JSON.parse(data.toString()));
-    client.send('pong')
   });
 });
