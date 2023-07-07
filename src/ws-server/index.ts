@@ -14,6 +14,10 @@ wss.on('listening', function cb(): void {
 wss.on('connection', (client) => {
   client.on('error', console.error);
   client.on('message', function handleMessage(data): void {
-    handleClientMessage(wss, this, JSON.parse(data.toString()));
+    try {
+      handleClientMessage(wss, this, JSON.parse(data.toString()));
+    } catch (err) {
+      console.error(err);
+    }
   });
 });

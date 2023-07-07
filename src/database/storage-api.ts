@@ -1,29 +1,28 @@
 import { User } from './user.entity';
 
 export class Database {
+  private static lastId = 0;
+
   private static players: Map<string, User> = new Map();
 
-  public static addUser(login: string, password: string): User | Error {
-    if (this.players.get(login)) {
-      return new Error('User already exists');
-    }
-
-    const user = new User(login, password);
+  private static addUser(login: string, password: string): User {
+    const user = new User(this.lastId, login, password);
 
     this.players.set(login, user);
+    this.lastId += 1;
 
     return user;
   }
 
-  public static getUser(login: string, password: string): User | Error {
+  public static verifyUser(login: string, password: string): User {
     const user = this.players.get(login);
 
     if (!user) {
-      return new Error('User not found');
+      return this.addUser(login, password);
     }
 
     if (password !== user.password) {
-      return new Error('Wrong password');
+      throw new Error('Wrong password');
     }
 
     return user;
