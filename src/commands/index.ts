@@ -29,7 +29,7 @@ function handleReg({ client, server }: WSData, data: string): void {
     const user = Users.verifyUser(regData.name, regData.password);
     user.socket = client;
 
-    sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getRoomList());
+    sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenRoomList());
     responseData = { name: user.login, index: user.id, error: false, errorText: '' };
   } catch (err) {
     const errorText = err instanceof Error ? err.message : 'Internal error';
@@ -41,12 +41,15 @@ function handleReg({ client, server }: WSData, data: string): void {
 
 function handleCreateRoom({ client, server }: WSData, data: string): void {
   const player = Users.getUserBySocket(client);
+  if (Lobbies.isUserLobbyOwner(player)) {
+    throw new Error('Already the owner of some lobby');
+  }
   const lobby = Lobbies.create();
 
   lobby.addUser(player);
-  sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getRoomList());
+  sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenRoomList());
 }
-function handleAddUserToRoom({ client }: WSData, data: string): void {
+function handleAddUserToRoom({ client, server }: WSData, data: string): void {
   const addUserToRoomData = validateAddUserToRoomData(JSON.parse(data));
   if (!addUserToRoomData) {
     throw new Error('Invalid addUserToRoom data');
@@ -56,6 +59,21 @@ function handleAddUserToRoom({ client }: WSData, data: string): void {
   const player = Users.getUserBySocket(client);
 
   lobby.addUser(player);
+  sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenRoomList());
+
+  if (!lobby.isFull()) {
+    return;
+  }
+
+  const lobbyUsers = lobby.getUsers();
+  if (!lobbyUsers.every((user) => user.socket && user.socket.readyState === WebSocket.OPEN)) {
+    return;
+  }
+  lobbyUsers.forEach((user) => {
+    if (user.socket) {
+      sendResponse(user.socket, MessageType.CREATE_GAME, { idGame: lobby.id, idPlayer: user.id });
+    }
+  });
 }
 function handleAddShips(wsData: WSData, data: string): void {
   const response = 'handleAddShips response';

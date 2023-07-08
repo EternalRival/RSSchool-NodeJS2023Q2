@@ -1,4 +1,5 @@
 import { RoomData } from './commands/interfaces/room/room-data.interface';
+import { User } from './database/user.entity';
 import { Counter } from './helpers/counter';
 import { Room } from './room';
 
@@ -22,15 +23,21 @@ export class Lobbies {
     return room;
   }
 
-  public static getRoomList(): RoomData[] {
-    return Array.from(this.list.values(), (v) => v.getRoomData());
+  public static getOpenRoomList(): RoomData[] {
+    return Array.from(this.list.values())
+      .filter((v) => !v.isFull())
+      .map((v) => v.getRoomData());
   }
 
   public static getRoomById(id: number): Room {
     const room = this.list.get(id);
-    if (!room){
+    if (!room) {
       throw new Error('Wrong room id');
     }
     return room;
+  }
+
+  public static isUserLobbyOwner(user: User): boolean {
+    return Array.from(this.list.values()).some((lobby) => lobby.hasUser(user));
   }
 }

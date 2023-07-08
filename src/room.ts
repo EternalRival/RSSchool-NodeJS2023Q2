@@ -9,7 +9,7 @@ export class Room {
   constructor(public id: number) {}
 
   public addUser(user: User): User {
-    if (this.userList.size >= this.limit) {
+    if (this.isFull()) {
       throw new Error('Room is full');
     }
     if (this.userList.has(user.id)) {
@@ -33,5 +33,17 @@ export class Room {
       roomId: this.id,
       roomUsers: Array.from(this.userList.values(), ({ login, id }) => ({ name: login, index: id })),
     };
+  }
+
+  public hasUser(user: User): boolean {
+    return this.userList.has(user.id);
+  }
+
+  public isFull(): boolean {
+    return this.userList.size >= this.limit;
+  }
+
+  public getUsers(): User[] {
+    return Array.from(this.userList.values());
   }
 }
