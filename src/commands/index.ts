@@ -1,9 +1,9 @@
 import { OPEN, WebSocket, WebSocketServer } from 'ws';
 import { validateClientMessage } from '../socket-message/socket-message.validator';
 import { MessageType } from '../socket-message/enums/message-type.enum';
-import { Users } from '../database/users.api.service';
+import { Users } from '../api/users.api.service';
 import { validateRegData } from './reg.validator';
-import { Lobbies } from '../lobbies.api.service';
+import { Lobbies } from '../api/lobbies.api.service';
 import { WSData } from './interfaces/ws-data.interface';
 import { validateAddUserToRoomData } from './add-user-to-room.validator';
 

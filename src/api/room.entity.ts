@@ -1,5 +1,5 @@
-import { RoomData } from './commands/interfaces/room/room-data.interface';
-import { User } from './database/user.entity';
+import { RoomData } from '../commands/interfaces/room/room-data.interface';
+import { User } from './user.entity';
 
 export class Room {
   private limit = 2;

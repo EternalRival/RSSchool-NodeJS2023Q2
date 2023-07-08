@@ -1,7 +1,7 @@
-import { RoomData } from './commands/interfaces/room/room-data.interface';
-import { User } from './database/user.entity';
-import { Counter } from './helpers/counter';
-import { Room } from './room';
+import { RoomData } from '../commands/interfaces/room/room-data.interface';
+import { User } from './user.entity';
+import { Counter } from '../helpers/counter';
+import { Room } from './room.entity';
 
 export class Lobbies {
   private static id = new Counter();
