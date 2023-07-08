@@ -1,46 +1,73 @@
-import { WebSocket, WebSocketServer } from 'ws';
+import { OPEN, WebSocket, WebSocketServer } from 'ws';
 import { validateClientMessage } from '../socket-message/socket-message.validator';
 import { MessageType } from '../socket-message/enums/message-type.enum';
-import { Database } from '../database/storage-api';
+import { Users } from '../database/users.api.service';
 import { validateRegData } from './reg.validator';
-import { RegResponse } from './interfaces/player/reg.response.interface';
+import { Lobbies } from '../lobbies.api.service';
+import { WSData } from './interfaces/ws-data.interface';
+import { validateAddUserToRoomData } from './add-user-to-room.validator';
 
-function handleReg(data: string): RegResponse['data'] {
+function sendResponse(target: WebSocket | WebSocketServer, type: MessageType, data: object): void {
+  if (target instanceof WebSocket && target.readyState === OPEN) {
+    const response = JSON.stringify({ type, data: JSON.stringify(data), id: 0 });
+    console.log('->', response);
+    target.send(response);
+  } else if (target instanceof WebSocketServer) {
+    target.clients.forEach((client) => sendResponse(client, type, data));
+  }
+}
+
+function handleReg({ client, server }: WSData, data: string): void {
   const regData = validateRegData(JSON.parse(data));
   if (!regData) {
     throw new Error('Invalid reg data');
   }
+
+  let responseData;
+
   try {
-    const user = Database.verifyUser(regData.name, regData.password);
-    return { name: user.login, index: user.id, error: false, errorText: '' };
+    const user = Users.verifyUser(regData.name, regData.password);
+    user.socket = client;
+
+    sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getRoomList());
+    responseData = { name: user.login, index: user.id, error: false, errorText: '' };
   } catch (err) {
     const errorText = err instanceof Error ? err.message : 'Internal error';
-    return { name: regData.name, index: -1, error: true, errorText };
+    responseData = { name: regData.name, index: -1, error: true, errorText };
   }
+
+  sendResponse(client, MessageType.REG, responseData);
 }
 
-function handleCreateRoom(data: string): object {
-  const response = 'handleCreateRoom response';
-  return { response };
+function handleCreateRoom({ client, server }: WSData, data: string): void {
+  const player = Users.getUserBySocket(client);
+  const lobby = Lobbies.create();
+
+  lobby.addUser(player);
+  sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getRoomList());
 }
-function handleAddUserToRoom(data: string): object {
-  const response = 'handleAddUserToRoom response';
-  return { response };
+function handleAddUserToRoom({ client }: WSData, data: string): void {
+  const addUserToRoomData = validateAddUserToRoomData(JSON.parse(data));
+  if (!addUserToRoomData) {
+    throw new Error('Invalid addUserToRoom data');
+  }
+  const { indexRoom } = addUserToRoomData;
+  const lobby = Lobbies.getRoomById(indexRoom);
+  const player = Users.getUserBySocket(client);
+
+  lobby.addUser(player);
 }
-function handleAddShips(data: string): object {
+function handleAddShips(wsData: WSData, data: string): void {
   const response = 'handleAddShips response';
-  return { response };
 }
-function handleAttack(data: string): object {
+function handleAttack(wsData: WSData, data: string): void {
   const response = 'handleAttack response';
-  return { response };
 }
-function handleRandomAttack(data: string): object {
+function handleRandomAttack(wsData: WSData, data: string): void {
   const response = 'handleRandomAttack response';
-  return { response };
 }
 
-const commands: Map<MessageType, (data: string) => object> = new Map([
+const commands: Map<MessageType, (wsData: WSData, data: string) => void> = new Map([
   [MessageType.REG, handleReg],
   [MessageType.CREATE_ROOM, handleCreateRoom],
   [MessageType.ADD_USER_TO_ROOM, handleAddUserToRoom],
@@ -49,12 +76,12 @@ const commands: Map<MessageType, (data: string) => object> = new Map([
   [MessageType.RANDOM_ATTACK, handleRandomAttack],
 ]);
 
-function handleCommand(command: MessageType, data: string): string {
+function handleCommand(wsData: WSData, command: MessageType, data: string): void {
   const callback = commands.get(command);
   if (!callback) {
     throw new Error('Wrong command');
   }
-  return JSON.stringify({ type: command, data: JSON.stringify(callback(data)), id: 0 });
+  callback(wsData, data);
 }
 
 export function handleClientMessage(server: WebSocketServer, client: WebSocket, message: unknown): void {
@@ -63,8 +90,6 @@ export function handleClientMessage(server: WebSocketServer, client: WebSocket, 
     throw new Error('wrong socket message');
   }
   const { type, data, id } = socketMessage;
-  const responseData = handleCommand(type, data);
+  handleCommand({ server, client }, type, data);
   console.log('<-', type, data, id);
-  console.log('->', responseData);
-  client.send(responseData);
 }

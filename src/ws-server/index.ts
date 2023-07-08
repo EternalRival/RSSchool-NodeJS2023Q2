@@ -17,7 +17,7 @@ wss.on('connection', (client) => {
     try {
       handleClientMessage(wss, this, JSON.parse(data.toString()));
     } catch (err) {
-      console.error(err);
+      console.error(err instanceof Error ? err.message : err);
     }
   });
 });
