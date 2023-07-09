@@ -20,9 +20,6 @@ function sendResponse(target: WebSocket | WebSocketServer, type: MessageType, da
 
 function handleReg({ client, server }: WSData, data: string): void {
   const regData = validateRegData(JSON.parse(data));
-  if (!regData) {
-    throw new Error('Invalid reg data');
-  }
 
   let responseData;
 
@@ -50,11 +47,10 @@ function handleCreateRoom({ client, server }: WSData, data: string): void {
   lobby.addUser(player);
   sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenRoomList());
 }
+
 function handleAddUserToRoom({ client, server }: WSData, data: string): void {
   const addUserToRoomData = validateAddUserToRoomData(JSON.parse(data));
-  if (!addUserToRoomData) {
-    throw new Error('Invalid addUserToRoom data');
-  }
+
   const { indexRoom } = addUserToRoomData;
   const lobby = Lobbies.getRoomById(indexRoom);
   const player = Users.getUserBySocket(client);
@@ -86,15 +82,14 @@ function handleAddUserToRoom({ client, server }: WSData, data: string): void {
 
 function handleAddShips({ client }: WSData, data: string): void {
   const addShipsData = validateAddShipsData(JSON.parse(data));
-  if (!addShipsData) {
-    throw new Error('Invalid addUserToRoom data');
-  }
 
   const player = Users.getUserBySocket(client);
 }
+
 function handleAttack(wsData: WSData, data: string): void {
   const response = 'handleAttack response';
 }
+
 function handleRandomAttack(wsData: WSData, data: string): void {
   const response = 'handleRandomAttack response';
 }
@@ -118,9 +113,6 @@ function handleCommand(wsData: WSData, command: MessageType, data: string): void
 
 export function handleClientMessage(server: WebSocketServer, client: WebSocket, message: unknown): void {
   const socketMessage = validateClientMessage(message);
-  if (!socketMessage) {
-    throw new Error('wrong socket message');
-  }
   const { type, data, id } = socketMessage;
   handleCommand({ server, client }, type, data);
   console.log('<-', type, data, id);

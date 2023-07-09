@@ -14,6 +14,9 @@ function isValidMessage(message: unknown): message is SocketMessage {
   return false;
 }
 
-export function validateClientMessage(message: unknown): SocketMessage | null {
-  return isValidMessage(message) ? message : null;
+export function validateClientMessage(message: unknown): SocketMessage {
+  if (!isValidMessage(message)) {
+    throw new Error('wrong socket message');
+  }
+  return message;
 }

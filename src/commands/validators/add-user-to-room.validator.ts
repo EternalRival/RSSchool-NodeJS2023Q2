@@ -5,6 +5,9 @@ function isValidAddUserToRoomData(rawData: unknown): rawData is AddUserToRoomReq
   return isObject(rawData) ? typeof rawData.indexRoom === 'number' : false;
 }
 
-export function validateAddUserToRoomData(message: unknown): AddUserToRoomRequest['data'] | null {
-  return isValidAddUserToRoomData(message) ? message : null;
+export function validateAddUserToRoomData(message: unknown): AddUserToRoomRequest['data'] {
+  if (!isValidAddUserToRoomData(message)) {
+    throw new Error('Invalid addUserToRoom data');
+  }
+  return message;
 }

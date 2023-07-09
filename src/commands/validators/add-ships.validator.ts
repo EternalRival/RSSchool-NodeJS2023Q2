@@ -30,6 +30,9 @@ function isValidAddShipsData(rawData: unknown): rawData is AddShipsRequest['data
   return false;
 }
 
-export function validateAddShipsData(message: unknown): AddShipsRequest['data'] | null {
-  return isValidAddShipsData(message) ? message : null;
+export function validateAddShipsData(message: unknown): AddShipsRequest['data'] {
+  if (!isValidAddShipsData(message)) {
+    throw new Error('Invalid addShips data');
+  }
+  return message;
 }
