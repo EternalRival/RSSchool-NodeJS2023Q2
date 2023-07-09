@@ -1,14 +1,14 @@
 import { isObject } from '../../helpers/is-object';
-import { AddShipsRequest } from '../interfaces/ships/add-ships.request.interface';
+import { AddShipsRequest, Ship } from '../interfaces/ships/add-ships.request.interface';
 
-function isPosition(rawData: unknown): rawData is AddShipsRequest['data']['ships'][0]['position'] {
+function isPosition(rawData: unknown): rawData is Ship['position'] {
   if (isObject(rawData)) {
     return typeof rawData.x === 'number' && typeof rawData.y === 'number';
   }
   return false;
 }
 
-function isShip(rawData: unknown): rawData is AddShipsRequest['data']['ships'][0] {
+function isShip(rawData: unknown): rawData is Ship {
   if (isObject(rawData)) {
     const { position, direction, length, type } = rawData;
     return (

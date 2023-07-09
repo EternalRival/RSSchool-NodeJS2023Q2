@@ -36,4 +36,12 @@ export class Users {
     }
     return user;
   }
+
+  public static getUserById(id: number): User {
+    const user = Array.from(this.players.values()).find((item) => item.id === id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
+  }
 }

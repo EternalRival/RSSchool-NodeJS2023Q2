@@ -1,10 +1,13 @@
 import { RoomData } from '../commands/interfaces/room/room-data.interface';
+import { Ship } from '../commands/interfaces/ships/add-ships.request.interface';
 import { User } from './user.entity';
 
-export class Room {
+export class Lobby {
   private limit = 2;
 
   private userList: Map<number, User> = new Map();
+
+  private ships: Map<number, Ship[]> = new Map();
 
   constructor(public id: number) {}
 
@@ -28,7 +31,7 @@ export class Room {
     return user;
   }
 
-  public getRoomData(): RoomData {
+  public getLobbyData(): RoomData {
     return {
       roomId: this.id,
       roomUsers: Array.from(this.userList.values(), ({ login, id }) => ({ name: login, index: id })),
@@ -43,7 +46,23 @@ export class Room {
     return this.userList.size >= this.limit;
   }
 
+  public isReady(): boolean {
+    return this.ships.size >= this.limit;
+  }
+
   public getUsers(): User[] {
     return Array.from(this.userList.values());
+  }
+
+  public addShips(playerId: number, shipsData: Ship[]): void {
+    this.ships.set(playerId, shipsData);
+  }
+
+  public getShips(playerId: number): Ship[] {
+    const ships = this.ships.get(playerId);
+    if (!ships) {
+      throw new Error('Ships not found');
+    }
+    return ships;
   }
 }

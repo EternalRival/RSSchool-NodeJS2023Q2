@@ -1,20 +1,20 @@
 import { RoomData } from '../commands/interfaces/room/room-data.interface';
 import { User } from './user.entity';
 import { Counter } from '../helpers/counter';
-import { Room } from './room.entity';
+import { Lobby } from './room.entity';
 
 export class Lobbies {
   private static id = new Counter();
 
-  private static list: Map<number, Room> = new Map();
+  public static list: Map<number, Lobby> = new Map();
 
-  public static create(): Room {
-    const room = new Room(this.id.next());
+  public static create(): Lobby {
+    const room = new Lobby(this.id.next());
     this.list.set(room.id, room);
     return room;
   }
 
-  public static delete(id: number): Room {
+  public static delete(id: number): Lobby {
     const room = this.list.get(id);
     if (!room) {
       throw new Error('Wrong room id');
@@ -23,21 +23,22 @@ export class Lobbies {
     return room;
   }
 
-  public static getOpenRoomList(): RoomData[] {
+  public static getOpenLobbyList(): RoomData[] {
     return Array.from(this.list.values())
       .filter((v) => !v.isFull())
-      .map((v) => v.getRoomData());
+      .map((v) => v.getLobbyData());
   }
 
-  public static getRoomById(id: number): Room {
+  public static getLobbyById(id: number): Lobby {
     const room = this.list.get(id);
+
     if (!room) {
       throw new Error('Wrong room id');
     }
     return room;
   }
 
-  public static getUsersLobby(user: User): Room | undefined {
+  public static getLobbyByUser(user: User): Lobby | undefined {
     return Array.from(this.list.values()).find((lobby) => lobby.hasUser(user));
   }
 }

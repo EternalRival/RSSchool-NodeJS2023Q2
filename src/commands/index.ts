@@ -27,7 +27,7 @@ function handleReg({ client, server }: WSData, data: string): void {
     const user = Users.verifyUser(regData.name, regData.password);
     user.socket = client;
 
-    sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenRoomList());
+    sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenLobbyList());
     responseData = { name: user.login, index: user.id, error: false, errorText: '' };
   } catch (err) {
     const errorText = err instanceof Error ? err.message : 'Internal error';
@@ -39,24 +39,29 @@ function handleReg({ client, server }: WSData, data: string): void {
 
 function handleCreateRoom({ client, server }: WSData, data: string): void {
   const player = Users.getUserBySocket(client);
-  if (Lobbies.getUsersLobby(player)) {
+  if (Lobbies.getLobbyByUser(player)) {
     throw new Error('Already the owner of some lobby');
   }
   const lobby = Lobbies.create();
 
   lobby.addUser(player);
-  sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenRoomList());
+  sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenLobbyList());
 }
 
 function handleAddUserToRoom({ client, server }: WSData, data: string): void {
   const addUserToRoomData = validateAddUserToRoomData(JSON.parse(data));
 
   const { indexRoom } = addUserToRoomData;
-  const lobby = Lobbies.getRoomById(indexRoom);
+  const lobby = Lobbies.getLobbyById(indexRoom);
   const player = Users.getUserBySocket(client);
 
+  const usersLobby = Lobbies.getLobbyByUser(player);
+  if (usersLobby) {
+    Lobbies.delete(usersLobby.id);
+  }
+
   lobby.addUser(player);
-  sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenRoomList());
+  sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenLobbyList());
 
   if (!lobby.isFull()) {
     return;
@@ -67,12 +72,6 @@ function handleAddUserToRoom({ client, server }: WSData, data: string): void {
     return;
   }
 
-  const usersLobby = Lobbies.getUsersLobby(player);
-  if (usersLobby) {
-    Lobbies.delete(usersLobby.id);
-    sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenRoomList());
-  }
-
   lobbyUsers.forEach((user) => {
     if (user.socket) {
       sendResponse(user.socket, MessageType.CREATE_GAME, { idGame: lobby.id, idPlayer: user.id });
@@ -80,18 +79,37 @@ function handleAddUserToRoom({ client, server }: WSData, data: string): void {
   });
 }
 
-function handleAddShips({ client }: WSData, data: string): void {
+function handleAddShips(wsData: WSData, data: string): void {
   const addShipsData = validateAddShipsData(JSON.parse(data));
+  const lobby = Lobbies.getLobbyById(addShipsData.gameId);
 
-  const player = Users.getUserBySocket(client);
+  lobby.addShips(addShipsData.indexPlayer, addShipsData.ships);
+
+  const lobbyUsers = lobby.getUsers();
+  if (!lobbyUsers.every((user) => user.socket && user.socket.readyState === WebSocket.OPEN)) {
+    return;
+  }
+
+  if (lobby.isReady()) {
+    const { id } = lobbyUsers[+(Math.random() < 0.5)];
+    lobby.getUsers().forEach((user) => {
+      if (user.socket) {
+        sendResponse(user.socket, MessageType.START_GAME, {
+          ships: lobby.getShips(user.id),
+          currentPlayerIndex: id,
+        });
+      }
+    });
+  }
 }
 
+// TODO хендлить атаки не в свой ход
 function handleAttack(wsData: WSData, data: string): void {
-  const response = 'handleAttack response';
+  console.log('handleAttack response');
 }
 
 function handleRandomAttack(wsData: WSData, data: string): void {
-  const response = 'handleRandomAttack response';
+  console.log('handleRandomAttack response');
 }
 
 const commands: Map<MessageType, (wsData: WSData, data: string) => void> = new Map([
