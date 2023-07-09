@@ -1,11 +1,12 @@
 import { OPEN, WebSocket, WebSocketServer } from 'ws';
-import { validateClientMessage } from '../socket-message/socket-message.validator';
+import { validateClientMessage } from '../socket-message/validators/socket-message.validator';
 import { MessageType } from '../socket-message/enums/message-type.enum';
 import { Users } from '../api/users.api.service';
-import { validateRegData } from './reg.validator';
+import { validateRegData } from './validators/reg.validator';
 import { Lobbies } from '../api/lobbies.api.service';
 import { WSData } from './interfaces/ws-data.interface';
-import { validateAddUserToRoomData } from './add-user-to-room.validator';
+import { validateAddUserToRoomData } from './validators/add-user-to-room.validator';
+import { validateAddShipsData } from './validators/add-ships.validator';
 
 function sendResponse(target: WebSocket | WebSocketServer, type: MessageType, data: object): void {
   if (target instanceof WebSocket && target.readyState === OPEN) {
@@ -41,7 +42,7 @@ function handleReg({ client, server }: WSData, data: string): void {
 
 function handleCreateRoom({ client, server }: WSData, data: string): void {
   const player = Users.getUserBySocket(client);
-  if (Lobbies.isUserLobbyOwner(player)) {
+  if (Lobbies.getUsersLobby(player)) {
     throw new Error('Already the owner of some lobby');
   }
   const lobby = Lobbies.create();
@@ -69,14 +70,27 @@ function handleAddUserToRoom({ client, server }: WSData, data: string): void {
   if (!lobbyUsers.every((user) => user.socket && user.socket.readyState === WebSocket.OPEN)) {
     return;
   }
+
+  const usersLobby = Lobbies.getUsersLobby(player);
+  if (usersLobby) {
+    Lobbies.delete(usersLobby.id);
+    sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenRoomList());
+  }
+
   lobbyUsers.forEach((user) => {
     if (user.socket) {
       sendResponse(user.socket, MessageType.CREATE_GAME, { idGame: lobby.id, idPlayer: user.id });
     }
   });
 }
-function handleAddShips(wsData: WSData, data: string): void {
-  const response = 'handleAddShips response';
+
+function handleAddShips({ client }: WSData, data: string): void {
+  const addShipsData = validateAddShipsData(JSON.parse(data));
+  if (!addShipsData) {
+    throw new Error('Invalid addUserToRoom data');
+  }
+
+  const player = Users.getUserBySocket(client);
 }
 function handleAttack(wsData: WSData, data: string): void {
   const response = 'handleAttack response';

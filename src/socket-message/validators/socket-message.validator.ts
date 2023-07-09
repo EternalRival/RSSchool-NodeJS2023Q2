@@ -1,14 +1,14 @@
-import { MessageType } from './enums/message-type.enum';
-import { SocketMessage } from './interfaces/socket-message.interface';
+import { isObject } from '../../helpers/is-object';
+import { MessageType } from '../enums/message-type.enum';
+import { SocketMessage } from '../interfaces/socket-message.interface';
 
-function isMessageType(type: unknown): boolean {
+function isMessageType(type: unknown): type is MessageType {
   return typeof type === 'string' && (Object.values(MessageType) as string[]).includes(type);
 }
 
 function isValidMessage(message: unknown): message is SocketMessage {
-  if (message !== null && typeof message === 'object') {
-    const obj = message as Record<string, unknown>;
-    const { type, data, id } = obj;
+  if (isObject(message)) {
+    const { type, data, id } = message;
     return typeof type === 'string' && isMessageType(type) && typeof data === 'string' && id === 0;
   }
   return false;

@@ -37,7 +37,7 @@ export class Lobbies {
     return room;
   }
 
-  public static isUserLobbyOwner(user: User): boolean {
-    return Array.from(this.list.values()).some((lobby) => lobby.hasUser(user));
+  public static getUsersLobby(user: User): Room | undefined {
+    return Array.from(this.list.values()).find((lobby) => lobby.hasUser(user));
   }
 }
