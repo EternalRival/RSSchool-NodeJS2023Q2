@@ -1,5 +1,6 @@
 import { WebSocketServer } from 'ws';
 import { handleClientMessage } from '../commands';
+import { logError } from '../helpers/log';
 
 const WSS_PORT = 3000;
 
@@ -17,7 +18,7 @@ wss.on('connection', (client) => {
     try {
       handleClientMessage(wss, this, JSON.parse(data.toString()));
     } catch (err) {
-      console.error(err instanceof Error ? err.message : err);
+      logError(err)
     }
   });
 });

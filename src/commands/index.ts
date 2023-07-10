@@ -1,118 +1,14 @@
-import { OPEN, WebSocket, WebSocketServer } from 'ws';
+import { WebSocket, WebSocketServer } from 'ws';
 import { validateClientMessage } from '../socket-message/validators/socket-message.validator';
 import { MessageType } from '../socket-message/enums/message-type.enum';
-import { Users } from '../api/users.api.service';
-import { validateRegData } from './validators/reg.validator';
-import { Lobbies } from '../api/lobbies.api.service';
 import { WSData } from './interfaces/ws-data.interface';
-import { validateAddUserToRoomData } from './validators/add-user-to-room.validator';
-import { validateAddShipsData } from './validators/add-ships.validator';
-import { logRequest, logResponse } from '../helpers/log';
-import { SocketMessage } from '../socket-message/interfaces/socket-message.interface';
-
-function sendResponse(target: WebSocket | WebSocketServer, type: MessageType, data: object): void {
-  if (target instanceof WebSocket && target.readyState === OPEN) {
-    const response: SocketMessage = { type, data: JSON.stringify(data), id: 0 };
-    target.send(JSON.stringify(response));
-    logResponse(response);
-  } else if (target instanceof WebSocketServer) {
-    target.clients.forEach((client) => sendResponse(client, type, data));
-  }
-}
-
-function handleReg({ client, server }: WSData, data: string): void {
-  const regData = validateRegData(JSON.parse(data));
-
-  let responseData;
-
-  try {
-    const user = Users.verifyUser(regData.name, regData.password);
-    user.socket = client;
-
-    sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenLobbyList());
-    responseData = { name: user.login, index: user.id, error: false, errorText: '' };
-  } catch (err) {
-    const errorText = err instanceof Error ? err.message : 'Internal error';
-    responseData = { name: regData.name, index: -1, error: true, errorText };
-  }
-
-  sendResponse(client, MessageType.REG, responseData);
-}
-
-function handleCreateRoom({ client, server }: WSData, data: string): void {
-  const player = Users.getUserBySocket(client);
-  if (Lobbies.getLobbyByUser(player)) {
-    throw new Error('Already the owner of some lobby');
-  }
-  const lobby = Lobbies.create();
-
-  lobby.addUser(player);
-  sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenLobbyList());
-}
-
-function handleAddUserToRoom({ client, server }: WSData, data: string): void {
-  const addUserToRoomData = validateAddUserToRoomData(JSON.parse(data));
-
-  const { indexRoom } = addUserToRoomData;
-  const lobby = Lobbies.getLobbyById(indexRoom);
-  const player = Users.getUserBySocket(client);
-
-  const usersLobby = Lobbies.getLobbyByUser(player);
-  if (usersLobby) {
-    Lobbies.delete(usersLobby.id);
-  }
-
-  lobby.addUser(player);
-  sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenLobbyList());
-
-  if (!lobby.isFull()) {
-    return;
-  }
-
-  const lobbyUsers = lobby.getUsers();
-  if (!lobbyUsers.every((user) => user.socket && user.socket.readyState === WebSocket.OPEN)) {
-    return;
-  }
-
-  lobbyUsers.forEach((user) => {
-    if (user.socket) {
-      sendResponse(user.socket, MessageType.CREATE_GAME, { idGame: lobby.id, idPlayer: user.id });
-    }
-  });
-}
-
-function handleAddShips(wsData: WSData, data: string): void {
-  const addShipsData = validateAddShipsData(JSON.parse(data));
-  const lobby = Lobbies.getLobbyById(addShipsData.gameId);
-
-  lobby.addShips(addShipsData.indexPlayer, addShipsData.ships);
-
-  const lobbyUsers = lobby.getUsers();
-  if (!lobbyUsers.every((user) => user.socket && user.socket.readyState === WebSocket.OPEN)) {
-    return;
-  }
-
-  if (lobby.isReady()) {
-    const { id } = lobbyUsers[+(Math.random() < 0.5)];
-    lobby.getUsers().forEach((user) => {
-      if (user.socket) {
-        sendResponse(user.socket, MessageType.START_GAME, {
-          ships: lobby.getShips(user.id),
-          currentPlayerIndex: id,
-        });
-      }
-    });
-  }
-}
-
-// TODO хендлить атаки не в свой ход
-function handleAttack(wsData: WSData, data: string): void {
-  throw new Error('handleAttack not implemented');
-}
-
-function handleRandomAttack(wsData: WSData, data: string): void {
-  throw new Error('handleRandomAttack  not implemented');
-}
+import { logRequest } from '../helpers/log';
+import { handleReg } from './handlers/reg';
+import { handleCreateRoom } from './handlers/create-room';
+import { handleAddUserToRoom } from './handlers/add-user-to-room';
+import { handleAddShips } from './handlers/add-ships';
+import { handleAttack } from './handlers/attack';
+import { handleRandomAttack } from './handlers/random-attack';
 
 const commands: Map<MessageType, (wsData: WSData, data: string) => void> = new Map([
   [MessageType.REG, handleReg],
