@@ -18,7 +18,7 @@ wss.on('connection', (client) => {
     try {
       handleClientMessage(wss, this, JSON.parse(data.toString()));
     } catch (err) {
-      logError(err)
+      logError(err);
     }
   });
 });

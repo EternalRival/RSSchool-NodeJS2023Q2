@@ -1,6 +1,6 @@
 import { RoomData } from '../commands/interfaces/room/room-data.interface';
 import { Ship } from '../commands/interfaces/ships/add-ships.request.interface';
-import { User } from './user.entity';
+import { User } from './user';
 
 export class Lobby {
   private limit = 2;

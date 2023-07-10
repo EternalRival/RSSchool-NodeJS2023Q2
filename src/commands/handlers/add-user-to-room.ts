@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
 import { MessageType } from '../../socket-message/enums/message-type.enum';
-import { Users } from '../../api/users.api.service';
-import { Lobbies } from '../../api/lobbies.api.service';
+import { Users } from '../../api/users';
+import { Lobbies } from '../../api/lobbies';
 import { WSData } from '../interfaces/ws-data.interface';
 import { validateAddUserToRoomData } from '../validators/add-user-to-room.validator';
 import { sendResponse } from '../send-response';

@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
 import { MessageType } from '../../socket-message/enums/message-type.enum';
-import { Lobbies } from '../../api/lobbies.api.service';
+import { Lobbies } from '../../api/lobbies';
 import { WSData } from '../interfaces/ws-data.interface';
 import { validateAddShipsData } from '../validators/add-ships.validator';
 import { sendResponse } from '../send-response';

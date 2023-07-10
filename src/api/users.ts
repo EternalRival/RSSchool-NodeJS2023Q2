@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
 import { Counter } from '../helpers/counter';
-import { User } from './user.entity';
+import { User } from './user';
 
 export class Users {
   private static id = new Counter();
