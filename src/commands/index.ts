@@ -7,11 +7,12 @@ import { Lobbies } from '../api/lobbies.api.service';
 import { WSData } from './interfaces/ws-data.interface';
 import { validateAddUserToRoomData } from './validators/add-user-to-room.validator';
 import { validateAddShipsData } from './validators/add-ships.validator';
+import { logRequest, logResponse } from '../helpers/log';
 
 function sendResponse(target: WebSocket | WebSocketServer, type: MessageType, data: object): void {
   if (target instanceof WebSocket && target.readyState === OPEN) {
     const response = JSON.stringify({ type, data: JSON.stringify(data), id: 0 });
-    console.log('->', response);
+    logResponse(response); // TODO
     target.send(response);
   } else if (target instanceof WebSocketServer) {
     target.clients.forEach((client) => sendResponse(client, type, data));
@@ -105,11 +106,11 @@ function handleAddShips(wsData: WSData, data: string): void {
 
 // TODO хендлить атаки не в свой ход
 function handleAttack(wsData: WSData, data: string): void {
-  console.log('handleAttack response');
+  throw new Error('handleAttack not implemented');
 }
 
 function handleRandomAttack(wsData: WSData, data: string): void {
-  console.log('handleRandomAttack response');
+  throw new Error('handleRandomAttack  not implemented');
 }
 
 const commands: Map<MessageType, (wsData: WSData, data: string) => void> = new Map([
@@ -121,17 +122,14 @@ const commands: Map<MessageType, (wsData: WSData, data: string) => void> = new M
   [MessageType.RANDOM_ATTACK, handleRandomAttack],
 ]);
 
-function handleCommand(wsData: WSData, command: MessageType, data: string): void {
-  const callback = commands.get(command);
+export function handleClientMessage(server: WebSocketServer, client: WebSocket, message: unknown): void {
+  const clientMessage = validateClientMessage(message);
+
+  const callback = commands.get(clientMessage.type);
   if (!callback) {
     throw new Error('Wrong command');
   }
-  callback(wsData, data);
-}
+  callback({ server, client }, clientMessage.data);
 
-export function handleClientMessage(server: WebSocketServer, client: WebSocket, message: unknown): void {
-  const socketMessage = validateClientMessage(message);
-  const { type, data, id } = socketMessage;
-  handleCommand({ server, client }, type, data);
-  console.log('<-', type, data, id);
+  logRequest(clientMessage.type, clientMessage.data, clientMessage.id);
 }
