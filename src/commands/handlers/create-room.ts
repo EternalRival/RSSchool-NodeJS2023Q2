@@ -6,11 +6,8 @@ import { sendResponse } from '../send-response';
 
 export function handleCreateRoom({ client, server }: WSData): void {
   const player = Users.getUserBySocket(client);
-  if (Lobbies.getLobbyByUser(player)) {
-    throw new Error('Already the owner of some lobby');
-  }
-  const lobby = Lobbies.create();
 
-  lobby.addUser(player);
+  Lobbies.create(player);
+
   sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenLobbyList());
 }

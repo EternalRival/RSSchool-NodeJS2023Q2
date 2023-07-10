@@ -8,7 +8,7 @@ export enum MessageType {
   ADD_SHIPS = 'add_ships',
   START_GAME = 'start_game',
   ATTACK = 'attack',
-  RANDOM_ATTACK = 'random_attack',
+  RANDOM_ATTACK = 'randomAttack',
   TURN = 'turn',
   FINISH = 'finish',
 }

@@ -8,8 +8,12 @@ export class Lobbies {
 
   public static list: Map<number, Lobby> = new Map();
 
-  public static create(): Lobby {
+  public static create(user: User): Lobby {
+    if (this.isUserInAnotherLobby(user)) {
+      throw new Error('User is already in another lobby');
+    }
     const room = new Lobby(this.id.next());
+    room.addUser(user);
     this.list.set(room.id, room);
     return room;
   }
@@ -38,7 +42,13 @@ export class Lobbies {
     return room;
   }
 
-  public static getLobbyByUser(user: User): Lobby | undefined {
-    return Array.from(this.list.values()).find((lobby) => lobby.hasUser(user));
+  private static isUserInAnotherLobby(user: User): boolean {
+    return Array.from(this.list.values()).some((lobby) => lobby.hasUser(user));
+  }
+
+  public static pruneUserFromAnotherLobbies(lobby: Lobby, user: User): void {
+    Array.from(this.list.values())
+      .filter((v) => v.hasUser(user) && v !== lobby)
+      .forEach((v) => Lobbies.delete(v.id));
   }
 }

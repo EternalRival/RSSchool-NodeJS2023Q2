@@ -1,4 +1,3 @@
-import { WebSocket } from 'ws';
 import { MessageType } from '../../socket-message/enums/message-type.enum';
 import { Users } from '../../api/users';
 import { Lobbies } from '../../api/lobbies';
@@ -12,26 +11,9 @@ export function handleAddUserToRoom({ client, server }: WSData, data: string): v
   const lobby = Lobbies.getLobbyById(addUserToRoomData.indexRoom);
   const player = Users.getUserBySocket(client);
 
-  const usersLobby = Lobbies.getLobbyByUser(player);
-  if (usersLobby) {
-    Lobbies.delete(usersLobby.id);
-  }
-
   lobby.addUser(player);
+  Lobbies.pruneUserFromAnotherLobbies(lobby, player);
   sendResponse(server, MessageType.UPDATE_ROOM, Lobbies.getOpenLobbyList());
 
-  if (!lobby.isFull()) {
-    return;
-  }
-
-  const lobbyUsers = lobby.getUsers();
-  if (!lobbyUsers.every((user) => user.socket && user.socket.readyState === WebSocket.OPEN)) {
-    return;
-  }
-
-  lobbyUsers.forEach((user) => {
-    if (user.socket) {
-      sendResponse(user.socket, MessageType.CREATE_GAME, { idGame: lobby.id, idPlayer: user.id });
-    }
-  });
+  lobby.createGame();
 }

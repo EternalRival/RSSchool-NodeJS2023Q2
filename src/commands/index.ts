@@ -26,7 +26,7 @@ export function handleClientMessage(server: WebSocketServer, client: WebSocket, 
   if (!callback) {
     throw new Error('Wrong command');
   }
-  callback({ server, client }, clientMessage.data);
 
   logRequest(clientMessage);
+  callback({ server, client }, clientMessage.data);
 }
