@@ -8,12 +8,13 @@ import { WSData } from './interfaces/ws-data.interface';
 import { validateAddUserToRoomData } from './validators/add-user-to-room.validator';
 import { validateAddShipsData } from './validators/add-ships.validator';
 import { logRequest, logResponse } from '../helpers/log';
+import { SocketMessage } from '../socket-message/interfaces/socket-message.interface';
 
 function sendResponse(target: WebSocket | WebSocketServer, type: MessageType, data: object): void {
   if (target instanceof WebSocket && target.readyState === OPEN) {
-    const response = JSON.stringify({ type, data: JSON.stringify(data), id: 0 });
-    logResponse(response); // TODO
-    target.send(response);
+    const response: SocketMessage = { type, data: JSON.stringify(data), id: 0 };
+    target.send(JSON.stringify(response));
+    logResponse(response);
   } else if (target instanceof WebSocketServer) {
     target.clients.forEach((client) => sendResponse(client, type, data));
   }
@@ -131,5 +132,5 @@ export function handleClientMessage(server: WebSocketServer, client: WebSocket, 
   }
   callback({ server, client }, clientMessage.data);
 
-  logRequest(clientMessage.type, clientMessage.data, clientMessage.id);
+  logRequest(clientMessage);
 }
