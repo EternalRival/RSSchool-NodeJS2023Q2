@@ -4,6 +4,7 @@ import { Ship } from '../commands/interfaces/ships/add-ships.request.interface';
 import { sendResponse } from '../commands/send-response';
 import { MessageType } from '../socket-message/enums/message-type.enum';
 import { User } from './user';
+import { Game } from './game';
 
 export class Lobby {
   private limit = 2;
@@ -11,6 +12,8 @@ export class Lobby {
   private users: Map<number, User> = new Map();
 
   private ships: Map<number, Ship[]> = new Map();
+
+  private game?: Game;
 
   constructor(public id: number) {}
 
@@ -22,15 +25,6 @@ export class Lobby {
       throw new Error('User already in room');
     }
     this.users.set(user.id, user);
-    return user;
-  }
-
-  public removeUser(id: number): User {
-    const user = this.users.get(id);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    this.users.delete(user.id);
     return user;
   }
 
@@ -49,19 +43,35 @@ export class Lobby {
     return this.users.size >= this.limit;
   }
 
-  public isReady(): boolean {
-    return this.ships.size >= this.limit;
-  }
-
-  public getUsers(): User[] {
-    return Array.from(this.users.values());
-  }
-
   public addShips(playerId: number, shipsData: Ship[]): void {
     this.ships.set(playerId, shipsData);
+
+    if (this.ships.size < this.limit) {
+      return;
+    }
+
+    const lobbyUsers = Array.from(this.users.values());
+    if (!lobbyUsers.every((user) => user.socket && user.socket.readyState === WebSocket.OPEN)) {
+      throw new Error('Some player was disconnected');
+    }
+
+    if (Math.random() < 0.5) {
+      lobbyUsers.reverse();
+    }
+    lobbyUsers.forEach((user) => {
+      if (!user.socket) {
+        return;
+      }
+      sendResponse(user.socket, MessageType.START_GAME, {
+        ships: this.getShipsByPlayerId(user.id),
+        currentPlayerIndex: lobbyUsers[0].id,
+      });
+    });
+
+    this.game = new Game(lobbyUsers, this.ships);
   }
 
-  public getShips(playerId: number): Ship[] {
+  public getShipsByPlayerId(playerId: number): Ship[] {
     const ships = this.ships.get(playerId);
     if (!ships) {
       throw new Error('Ships not found');
@@ -74,7 +84,7 @@ export class Lobby {
       throw new Error('Not enough players to start game');
     }
 
-    const lobbyUsers = this.getUsers();
+    const lobbyUsers = Array.from(this.users.values());
     if (!lobbyUsers.every((user) => user.socket && user.socket.readyState === WebSocket.OPEN)) {
       throw new Error('Some player was disconnected');
     }
