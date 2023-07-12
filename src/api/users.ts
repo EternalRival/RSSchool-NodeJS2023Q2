@@ -1,6 +1,7 @@
 import { WebSocket } from 'ws';
 import { Counter } from '../helpers/counter';
 import { User } from './user';
+import { randomRepeat } from '../helpers/random-repeat';
 
 export class Users {
   private static id = new Counter();
@@ -23,7 +24,7 @@ export class Users {
     }
 
     if (!user.verifyPassword(password)) {
-      throw new Error('Wrong password');
+      throw new Error(`Wrong password${randomRepeat('!', 4)}`);
     }
 
     return user;
