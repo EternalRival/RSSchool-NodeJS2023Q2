@@ -11,7 +11,7 @@ function isValidAddShipsData(rawData: unknown): rawData is AttackRequestData {
 
 export function validateAttackData(message: unknown): AttackRequestData {
   if (!isValidAddShipsData(message)) {
-    throw new Error('Invalid addShips data');
+    throw new Error('Invalid attack data');
   }
   return message;
 }

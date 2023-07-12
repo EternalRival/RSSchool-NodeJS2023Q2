@@ -2,7 +2,7 @@ import { SocketMessage } from '../../../socket-message/interfaces/socket-message
 import { Position } from '../shared/position.interface';
 
 export interface AttackRequestData extends Position {
-  gameID: number;
+  gameId: number;
   x: number;
   y: number;
   indexPlayer: number /* id of the player in the current game */;

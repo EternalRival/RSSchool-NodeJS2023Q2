@@ -1,6 +1,7 @@
 import { WebSocketServer } from 'ws';
 import { handleClientMessage } from '../commands';
 import { logError } from '../helpers/log';
+import { cyan, yellow } from '../helpers/colorize';
 
 const WSS_PORT = 3000;
 
@@ -8,7 +9,7 @@ const wss: WebSocketServer = new WebSocketServer({ port: WSS_PORT });
 
 wss.on('listening', function cb(): void {
   const port = this.options.port ?? 'unknown';
-  console.log(`Start ws-server on the ${port} port!`);
+  console.log(`${cyan('Start ws-server on the ')}${yellow(`${port}`)}${cyan(' port!')}`);
   console.log('websocket parameters:', this.address());
 });
 
