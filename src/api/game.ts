@@ -6,9 +6,10 @@ import { MessageType } from '../socket-message/enums/message-type.enum';
 import { AttackRequestData } from '../commands/interfaces/game/attack.request.interface';
 import { PlayerDisconnectedError } from '../errors/player-disconnected.error';
 import { NotImplementedError } from '../errors/not-implemented.error';
+import { Counter } from '../helpers/counter';
 
 export class Game {
-  private turnCounter = -1;
+  private turnCounter = new Counter()
 
   constructor(
     private users: User[],
@@ -23,10 +24,6 @@ export class Game {
     }
   }
 
-  private nextTurn(): void {
-    this.turnCounter += 1;
-  }
-
   public sendTurn(): void {
     this.checkDisconnected();
     this.users.forEach((user) => {
@@ -35,7 +32,7 @@ export class Game {
       }
       sendResponse(user.socket, MessageType.TURN, { currentPlayer: this.users[0].id });
     });
-    this.nextTurn();
+    this.turnCounter.next();
   }
 
   public handleAttack(attackData: AttackRequestData): void {

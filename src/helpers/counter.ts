@@ -10,4 +10,8 @@ export class Counter {
     this.i = 0;
     return this.i;
   }
+
+  public get value(): number {
+    return this.i;
+  }
 }
