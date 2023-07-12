@@ -3,6 +3,7 @@ import { Ship } from '../commands/interfaces/shared/ship.interface';
 import { User } from './user';
 import { sendResponse } from '../commands/send-response';
 import { MessageType } from '../socket-message/enums/message-type.enum';
+import { AttackRequestData } from '../commands/interfaces/game/attack.request.interface';
 
 export class Game {
   private turnCounter = -1;
@@ -10,7 +11,9 @@ export class Game {
   constructor(
     private users: User[],
     private ships: Map<number, Ship[]>,
-  ) {}
+  ) {
+    this.sendTurn();
+  }
 
   private checkDisconnected(): void | never {
     if (!this.users.every((user) => user.socket?.readyState === WebSocket.OPEN)) {
@@ -31,5 +34,10 @@ export class Game {
       sendResponse(user.socket, MessageType.TURN, { currentPlayer: this.users[0].id });
     });
     this.nextTurn();
+  }
+
+  public handleAttack(attackData: AttackRequestData): void {
+    throw new Error('Not implemented');
+    console.log(this, attackData);
   }
 }

@@ -5,6 +5,7 @@ import { MessageType } from '../socket-message/enums/message-type.enum';
 import { User } from './user';
 import { Game } from './game';
 import { RoomData } from '../commands/interfaces/room/update-room.response.interface';
+import { AttackRequestData } from '../commands/interfaces/game/attack.request.interface';
 
 export class Lobby {
   private limit = 2;
@@ -69,7 +70,6 @@ export class Lobby {
     });
 
     this.game = new Game(lobbyUsers, this.ships);
-    this.game.sendTurn();
   }
 
   public getShipsByPlayerId(playerId: number): Ship[] {
@@ -95,5 +95,12 @@ export class Lobby {
         sendResponse(user.socket, MessageType.CREATE_GAME, { idGame: this.id, idPlayer: user.id });
       }
     });
+  }
+
+  public handleAttack(attackData: AttackRequestData): void {
+    if (!this.game) {
+      throw new Error('Game not found');
+    }
+    this.game.handleAttack(attackData);
   }
 }
