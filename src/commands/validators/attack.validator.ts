@@ -1,3 +1,4 @@
+import { InvalidDataError } from '../../errors/invalid-data.error';
 import { isObject } from '../../helpers/is-object';
 import { AttackRequestData } from '../interfaces/game/attack.request.interface';
 
@@ -11,7 +12,7 @@ function isValidAddShipsData(rawData: unknown): rawData is AttackRequestData {
 
 export function validateAttackData(message: unknown): AttackRequestData {
   if (!isValidAddShipsData(message)) {
-    throw new Error('Invalid attack data');
+    throw new InvalidDataError('attack');
   }
   return message;
 }

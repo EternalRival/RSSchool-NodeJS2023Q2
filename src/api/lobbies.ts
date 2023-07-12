@@ -2,6 +2,8 @@ import { User } from './user';
 import { Counter } from '../helpers/counter';
 import { Lobby } from './lobby';
 import { RoomData } from '../commands/interfaces/room/update-room.response.interface';
+import { AlreadyInAnotherLobbyError } from '../errors/already-in-another-lobby.error';
+import { WrongRoomIdError } from '../errors/wrong-room-id.error';
 
 export class Lobbies {
   private static id = new Counter();
@@ -10,7 +12,7 @@ export class Lobbies {
 
   public static create(user: User): Lobby {
     if (this.isUserInAnotherLobby(user)) {
-      throw new Error('User is already in another lobby');
+      throw new AlreadyInAnotherLobbyError();
     }
     const room = new Lobby(this.id.next());
     room.addUser(user);
@@ -21,7 +23,7 @@ export class Lobbies {
   public static delete(id: number): Lobby {
     const room = this.list.get(id);
     if (!room) {
-      throw new Error('Wrong room id');
+      throw new WrongRoomIdError();
     }
     this.list.delete(room.id);
     return room;
@@ -37,7 +39,7 @@ export class Lobbies {
     const room = this.list.get(id);
 
     if (!room) {
-      throw new Error('Wrong room id');
+      throw new WrongRoomIdError();
     }
     return room;
   }

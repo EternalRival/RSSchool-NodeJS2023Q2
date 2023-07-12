@@ -9,6 +9,7 @@ import { handleAddUserToRoom } from './handlers/add-user-to-room';
 import { handleAddShips } from './handlers/add-ships';
 import { handleAttack } from './handlers/attack';
 import { handleRandomAttack } from './handlers/random-attack';
+import { WrongCommandError } from '../errors/wrong-command.error';
 
 const commands: Map<MessageType, (wsData: WSData, data: string) => void> = new Map([
   [MessageType.REG, handleReg],
@@ -24,7 +25,7 @@ export function handleClientMessage(server: WebSocketServer, client: WebSocket, 
 
   const callback = commands.get(clientMessage.type);
   if (!callback) {
-    throw new Error('Wrong command');
+    throw new WrongCommandError();
   }
 
   logRequest(clientMessage);

@@ -4,6 +4,8 @@ import { User } from './user';
 import { sendResponse } from '../commands/send-response';
 import { MessageType } from '../socket-message/enums/message-type.enum';
 import { AttackRequestData } from '../commands/interfaces/game/attack.request.interface';
+import { PlayerDisconnectedError } from '../errors/player-disconnected.error';
+import { NotImplementedError } from '../errors/not-implemented.error';
 
 export class Game {
   private turnCounter = -1;
@@ -17,7 +19,7 @@ export class Game {
 
   private checkDisconnected(): void | never {
     if (!this.users.every((user) => user.socket?.readyState === WebSocket.OPEN)) {
-      throw new Error('Some player was disconnected');
+      throw new PlayerDisconnectedError();
     }
   }
 
@@ -37,7 +39,7 @@ export class Game {
   }
 
   public handleAttack(attackData: AttackRequestData): void {
-    throw new Error('Not implemented');
+    throw new NotImplementedError('handleAttack');
     console.log(this, attackData);
   }
 }

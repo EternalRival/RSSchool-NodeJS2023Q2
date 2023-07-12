@@ -6,6 +6,11 @@ import { User } from './user';
 import { Game } from './game';
 import { RoomData } from '../commands/interfaces/room/update-room.response.interface';
 import { AttackRequestData } from '../commands/interfaces/game/attack.request.interface';
+import { RoomIsFullError } from '../errors/room-is-full.error';
+import { AlreadyInRoomError } from '../errors/already-in-room.error';
+import { PlayerDisconnectedError } from '../errors/player-disconnected.error';
+import { NotFoundError } from '../errors/not-found.error';
+import { NotEnoughPlayersError } from '../errors/not-enough-players.error';
 
 export class Lobby {
   private limit = 2;
@@ -20,10 +25,10 @@ export class Lobby {
 
   public addUser(user: User): User {
     if (this.isFull()) {
-      throw new Error('Room is full');
+      throw new RoomIsFullError();
     }
     if (this.users.has(user.id)) {
-      throw new Error('User already in room');
+      throw new AlreadyInRoomError();
     }
     this.users.set(user.id, user);
     return user;
@@ -53,7 +58,7 @@ export class Lobby {
 
     const lobbyUsers = Array.from(this.users.values());
     if (!lobbyUsers.every((user) => user.socket && user.socket.readyState === WebSocket.OPEN)) {
-      throw new Error('Some player was disconnected');
+      throw new PlayerDisconnectedError();
     }
 
     if (Math.random() < 0.5) {
@@ -75,19 +80,19 @@ export class Lobby {
   public getShipsByPlayerId(playerId: number): Ship[] {
     const ships = this.ships.get(playerId);
     if (!ships) {
-      throw new Error('Ships not found');
+      throw new NotFoundError('Ships');
     }
     return ships;
   }
 
   public createGame(): void {
     if (!this.isFull()) {
-      throw new Error('Not enough players to start game');
+      throw new NotEnoughPlayersError();
     }
 
     const lobbyUsers = Array.from(this.users.values());
     if (!lobbyUsers.every((user) => user.socket && user.socket.readyState === WebSocket.OPEN)) {
-      throw new Error('Some player was disconnected');
+      throw new PlayerDisconnectedError();
     }
 
     lobbyUsers.forEach((user) => {
@@ -99,7 +104,7 @@ export class Lobby {
 
   public handleAttack(attackData: AttackRequestData): void {
     if (!this.game) {
-      throw new Error('Game not found');
+      throw new NotFoundError('Game');
     }
     this.game.handleAttack(attackData);
   }

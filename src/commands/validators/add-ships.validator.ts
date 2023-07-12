@@ -2,6 +2,7 @@ import { isObject } from '../../helpers/is-object';
 import { AddShipsRequestData } from '../interfaces/ships/add-ships.request.interface';
 import { Ship } from '../interfaces/shared/ship.interface';
 import { Position } from '../interfaces/shared/position.interface';
+import { InvalidDataError } from '../../errors/invalid-data.error';
 
 function isShipPosition(rawData: unknown): rawData is Position {
   if (isObject(rawData)) {
@@ -34,7 +35,7 @@ function isValidAddShipsData(rawData: unknown): rawData is AddShipsRequestData {
 
 export function validateAddShipsData(message: unknown): AddShipsRequestData {
   if (!isValidAddShipsData(message)) {
-    throw new Error('Invalid addShips data');
+    throw new InvalidDataError('addships');
   }
   return message;
 }

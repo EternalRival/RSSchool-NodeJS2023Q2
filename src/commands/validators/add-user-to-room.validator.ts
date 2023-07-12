@@ -1,3 +1,4 @@
+import { InvalidDataError } from '../../errors/invalid-data.error';
 import { isObject } from '../../helpers/is-object';
 import { AddUserToRoomRequest, AddUserToRoomRequestData } from '../interfaces/room/add-user-to-room.request.interface';
 
@@ -7,7 +8,7 @@ function isValidAddUserToRoomData(rawData: unknown): rawData is AddUserToRoomReq
 
 export function validateAddUserToRoomData(message: unknown): AddUserToRoomRequestData {
   if (!isValidAddUserToRoomData(message)) {
-    throw new Error('Invalid addUserToRoom data');
+    throw new InvalidDataError('addUserToRoom');
   }
   return message;
 }

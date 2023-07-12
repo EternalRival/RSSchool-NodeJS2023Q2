@@ -1,7 +1,8 @@
 import { WebSocket } from 'ws';
 import { Counter } from '../helpers/counter';
 import { User } from './user';
-import { randomRepeat } from '../helpers/random-repeat';
+import { WrongPasswordError } from '../errors/wrong-password.error';
+import { NotFoundError } from '../errors/not-found.error';
 
 export class Users {
   private static id = new Counter();
@@ -24,7 +25,7 @@ export class Users {
     }
 
     if (!user.verifyPassword(password)) {
-      throw new Error(`Wrong password${randomRepeat('!', 4)}`);
+      throw new WrongPasswordError();
     }
 
     return user;
@@ -33,7 +34,7 @@ export class Users {
   public static getUserBySocket(socket: WebSocket): User {
     const user = Array.from(this.players.values()).find((item) => item.socket === socket);
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundError('User');
     }
     return user;
   }
@@ -41,7 +42,7 @@ export class Users {
   public static getUserById(id: number): User {
     const user = Array.from(this.players.values()).find((item) => item.id === id);
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundError('User');
     }
     return user;
   }

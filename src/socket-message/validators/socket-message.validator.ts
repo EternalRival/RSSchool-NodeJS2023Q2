@@ -1,3 +1,4 @@
+import { WrongSocketMessageError } from '../../errors/wrong-socket-message.error';
 import { isObject } from '../../helpers/is-object';
 import { MessageType } from '../enums/message-type.enum';
 import { SocketMessage } from '../interfaces/socket-message.interface';
@@ -16,7 +17,7 @@ function isValidMessage(message: unknown): message is SocketMessage {
 
 export function validateClientMessage(message: unknown): SocketMessage {
   if (!isValidMessage(message)) {
-    throw new Error('wrong socket message');
+    throw new WrongSocketMessageError();
   }
   return message;
 }
