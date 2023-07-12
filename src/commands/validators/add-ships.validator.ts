@@ -1,7 +1,9 @@
 import { isObject } from '../../helpers/is-object';
-import { AddShipsRequest, Ship } from '../interfaces/ships/add-ships.request.interface';
+import { AddShipsRequestData } from '../interfaces/ships/add-ships.request.interface';
+import { Ship } from '../interfaces/shared/ship.interface';
+import { Position } from '../interfaces/shared/position.interface';
 
-function isPosition(rawData: unknown): rawData is Ship['position'] {
+function isShipPosition(rawData: unknown): rawData is Position {
   if (isObject(rawData)) {
     return typeof rawData.x === 'number' && typeof rawData.y === 'number';
   }
@@ -12,7 +14,7 @@ function isShip(rawData: unknown): rawData is Ship {
   if (isObject(rawData)) {
     const { position, direction, length, type } = rawData;
     return (
-      isPosition(position) &&
+      isShipPosition(position) &&
       typeof direction === 'boolean' &&
       typeof length === 'number' &&
       typeof type === 'string' &&
@@ -22,7 +24,7 @@ function isShip(rawData: unknown): rawData is Ship {
   return false;
 }
 
-function isValidAddShipsData(rawData: unknown): rawData is AddShipsRequest['data'] {
+function isValidAddShipsData(rawData: unknown): rawData is AddShipsRequestData {
   if (isObject(rawData)) {
     const { gameId, ships, indexPlayer } = rawData;
     return typeof gameId === 'number' && Array.isArray(ships) && ships.every(isShip) && typeof indexPlayer === 'number';
@@ -30,7 +32,7 @@ function isValidAddShipsData(rawData: unknown): rawData is AddShipsRequest['data
   return false;
 }
 
-export function validateAddShipsData(message: unknown): AddShipsRequest['data'] {
+export function validateAddShipsData(message: unknown): AddShipsRequestData {
   if (!isValidAddShipsData(message)) {
     throw new Error('Invalid addShips data');
   }

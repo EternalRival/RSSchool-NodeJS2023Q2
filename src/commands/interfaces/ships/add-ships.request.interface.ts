@@ -1,19 +1,12 @@
 import { SocketMessage } from '../../../socket-message/interfaces/socket-message.interface';
+import { Ship } from '../shared/ship.interface';
 
-export interface Ship {
-  position: {
-    x: number;
-    y: number;
-  };
-  direction: boolean;
-  length: number;
-  type: 'small' | 'medium' | 'large' | 'huge';
+export interface AddShipsRequestData {
+  gameId: number;
+  ships: Ship[];
+  indexPlayer: number /* id of the player in the current game */;
 }
 
 export interface AddShipsRequest extends Omit<SocketMessage, 'data'> {
-  data: {
-    gameId: number;
-    ships: Ship[];
-    indexPlayer: number /* id of the player in the current game */;
-  };
+  data: AddShipsRequestData;
 }

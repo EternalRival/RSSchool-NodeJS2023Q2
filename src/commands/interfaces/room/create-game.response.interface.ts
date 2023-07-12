@@ -1,8 +1,11 @@
 import { SocketMessage } from '../../../socket-message/interfaces/socket-message.interface';
 
+export interface CreateGameResponseData {
+  idGame: number /* player id in the game */;
+  idPlayer: number;
+}
+
 export interface CreateGameResponse extends Omit<SocketMessage, 'data'> {
-  data: {
-    idGame: number /* player id in the game */;
-    idPlayer: number;
-  };
+  // send for both players in the room
+  data: CreateGameResponseData;
 }

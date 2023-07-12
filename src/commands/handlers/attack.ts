@@ -1,6 +1,7 @@
 import { WSData } from '../interfaces/ws-data.interface';
+import { validateAttackData } from '../validators/attack.validator';
 
 // TODO хендлить атаки не в свой ход
-export function handleAttack(_wsData: WSData, _data: string): void {
-  throw new Error('handleAttack not implemented');
+export function handleAttack(_wsData: WSData, data: string): void {
+  const attackData = validateAttackData(JSON.parse(data));
 }

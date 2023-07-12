@@ -1,10 +1,10 @@
 import { WebSocket } from 'ws';
-import { RoomData } from '../commands/interfaces/room/room-data.interface';
-import { Ship } from '../commands/interfaces/ships/add-ships.request.interface';
+import { Ship } from '../commands/interfaces/shared/ship.interface';
 import { sendResponse } from '../commands/send-response';
 import { MessageType } from '../socket-message/enums/message-type.enum';
 import { User } from './user';
 import { Game } from './game';
+import { RoomData } from '../commands/interfaces/room/update-room.response.interface';
 
 export class Lobby {
   private limit = 2;
@@ -64,11 +64,12 @@ export class Lobby {
       }
       sendResponse(user.socket, MessageType.START_GAME, {
         ships: this.getShipsByPlayerId(user.id),
-        currentPlayerIndex: lobbyUsers[0].id,
+        currentPlayerIndex: playerId,
       });
     });
 
     this.game = new Game(lobbyUsers, this.ships);
+    this.game.sendTurn();
   }
 
   public getShipsByPlayerId(playerId: number): Ship[] {
