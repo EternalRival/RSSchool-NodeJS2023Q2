@@ -1,83 +1,57 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
 import { createGqlResponseSchema, gqlResponseSchema } from './schemas.js';
-import { buildSchema, graphql } from 'graphql';
-import { PrismaClient } from '@prisma/client';
+import { graphql } from 'graphql';
+import { graphqlSchema } from './graphql-schema.js';
+import {
+  getMemberTypeByMemberTypeId,
+  getMemberTypes,
+  getPostByPostId,
+  getPosts,
+  getPostsByAuthorId,
+  getProfileByProfileId,
+  getProfileByUserId,
+  getProfiles,
+  getUserByUserId,
+  getUsers,
+} from './service.js';
 
-const schema = buildSchema(`
-      enum MemberTypeId {
-        basic,
-        business
+const controller: Record<string, (arg: { id: string }) => unknown> = {
+  memberTypes: () => getMemberTypes(),
+  posts: () => getPosts(),
+  users: () => getUsers(),
+  profiles: () => getProfiles(),
+
+  memberType: ({ id }) => getMemberTypeByMemberTypeId(id),
+  post: ({ id }) => getPostByPostId(id),
+  user: async ({ id }) => {
+    return await getUserByUserId(id);
+    /* const result = {
+      id: null,
+      name: null,
+      balance: null,
+      profile: null,
+      posts: null,
+      userSubscribedTo: null,
+      subscribedToUser: null,
+    };
+    const user = await getUserByUserId(id);
+    if (user) {
+      const posts = await getPostsByAuthorId(id);
+      Object.assign(result, { posts });
+
+      const profile = await getProfileByUserId(user.id);
+      Object.assign(result, user, { profile });
+
+      if (profile) {
+        const memberType = await getMemberTypeByMemberTypeId(profile.memberTypeId);
+        Object.assign(profile, { memberType });
       }
 
-      scalar UUID
-
-      type MemberType {
-        id: MemberTypeId
-        discount: Float
-        postsLimitPerMonth: Int
-        profiles: [Profile]
-      }
-
-      type Post {
-        id: UUID
-        title: String
-        content: String
-        author: User
-        authorId: UUID
-      }
-
-      type Profile {
-        id: UUID
-        isMale: Boolean
-        yearOfBirth: Int
-        user: User
-        userId: UUID
-        memberType: MemberType
-        memberTypeId: MemberTypeId
-      }
-
-      type SubscribersOnAuthors {
-        subscriber: User
-        subscriberId: UUID
-        author: User
-        authorId: UUID
-      }
-
-      type User {
-        id: UUID
-        name: String
-        balance: Float
-        profile: Profile
-        posts: [Post]
-        userSubscribedTo: [SubscribersOnAuthors]
-        subscribedToUser: [SubscribersOnAuthors]
-      }
-
-      type Query {
-        memberTypes: [MemberType]
-        posts: [Post]
-        users: [User]
-        profiles: [Profile]
-        memberType(id: MemberTypeId): MemberType
-        post(id: UUID): Post
-        user(id: UUID): User
-        profile(id: UUID): Profile
-      }
-
-    `);
-
-const prisma = new PrismaClient();
-
-const rootValue = {
-  memberTypes: () => prisma.memberType.findMany(),
-  posts: () => prisma.post.findMany(),
-  users: () => prisma.user.findMany(),
-  profiles: () => prisma.profile.findMany(),
-
-  memberType: ({ id }: { id: string }) => prisma.memberType.findUnique({ where: { id } }),
-  post: ({ id }: { id: string }) => prisma.post.findUnique({ where: { id } }),
-  user: ({ id }: { id: string }) => prisma.user.findUnique({ where: { id } }),
-  profile: ({ id }: { id: string }) => prisma.profile.findUnique({ where: { id } }),
+      return result;
+    }
+    return null; */
+  },
+  profile: ({ id }) => getProfileByProfileId(id),
 };
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
@@ -97,7 +71,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       const variableValues = variables;
       console.log(query, JSON.stringify(variableValues));
 
-      const gql = await graphql({ schema, source, variableValues, rootValue });
+      const gql = await graphql({
+        schema: graphqlSchema,
+        source,
+        variableValues,
+        rootValue: controller,
+      });
 
       return gql;
     },
