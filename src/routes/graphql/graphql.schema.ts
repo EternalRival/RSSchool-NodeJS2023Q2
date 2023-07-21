@@ -1,6 +1,6 @@
 import { buildSchema } from 'graphql';
 
-export const graphqlSchema = buildSchema(`
+export const GraphQLSchema = buildSchema(`
 enum MemberTypeId {
   basic,
   business

@@ -1,60 +1,15 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
 import { createGqlResponseSchema, gqlResponseSchema } from './schemas.js';
 import { graphql } from 'graphql';
-import { graphqlSchema } from './graphql-schema.js';
-import {
-  getMemberTypeByMemberTypeId,
-  getMemberTypes,
-  getPostByPostId,
-  getPosts,
-  getPostsByAuthorId,
-  getProfileByProfileId,
-  getProfileByUserId,
-  getProfiles,
-  getUserByUserId,
-  getUsers,
-} from './service.js';
-
-const controller: Record<string, (arg: { id: string }) => unknown> = {
-  memberTypes: () => getMemberTypes(),
-  posts: () => getPosts(),
-  users: () => getUsers(),
-  profiles: () => getProfiles(),
-
-  memberType: ({ id }) => getMemberTypeByMemberTypeId(id),
-  post: ({ id }) => getPostByPostId(id),
-  user: async ({ id }) => {
-    return await getUserByUserId(id);
-    /* const result = {
-      id: null,
-      name: null,
-      balance: null,
-      profile: null,
-      posts: null,
-      userSubscribedTo: null,
-      subscribedToUser: null,
-    };
-    const user = await getUserByUserId(id);
-    if (user) {
-      const posts = await getPostsByAuthorId(id);
-      Object.assign(result, { posts });
-
-      const profile = await getProfileByUserId(user.id);
-      Object.assign(result, user, { profile });
-
-      if (profile) {
-        const memberType = await getMemberTypeByMemberTypeId(profile.memberTypeId);
-        Object.assign(profile, { memberType });
-      }
-
-      return result;
-    }
-    return null; */
-  },
-  profile: ({ id }) => getProfileByProfileId(id),
-};
+import { GraphQLSchema } from './graphql.schema.js';
+import { GraphQLService } from './graphql.service.js';
+import { GraphQLController } from './graphql.controller.js';
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
+  const { prisma } = fastify;
+  const service = new GraphQLService(prisma);
+  const controller = new GraphQLController(service);
+
   fastify.route({
     url: '/',
     method: 'POST',
@@ -71,14 +26,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       const variableValues = variables;
       console.log(query, JSON.stringify(variableValues));
 
-      const gql = await graphql({
-        schema: graphqlSchema,
+      return graphql({
+        schema: GraphQLSchema,
         source,
         variableValues,
         rootValue: controller,
       });
-
-      return gql;
     },
   });
 };
