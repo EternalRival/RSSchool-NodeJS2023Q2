@@ -51,13 +51,13 @@ type User {
 }
 
 type Query {
-  memberTypes: [MemberType]
-  posts: [Post]
-  users: [User]
-  profiles: [Profile]
-  memberType(id: MemberTypeId): MemberType
-  post(id: UUID): Post
-  user(id: UUID): User
-  profile(id: UUID): Profile
+  memberTypes: [MemberType]!
+  memberType(id: MemberTypeId!): MemberType
+  posts: [Post]!
+  post(id: UUID!): Post
+  users: [User]!
+  user(id: UUID!): User
+  profiles: [Profile]!
+  profile(id: UUID!): Profile
 }
 `);

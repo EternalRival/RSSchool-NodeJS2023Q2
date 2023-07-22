@@ -28,4 +28,11 @@ export class GraphQLController {
   profile({ id }: { id: string }) {
     return this.service.getProfileByProfileId(id);
   }
+
+  subscribedToUser({ id }: { id: string }) {
+    return this.service.getSubscribedToUserByAuthorId(id);
+  }
+  userSubscribedTo({ id }: { id: string }) {
+    return this.service.getUserSubscribedToBySubscriberId(id);
+  }
 }
