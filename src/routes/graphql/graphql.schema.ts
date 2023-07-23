@@ -108,7 +108,14 @@ class GraphQLController {
       yearOfBirth: { type: GraphQLInt },
       user: { type: this.UserType },
       userId: { type: UUIDType },
-      memberType: { type: this.MemberTypeType },
+      memberType: {
+        type: this.MemberTypeType,
+        resolve: ({ memberTypeId }, _a, { memberType }: PrismaClient) => {
+          return typeof memberTypeId === 'string'
+            ? memberType.findUnique({ where: { id: memberTypeId } })
+            : null;
+        },
+      },
       memberTypeId: { type: this.MemberTypeIdEnum },
     }),
   });
@@ -129,8 +136,20 @@ class GraphQLController {
       id: { type: UUIDType },
       name: { type: GraphQLString },
       balance: { type: GraphQLFloat },
-      profile: { type: this.ProfileType },
-      posts: { type: new GraphQLList(this.PostType) },
+      profile: {
+        type: this.ProfileType,
+        resolve: ({ id }, _a, { profile }: PrismaClient) => {
+          return typeof id === 'string'
+            ? profile.findUnique({ where: { userId: id } })
+            : null;
+        },
+      },
+      posts: {
+        type: new GraphQLList(this.PostType),
+        resolve: ({ id }, _a, { post }: PrismaClient) => {
+          return typeof id === 'string' ? post.findMany({ where: { authorId: id } }) : [];
+        },
+      },
       userSubscribedTo: { type: new GraphQLList(this.SubscribersOnAuthorsType) },
       subscribedToUser: { type: new GraphQLList(this.SubscribersOnAuthorsType) },
     }),
