@@ -110,7 +110,7 @@ class GraphQLController {
       userId: { type: UUIDType },
       memberType: {
         type: this.MemberTypeType,
-        resolve: ({ memberTypeId }, _a, { memberType }: PrismaClient) => {
+        resolve: ({ memberTypeId }, _args, { memberType }: PrismaClient) => {
           return typeof memberTypeId === 'string'
             ? memberType.findUnique({ where: { id: memberTypeId } })
             : null;
@@ -138,7 +138,7 @@ class GraphQLController {
       balance: { type: GraphQLFloat },
       profile: {
         type: this.ProfileType,
-        resolve: ({ id }, _a, { profile }: PrismaClient) => {
+        resolve: ({ id }, _args, { profile }: PrismaClient) => {
           return typeof id === 'string'
             ? profile.findUnique({ where: { userId: id } })
             : null;
@@ -146,12 +146,30 @@ class GraphQLController {
       },
       posts: {
         type: new GraphQLList(this.PostType),
-        resolve: ({ id }, _a, { post }: PrismaClient) => {
+        resolve: ({ id }, _args, { post }: PrismaClient) => {
           return typeof id === 'string' ? post.findMany({ where: { authorId: id } }) : [];
         },
       },
-      userSubscribedTo: { type: new GraphQLList(this.SubscribersOnAuthorsType) },
-      subscribedToUser: { type: new GraphQLList(this.SubscribersOnAuthorsType) },
+      // userSubscribedTo: { type: new GraphQLList(this.SubscribersOnAuthorsType) },
+      // subscribedToUser: { type: new GraphQLList(this.SubscribersOnAuthorsType) },
+      userSubscribedTo: {
+        type: new GraphQLList(this.UserType),
+        resolve: ({ id }, _args, { user }: PrismaClient) => {
+          return typeof id === 'string'
+            ? user.findMany({
+                where: { subscribedToUser: { some: { subscriberId: id } } },
+              })
+            : [];
+        },
+      },
+      subscribedToUser: {
+        type: new GraphQLList(this.UserType),
+        resolve: ({ id }, _args, { user }: PrismaClient) => {
+          return typeof id === 'string'
+            ? user.findMany({ where: { userSubscribedTo: { some: { authorId: id } } } })
+            : [];
+        },
+      },
     }),
   });
 
