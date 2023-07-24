@@ -5,8 +5,6 @@ import { graphQLSchema } from './graphql.schema.js';
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { prisma } = fastify;
-  // const service = new GraphQLService(prisma);
-  // const controller = new GraphQLController(service);
 
   fastify.route({
     url: '/',
