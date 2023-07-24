@@ -14,30 +14,18 @@ import {
 import { UUIDType } from './types/uuid.js';
 import { PrismaClient } from '@prisma/client';
 import { ObjMap } from 'graphql/jsutils/ObjMap.js';
-import { Static } from '@sinclair/typebox';
-import { changePostByIdSchema, createPostSchema } from '../posts/schemas.js';
-import { changeUserByIdSchema, createUserSchema } from '../users/schemas.js';
-import { changeProfileByIdSchema, createProfileSchema } from '../profiles/schemas.js';
 import {
-  subscribeToUserSchema,
-  unsubscribeFromUserSchema,
-} from '../users/_userId/user-subscribed-to/schemas.js';
+  CreatePostDto,
+  CreateUserDto,
+  CreateProfileDto,
+  UpdatePostDto,
+  UpdateProfileDto,
+  UpdateUserDto,
+  subscribeToUserDto,
+  unsubscribeFromUserDto,
+} from './gql.dto.js';
 
-type CreatePostDto = Static<(typeof createPostSchema)['body']>;
-type CreateUserDto = Static<(typeof createUserSchema)['body']>;
-type CreateProfileDto = Static<(typeof createProfileSchema)['body']>;
-
-type UpdatePostDto = Static<(typeof changePostByIdSchema)['body']>;
-type UpdateUserDto = Static<(typeof changeUserByIdSchema)['body']>;
-type UpdateProfileDto = Static<(typeof changeProfileByIdSchema)['body']>;
-
-type subscribeToUserDtoBody = Static<(typeof subscribeToUserSchema)['body']>;
-type subscribeToUserDtoParams = Static<(typeof subscribeToUserSchema)['params']>;
-type subscribeToUserDto = subscribeToUserDtoBody & subscribeToUserDtoParams;
-
-type unsubscribeFromUserDto = Static<(typeof unsubscribeFromUserSchema)['params']>;
-
-class GraphQLController {
+class GQLController {
   MemberTypeIdEnum: GraphQLEnumType = new GraphQLEnumType({
     name: 'MemberTypeId',
     values: {
@@ -351,9 +339,9 @@ class GraphQLController {
   });
 }
 
-const controller = new GraphQLController();
+const controller = new GQLController();
 
-export const graphQLSchema: GraphQLSchema = new GraphQLSchema({
+export const gqlSchema: GraphQLSchema = new GraphQLSchema({
   query: controller.QueryType,
   mutation: controller.MutationType,
   types: [
