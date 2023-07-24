@@ -105,8 +105,7 @@ class GQLController {
           return typeof id === 'string' ? post.findMany({ where: { authorId: id } }) : [];
         },
       },
-      // userSubscribedTo: { type: new GraphQLList(this.SubscribersOnAuthorsType) },
-      // subscribedToUser: { type: new GraphQLList(this.SubscribersOnAuthorsType) },
+
       userSubscribedTo: {
         type: new GraphQLList(this.UserType),
         resolve: ({ id }, _args, { user }: PrismaClient) => {
