@@ -6,10 +6,17 @@ import {
   Param,
   Delete,
   Put,
+  HttpException,
+  HttpStatus,
+  HttpCode,
+  ParseUUIDPipe,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
+import { IdNotFoundError } from '../shared/id-not-found.error';
 
 @Controller('user')
 export class UsersController {
@@ -17,38 +24,57 @@ export class UsersController {
 
   @Get()
   findAll() {
-    // - Server should answer with `status code` **200** and all users records
-    return this.usersService.findAll();
+    return this.usersService.findAll().map(this.usersService.cleanPassword);
   }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    // - Server should answer with `status code` **200** and and record with `id === userId` if it exists
-    // - Server should answer with `status code` **400** and corresponding message if `userId` is invalid (not `uuid`)
-    // - Server should answer with `status code` **404** and corresponding message if record with `id === userId` doesn't exist
-    return this.usersService.findOne(+id);
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    const entity = this.usersService.findOne(id);
+
+    if (!entity) {
+      throw new IdNotFoundError(id);
+    }
+
+    return this.usersService.cleanPassword(entity);
   }
+
   @Post()
+  @UsePipes(ValidationPipe)
   create(@Body() createUserDto: CreateUserDto) {
-    // - Server should answer with `status code` **201** and newly created record if request is valid
-    // - Server should answer with `status code` **400** and corresponding message if request `body` does not contain **required** fields
-    return this.usersService.create(createUserDto);
+    console.log(createUserDto);
+    const entity = this.usersService.create(createUserDto);
+    return this.usersService.cleanPassword(entity);
   }
+
   @Put(':id')
+  @UsePipes(ValidationPipe)
   update(
-    @Param('id') id: string,
-    @Body() updatePasswordDto: UpdatePasswordDto,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() { oldPassword, newPassword }: UpdatePasswordDto,
   ) {
-    // - Server should answer with` status code` **200** and updated record if request is valid
-    // - Server should answer with` status code` **400** and corresponding message if `userId` is invalid (not `uuid`)
-    // - Server should answer with` status code` **404** and corresponding message if record with `id === userId` doesn't exist
-    // - Server should answer with` status code` **403** and corresponding message if `oldPassword` is wrong
-    return this.usersService.update(+id, updatePasswordDto);
+    const entity = this.usersService.findOne(id);
+
+    if (!entity) {
+      throw new IdNotFoundError(id);
+    }
+
+    if (entity.password !== oldPassword) {
+      throw new HttpException('Wrong password', HttpStatus.FORBIDDEN);
+    }
+
+    const updated = this.usersService.update(id, { password: newPassword });
+
+    return this.usersService.cleanPassword(updated);
   }
+
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    // - Server should answer with `status code` **204** if the record is found and deleted
-    // - Server should answer with `status code` **400** and corresponding message if `userId` is invalid (not `uuid`)
-    // - Server should answer with `status code` **404** and corresponding message if record with `id === userId` doesn't exist
-    return this.usersService.remove(+id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    const entity = this.usersService.remove(id);
+    if (!entity) {
+      throw new IdNotFoundError(id);
+    }
+
+    return this.usersService.cleanPassword(entity);
   }
 }
