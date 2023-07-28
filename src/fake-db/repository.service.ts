@@ -1,26 +1,43 @@
 export class Repository<T extends { id: string }> {
   private table: T[] = [];
 
-  remove({ id }: Pick<T, 'id'>) {
-    const entity = this.table.find((ent: T) => ent.id === id);
+  remove(entity: T): T;
+  remove(entities: T[]): T[];
+  remove(arg: T | T[]): T | T[] {
+    this.table = this.table.filter((ent) => {
+      return (Array.isArray(arg) ? arg : [arg]).every((item) => item !== ent);
+    });
+
+    return arg;
+  }
+
+  findOneBy(prop: Partial<T>) {
+    const entity = this.table.find((ent: T) => {
+      return Object.entries(prop).every(([key, value]) => ent[key] === value);
+    });
     if (!entity) return null;
 
-    this.table = this.table.filter((ent) => ent !== entity);
     return entity;
   }
 
-  findOneBy({ id }: Pick<T, 'id'>) {
-    const entity = this.table.find((ent: T) => ent.id === id);
-    if (!entity) return null;
+  find(prop?: Partial<T>) {
+    if (!prop) {
+      return this.table;
+    }
 
-    return entity;
+    return this.table.filter((ent) => {
+      return Object.entries(prop).every(([key, value]) => ent[key] === value);
+    });
   }
 
-  find() {
-    return this.table;
+  save(entity: T): T;
+  save(entities: T[]): T[];
+  save(arg: T | T[]): T | T[] {
+    (Array.isArray(arg) ? arg : [arg]).forEach((ent) => this.saveOne(ent));
+    return arg;
   }
 
-  save(entity: T) {
+  private saveOne(entity: T): T {
     const ent = this.table.find(({ id }: T) => entity.id === id);
     if (ent) {
       Object.assign(ent, entity);

@@ -27,7 +27,7 @@ export class TracksService {
     return this.tracksRepository.save({ ...entity, ...updateData });
   }
 
-  remove(id: string) {
-    return this.tracksRepository.remove({ id });
+  remove(track: Track) {
+    return this.tracksRepository.remove(track);
   }
 }

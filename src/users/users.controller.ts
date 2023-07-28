@@ -30,6 +30,7 @@ export class UsersController {
   @UsePipes(ValidationPipe)
   create(@Body() createUserDto: CreateUserDto) {
     const entity = this.usersService.create(createUserDto);
+
     return new User(entity);
   }
 
@@ -73,11 +74,14 @@ export class UsersController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.usersService.remove(id);
+    const entity = this.usersService.findOne(id);
+
     if (!entity) {
       throw new IdNotFoundError(id);
     }
 
-    return new User(entity);
+    const deleted = this.usersService.remove(entity);
+
+    return new User(deleted);
   }
 }

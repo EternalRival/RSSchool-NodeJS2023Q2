@@ -3,21 +3,29 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  UsePipes,
+  ValidationPipe,
+  ParseUUIDPipe,
+  Put,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
+import { IdNotFoundError } from '../shared/id-not-found.error';
 
-@Controller('albums')
+@Controller('album')
 export class AlbumsController {
   constructor(private readonly albumsService: AlbumsService) {}
 
   @Post()
-  create(@Body() createAlbumDto: CreateAlbumDto) {
-    return this.albumsService.create(createAlbumDto);
+  @UsePipes(ValidationPipe)
+  create(@Body() createArtistDto: CreateAlbumDto) {
+    const entity = this.albumsService.create(createArtistDto);
+    return entity;
   }
 
   @Get()
@@ -26,17 +34,44 @@ export class AlbumsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.albumsService.findOne(+id);
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    const entity = this.albumsService.findOne(id);
+
+    if (!entity) {
+      throw new IdNotFoundError(id);
+    }
+
+    return entity;
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
-    return this.albumsService.update(+id, updateAlbumDto);
+  @Put(':id')
+  @UsePipes(ValidationPipe)
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateArtistDto: UpdateAlbumDto,
+  ) {
+    const entity = this.albumsService.findOne(id);
+
+    if (!entity) {
+      throw new IdNotFoundError(id);
+    }
+
+    const updated = this.albumsService.update(id, updateArtistDto);
+
+    return updated;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.albumsService.remove(+id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    const entity = this.albumsService.findOne(id);
+
+    if (!entity) {
+      throw new IdNotFoundError(id);
+    }
+
+    const deleted = this.albumsService.remove(entity);
+
+    return deleted;
   }
 }

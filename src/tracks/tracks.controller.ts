@@ -24,8 +24,8 @@ export class TracksController {
   @Post()
   @UsePipes(ValidationPipe)
   create(@Body() createTrackDto: CreateTrackDto) {
-    console.log(createTrackDto);
     const entity = this.tracksService.create(createTrackDto);
+
     return entity;
   }
 
@@ -65,11 +65,14 @@ export class TracksController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.tracksService.remove(id);
+    const entity = this.tracksService.findOne(id);
+
     if (!entity) {
       throw new IdNotFoundError(id);
     }
 
-    return entity;
+    const deleted = this.tracksService.remove(entity);
+
+    return deleted;
   }
 }

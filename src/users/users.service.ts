@@ -41,7 +41,7 @@ export class UsersService {
     });
   }
 
-  remove(id: string) {
-    return this.usersRepository.remove({ id });
+  remove(user: User) {
+    return this.usersRepository.remove(user);
   }
 }
