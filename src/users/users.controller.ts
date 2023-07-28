@@ -22,6 +22,14 @@ import { IdNotFoundError } from '../shared/id-not-found.error';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Post()
+  @UsePipes(ValidationPipe)
+  create(@Body() createUserDto: CreateUserDto) {
+    console.log(createUserDto);
+    const entity = this.usersService.create(createUserDto);
+    return this.usersService.cleanPassword(entity);
+  }
+
   @Get()
   findAll() {
     return this.usersService.findAll().map(this.usersService.cleanPassword);
@@ -35,14 +43,6 @@ export class UsersController {
       throw new IdNotFoundError(id);
     }
 
-    return this.usersService.cleanPassword(entity);
-  }
-
-  @Post()
-  @UsePipes(ValidationPipe)
-  create(@Body() createUserDto: CreateUserDto) {
-    console.log(createUserDto);
-    const entity = this.usersService.create(createUserDto);
     return this.usersService.cleanPassword(entity);
   }
 
