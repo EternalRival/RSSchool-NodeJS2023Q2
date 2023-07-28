@@ -12,13 +12,17 @@ import {
   ParseUUIDPipe,
   UsePipes,
   ValidationPipe,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { IdNotFoundError } from '../shared/id-not-found.error';
+import { User } from './entities/user.entity';
 
 @Controller('user')
+@UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -26,12 +30,12 @@ export class UsersController {
   @UsePipes(ValidationPipe)
   create(@Body() createUserDto: CreateUserDto) {
     const entity = this.usersService.create(createUserDto);
-    return this.usersService.cleanPassword(entity);
+    return new User(entity);
   }
 
   @Get()
   findAll() {
-    return this.usersService.findAll().map(this.usersService.cleanPassword);
+    return this.usersService.findAll().map((user) => new User(user));
   }
 
   @Get(':id')
@@ -42,7 +46,7 @@ export class UsersController {
       throw new IdNotFoundError(id);
     }
 
-    return this.usersService.cleanPassword(entity);
+    return new User(entity);
   }
 
   @Put(':id')
@@ -63,7 +67,7 @@ export class UsersController {
 
     const updated = this.usersService.update(id, { password: newPassword });
 
-    return this.usersService.cleanPassword(updated);
+    return new User(updated);
   }
 
   @Delete(':id')
@@ -74,6 +78,6 @@ export class UsersController {
       throw new IdNotFoundError(id);
     }
 
-    return this.usersService.cleanPassword(entity);
+    return new User(entity);
   }
 }

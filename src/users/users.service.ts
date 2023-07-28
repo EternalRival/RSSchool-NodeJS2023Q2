@@ -44,10 +44,4 @@ export class UsersService {
   remove(id: string) {
     return this.usersRepository.remove({ id });
   }
-
-  cleanPassword(user: User) {
-    const clone = structuredClone(user);
-    delete clone.password;
-    return clone;
-  }
 }

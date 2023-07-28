@@ -1,3 +1,5 @@
+import { Exclude } from 'class-transformer';
+
 interface UserInterface {
   id: string; // uuid v4
   login: string;
@@ -9,9 +11,19 @@ interface UserInterface {
 
 export class User implements UserInterface {
   id: string;
+
   login: string;
+
+  @Exclude()
   password: string;
+
   version: number;
+
   createdAt: number;
+
   updatedAt: number;
+
+  constructor(props: User) {
+    Object.assign(this, props);
+  }
 }
