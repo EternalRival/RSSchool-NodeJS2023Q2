@@ -1,1 +1,3 @@
-export class Artist {}
+export class Artist {
+  id: string;
+}

@@ -25,7 +25,6 @@ export class UsersController {
   @Post()
   @UsePipes(ValidationPipe)
   create(@Body() createUserDto: CreateUserDto) {
-    console.log(createUserDto);
     const entity = this.usersService.create(createUserDto);
     return this.usersService.cleanPassword(entity);
   }

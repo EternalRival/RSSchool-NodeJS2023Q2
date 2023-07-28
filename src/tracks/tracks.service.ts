@@ -1,26 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
-import { UpdateTrackDto } from './dto/update-track.dto';
+import { DB } from '../fake-db/db.service';
+import { v4 } from 'uuid';
+import { Track } from './entities/track.entity';
 
 @Injectable()
 export class TracksService {
+  tracksRepository = DB.tracksRepository;
+
   create(createTrackDto: CreateTrackDto) {
-    return 'This action adds a new track';
+    const track = { ...createTrackDto, id: v4() };
+
+    return this.tracksRepository.save(track);
   }
 
   findAll() {
-    return `This action returns all tracks`;
+    return this.tracksRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} track`;
+  findOne(id: string) {
+    return this.tracksRepository.findOneBy({ id });
   }
 
-  update(id: number, updateTrackDto: UpdateTrackDto) {
-    return `This action updates a #${id} track`;
+  update(id: string, updateData: Partial<Track>) {
+    const entity = this.tracksRepository.findOneBy({ id });
+    return this.tracksRepository.save({ ...entity, ...updateData });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} track`;
+  remove(id: string) {
+    return this.tracksRepository.remove({ id });
   }
 }

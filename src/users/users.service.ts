@@ -8,12 +8,11 @@ import { User } from './entities/user.entity';
 export class UsersService {
   usersRepository = DB.usersRepository;
 
-  create({ login, password }: CreateUserDto) {
+  create(createUserDto: CreateUserDto) {
     const timestamp = Date.now();
     const user = {
+      ...createUserDto,
       id: v4(),
-      login: login,
-      password: password,
       version: 1,
       createdAt: timestamp,
       updatedAt: timestamp,
