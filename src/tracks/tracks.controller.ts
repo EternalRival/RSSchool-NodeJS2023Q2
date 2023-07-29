@@ -16,10 +16,14 @@ import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { IdNotFoundError } from '../shared/id-not-found.error';
+import { FavoritesService } from '../favorites/favorites.service';
 
 @Controller('track')
 export class TracksController {
-  constructor(private readonly tracksService: TracksService) {}
+  constructor(
+    private readonly tracksService: TracksService,
+    private readonly favoritesService: FavoritesService,
+  ) {}
 
   @Post()
   @UsePipes(ValidationPipe)
@@ -70,6 +74,8 @@ export class TracksController {
     if (!entity) {
       throw new IdNotFoundError(id);
     }
+
+    this.favoritesService.remove('tracks', id);
 
     const deleted = this.tracksService.remove(entity);
 

@@ -2,44 +2,103 @@ import {
   Controller,
   Get,
   Post,
-  Body,
-  Patch,
-  Param,
   Delete,
+  Param,
+  ParseUUIDPipe,
+  HttpException,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { CreateFavoriteDto } from './dto/create-favorite.dto';
-import { UpdateFavoriteDto } from './dto/update-favorite.dto';
+import { StatusCodes } from 'http-status-codes';
 
-@Controller('favorites')
+@Controller('favs')
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
-
-  @Post()
-  create(@Body() createFavoriteDto: CreateFavoriteDto) {
-    return this.favoritesService.create(createFavoriteDto);
-  }
 
   @Get()
   findAll() {
     return this.favoritesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.favoritesService.findOne(+id);
+  @Post('/track/:id')
+  createFavoriteTrack(@Param('id', ParseUUIDPipe) id: string) {
+    const entity = this.favoritesService.create('tracks', id);
+
+    if (!entity) {
+      throw new HttpException(
+        `track with \`id === ${id}\` doesn't exist`,
+        StatusCodes.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    return `the track ${id} was added to favorites`;
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateFavoriteDto: UpdateFavoriteDto,
-  ) {
-    return this.favoritesService.update(+id, updateFavoriteDto);
+  @Delete('/track/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeFavoriteTrack(@Param('id', ParseUUIDPipe) id: string) {
+    const entity = this.favoritesService.remove('tracks', id);
+
+    if (!entity) {
+      throw new HttpException(
+        'corresponding track is not favorite',
+        StatusCodes.NOT_FOUND,
+      );
+    }
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.favoritesService.remove(+id);
+  @Post('/album/:id')
+  createFavoriteAlbum(@Param('id', ParseUUIDPipe) id: string) {
+    const entity = this.favoritesService.create('albums', id);
+
+    if (!entity) {
+      throw new HttpException(
+        `album with \`id === ${id}\` doesn't exist`,
+        StatusCodes.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    return `the album ${id} was added to favorites`;
+  }
+
+  @Delete('/album/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeFavoriteAlbum(@Param('id', ParseUUIDPipe) id: string) {
+    const entity = this.favoritesService.remove('albums', id);
+
+    if (!entity) {
+      throw new HttpException(
+        'corresponding album is not favorite',
+        StatusCodes.NOT_FOUND,
+      );
+    }
+  }
+
+  @Post('/artist/:id')
+  createFavoriteArtist(@Param('id', ParseUUIDPipe) id: string) {
+    const entity = this.favoritesService.create('artists', id);
+
+    if (!entity) {
+      throw new HttpException(
+        `artist with \`id === ${id}\` doesn't exist`,
+        StatusCodes.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    return `the artist ${id} was added to favorites`;
+  }
+
+  @Delete('/artist/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeFavoriteArtist(@Param('id', ParseUUIDPipe) id: string) {
+    const entity = this.favoritesService.remove('artists', id);
+
+    if (!entity) {
+      throw new HttpException(
+        'corresponding artist is not favorite',
+        StatusCodes.NOT_FOUND,
+      );
+    }
   }
 }

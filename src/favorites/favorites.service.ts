@@ -1,26 +1,64 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFavoriteDto } from './dto/create-favorite.dto';
-import { UpdateFavoriteDto } from './dto/update-favorite.dto';
+import { DB } from '../fake-db/db.service';
+import { Artist } from '../artists/entities/artist.entity';
+import { Album } from '../albums/entities/album.entity';
+import { Track } from '../tracks/entities/track.entity';
+
+interface Favorites {
+  artists: string[]; // favorite artists ids
+  albums: string[]; // favorite albums ids
+  tracks: string[]; // favorite tracks ids
+}
+
+export interface FavoritesResponse {
+  artists: Artist[];
+  albums: Album[];
+  tracks: Track[];
+}
 
 @Injectable()
 export class FavoritesService {
-  create(createFavoriteDto: CreateFavoriteDto) {
-    return 'This action adds a new favorite';
-  }
+  albumsRepository = DB.albumsRepository;
+  artistsRepository = DB.artistsRepository;
+  tracksRepository = DB.tracksRepository;
+  favorites: Favorites = {
+    artists: [],
+    albums: [],
+    tracks: [],
+  };
 
   findAll() {
-    return `This action returns all favorites`;
+    const response: FavoritesResponse = { artists: [], albums: [], tracks: [] };
+
+    Object.entries(this.favorites).forEach(([key, list]) => {
+      const repo = this[`${key}Repository`];
+      response[key] = list.map((id: string) => repo.findOneBy({ id }));
+    });
+
+    return response;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} favorite`;
+  create(path: keyof Favorites, id: string) {
+    const entity = this[`${path}Repository`].findOneBy({ id });
+    if (!entity) {
+      return null;
+    }
+
+    this.favorites[path].push(id);
+
+    return id;
   }
 
-  update(id: number, updateFavoriteDto: UpdateFavoriteDto) {
-    return `This action updates a #${id} favorite`;
-  }
+  remove(path: keyof Favorites, id: string) {
+    const entity = this[`${path}Repository`].findOneBy({ id });
+    if (!entity) {
+      return null;
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} favorite`;
+    this.favorites[path] = this.favorites[path].filter(
+      (item: string) => id !== item,
+    );
+
+    return id;
   }
 }

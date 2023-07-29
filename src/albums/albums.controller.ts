@@ -16,10 +16,14 @@ import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { IdNotFoundError } from '../shared/id-not-found.error';
+import { FavoritesService } from '../favorites/favorites.service';
 
 @Controller('album')
 export class AlbumsController {
-  constructor(private readonly albumsService: AlbumsService) {}
+  constructor(
+    private readonly albumsService: AlbumsService,
+    private readonly favoritesService: FavoritesService,
+  ) {}
 
   @Post()
   @UsePipes(ValidationPipe)
@@ -69,6 +73,8 @@ export class AlbumsController {
     if (!entity) {
       throw new IdNotFoundError(id);
     }
+
+    this.favoritesService.remove('albums', id);
 
     const deleted = this.albumsService.remove(entity);
 
