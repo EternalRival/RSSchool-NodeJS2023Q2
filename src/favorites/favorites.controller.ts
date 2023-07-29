@@ -11,11 +11,15 @@ import {
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 import { StatusCodes } from 'http-status-codes';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Favorites } from './entities/favorites.entity';
 
+@ApiTags('Favorites')
 @Controller('favs')
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
+  @ApiOkResponse({ description: 'Successfulsation', type: Favorites })
   @Get()
   findAll() {
     return this.favoritesService.findAll();

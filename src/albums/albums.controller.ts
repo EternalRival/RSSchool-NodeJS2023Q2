@@ -17,7 +17,10 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { IdNotFoundError } from '../shared/id-not-found.error';
 import { FavoritesService } from '../favorites/favorites.service';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Album } from './entities/album.entity';
 
+@ApiTags('Albums')
 @Controller('album')
 export class AlbumsController {
   constructor(
@@ -33,6 +36,8 @@ export class AlbumsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all users', description: 'Gets all users' }) // TODO
+  @ApiOkResponse({ description: 'Successful  operation', type: Album })
   findAll() {
     return this.albumsService.findAll();
   }

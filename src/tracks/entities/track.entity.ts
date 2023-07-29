@@ -1,3 +1,5 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
 interface TrackInterface {
   id: string; // uuid v4
   name: string;
@@ -7,9 +9,18 @@ interface TrackInterface {
 }
 
 export class Track implements TrackInterface {
+  @ApiProperty({ format: 'uuid' })
   id: string;
+
+  @ApiProperty({ example: 'The Show Must Go On' })
   name: string;
+
+  @ApiPropertyOptional({ format: 'uuid', nullable: true })
   artistId: string | null;
+
+  @ApiPropertyOptional({ format: 'uuid', nullable: true })
   albumId: string | null;
+
+  @ApiProperty({ format: 'uuid', description: 'In seconds', example: 262 })
   duration: number;
 }

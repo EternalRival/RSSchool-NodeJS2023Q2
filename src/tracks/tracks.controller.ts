@@ -17,7 +17,9 @@ import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { IdNotFoundError } from '../shared/id-not-found.error';
 import { FavoritesService } from '../favorites/favorites.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Tracks')
 @Controller('track')
 export class TracksController {
   constructor(

@@ -17,7 +17,10 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { IdNotFoundError } from '../shared/id-not-found.error';
 import { FavoritesService } from '../favorites/favorites.service';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Artist } from './entities/artist.entity';
 
+@ApiTags('Artists')
 @Controller('artist')
 export class ArtistsController {
   constructor(
@@ -33,6 +36,12 @@ export class ArtistsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all users', description: 'Gets all users' })
+  @ApiOkResponse({
+    description: 'Successful operation',
+    type: Artist,
+    isArray: true,
+  })
   findAll() {
     return this.artistsService.findAll();
   }

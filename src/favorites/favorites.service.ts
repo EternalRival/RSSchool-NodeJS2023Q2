@@ -1,34 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { DB } from '../fake-db/db.service';
-import { Artist } from '../artists/entities/artist.entity';
-import { Album } from '../albums/entities/album.entity';
-import { Track } from '../tracks/entities/track.entity';
-
-interface Favorites {
-  artists: string[]; // favorite artists ids
-  albums: string[]; // favorite albums ids
-  tracks: string[]; // favorite tracks ids
-}
-
-export interface FavoritesResponse {
-  artists: Artist[];
-  albums: Album[];
-  tracks: Track[];
-}
+import { Favorites, FavoritesInterface } from './entities/favorites.entity';
 
 @Injectable()
 export class FavoritesService {
   albumsRepository = DB.albumsRepository;
   artistsRepository = DB.artistsRepository;
   tracksRepository = DB.tracksRepository;
-  favorites: Favorites = {
+  favorites: FavoritesInterface = {
     artists: [],
     albums: [],
     tracks: [],
   };
 
   findAll() {
-    const response: FavoritesResponse = { artists: [], albums: [], tracks: [] };
+    const response: Favorites = { artists: [], albums: [], tracks: [] };
 
     Object.entries(this.favorites).forEach(([key, list]) => {
       const repo = this[`${key}Repository`];
