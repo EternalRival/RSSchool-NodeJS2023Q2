@@ -46,8 +46,8 @@ export class TracksController {
   @ApiBadRequestResponse({
     description: 'Bad request. body does not contain required fields',
   })
-  create(@Body() createTrackDto: CreateTrackDto) {
-    const entity = this.tracksService.create(createTrackDto);
+  private create(@Body() createTrackDto: CreateTrackDto): Track {
+    const entity: Track = this.tracksService.create(createTrackDto);
 
     return entity;
   }
@@ -62,7 +62,7 @@ export class TracksController {
     type: Track,
     isArray: true,
   })
-  findAll() {
+  private findAll(): Track[] {
     return this.tracksService.findAll();
   }
 
@@ -77,8 +77,8 @@ export class TracksController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Track was not found' })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.tracksService.findOne(id);
+  private findOne(@Param('id', ParseUUIDPipe) id: string): Track {
+    const entity: Track | null = this.tracksService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
@@ -99,17 +99,21 @@ export class TracksController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Track not found' })
-  update(
+  private update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateTrackDto: UpdateTrackDto,
-  ) {
-    const entity = this.tracksService.findOne(id);
+  ): Track {
+    const entity: Track | null = this.tracksService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
     }
 
-    const updated = this.tracksService.update(id, updateTrackDto);
+    const updated: Track | null = this.tracksService.update(id, updateTrackDto);
+
+    if (!updated) {
+      throw new IdNotFoundError(id);
+    }
 
     return updated;
   }
@@ -126,8 +130,8 @@ export class TracksController {
   })
   @ApiNotFoundResponse({ description: 'Track was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.tracksService.findOne(id);
+  private remove(@Param('id', ParseUUIDPipe) id: string): void {
+    const entity: Track | null = this.tracksService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
@@ -135,8 +139,6 @@ export class TracksController {
 
     this.favoritesService.remove('tracks', id);
 
-    const deleted = this.tracksService.remove(entity);
-
-    return deleted;
+    this.tracksService.remove(entity);
   }
 }

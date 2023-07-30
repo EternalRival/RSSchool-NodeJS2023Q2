@@ -10,17 +10,17 @@ interface TrackInterface {
 
 export class Track implements TrackInterface {
   @ApiProperty({ format: 'uuid' })
-  id: string;
+  public id: string;
 
   @ApiProperty({ example: 'The Show Must Go On' })
-  name: string;
+  public name: string;
 
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
-  artistId: string | null;
+  public artistId: string | null;
 
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
-  albumId: string | null;
+  public albumId: string | null;
 
   @ApiProperty({ description: 'In seconds', example: 262 })
-  duration: number;
+  public duration: number;
 }

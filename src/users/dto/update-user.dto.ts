@@ -9,9 +9,9 @@ interface UpdatePasswordDtoInterface {
 export class UpdatePasswordDto implements UpdatePasswordDtoInterface {
   @ApiProperty({ description: "The user's old password" })
   @IsString()
-  oldPassword: string;
+  public oldPassword: string;
 
   @ApiProperty({ description: "The user's new password" })
   @IsString()
-  newPassword: string;
+  public newPassword: string;
 }

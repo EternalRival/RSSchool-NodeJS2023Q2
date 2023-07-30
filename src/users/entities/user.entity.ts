@@ -12,22 +12,22 @@ interface UserInterface {
 
 export class User implements UserInterface {
   @ApiProperty({ format: 'uuid' })
-  id: string;
+  public id: string;
 
   @ApiProperty({ example: 'TestUser' })
-  login: string;
+  public login: string;
 
   @Exclude()
-  password: string;
+  public password: string;
 
   @ApiPropertyOptional({ example: 1 })
-  version: number;
+  public version: number;
 
   @ApiPropertyOptional({ example: 1655000000 })
-  createdAt: number;
+  public createdAt: number;
 
   @ApiPropertyOptional({ example: 1655000000 })
-  updatedAt: number;
+  public updatedAt: number;
 
   constructor(props: User) {
     Object.assign(this, props);

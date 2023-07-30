@@ -9,14 +9,14 @@ interface AlbumInterface {
 
 export class Album implements AlbumInterface {
   @ApiProperty({ format: 'uuid' })
-  id: string;
+  public id: string;
 
   @ApiProperty({ example: 'Innuendo' })
-  name: string;
+  public name: string;
 
   @ApiPropertyOptional({ example: 1991 })
-  year: number;
+  public year: number;
 
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
-  artistId: string | null;
+  public artistId: string | null;
 }

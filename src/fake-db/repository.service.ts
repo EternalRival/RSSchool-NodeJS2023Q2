@@ -1,9 +1,9 @@
 export class Repository<T extends { id: string }> {
   private table: T[] = [];
 
-  remove(entity: T): T;
-  remove(entities: T[]): T[];
-  remove(arg: T | T[]): T | T[] {
+  public remove(entity: T): T;
+  public remove(entities: T[]): T[];
+  public remove(arg: T | T[]): T | T[] {
     this.table = this.table.filter((ent) => {
       return (Array.isArray(arg) ? arg : [arg]).every((item) => item !== ent);
     });
@@ -11,16 +11,18 @@ export class Repository<T extends { id: string }> {
     return arg;
   }
 
-  findOneBy(prop: Partial<T>) {
+  public findOneBy(prop: Partial<T>): T | null {
     const entity = this.table.find((ent: T) => {
       return Object.entries(prop).every(([key, value]) => ent[key] === value);
     });
-    if (!entity) return null;
+    if (!entity) {
+      return null;
+    }
 
     return entity;
   }
 
-  find(prop?: Partial<T>) {
+  public find(prop?: Partial<T>): T[] {
     if (!prop) {
       return this.table;
     }
@@ -30,9 +32,9 @@ export class Repository<T extends { id: string }> {
     });
   }
 
-  save(entity: T): T;
-  save(entities: T[]): T[];
-  save(arg: T | T[]): T | T[] {
+  public save(entity: T): T;
+  public save(entities: T[]): T[];
+  public save(arg: T | T[]): T | T[] {
     (Array.isArray(arg) ? arg : [arg]).forEach((ent) => this.saveOne(ent));
     return arg;
   }

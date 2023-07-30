@@ -39,7 +39,7 @@ export class FavoritesController {
     type: Favorites,
     isArray: true,
   })
-  findAll() {
+  private findAll(): Favorites {
     return this.favoritesService.findAll();
   }
 
@@ -67,8 +67,10 @@ export class FavoritesController {
   @ApiUnprocessableEntityResponse({
     description: "Track with id doesn't exist",
   })
-  createFavoriteTrack(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.favoritesService.create('tracks', id);
+  private createFavoriteTrack(@Param('id', ParseUUIDPipe) id: string): {
+    message: string;
+  } {
+    const entity: string | null = this.favoritesService.create('tracks', id);
 
     if (!entity) {
       throw new HttpException(
@@ -92,7 +94,7 @@ export class FavoritesController {
   })
   @ApiNotFoundResponse({ description: 'Track was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  removeFavoriteTrack(@Param('id', ParseUUIDPipe) id: string) {
+  private removeFavoriteTrack(@Param('id', ParseUUIDPipe) id: string): void {
     const entity = this.favoritesService.remove('tracks', id);
 
     if (!entity) {
@@ -127,8 +129,10 @@ export class FavoritesController {
   @ApiUnprocessableEntityResponse({
     description: "Album with id doesn't exist",
   })
-  createFavoriteAlbum(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.favoritesService.create('albums', id);
+  private createFavoriteAlbum(@Param('id', ParseUUIDPipe) id: string): {
+    message: string;
+  } {
+    const entity: string | null = this.favoritesService.create('albums', id);
 
     if (!entity) {
       throw new HttpException(
@@ -152,8 +156,8 @@ export class FavoritesController {
   })
   @ApiNotFoundResponse({ description: 'Album was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  removeFavoriteAlbum(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.favoritesService.remove('albums', id);
+  private removeFavoriteAlbum(@Param('id', ParseUUIDPipe) id: string): void {
+    const entity: string | null = this.favoritesService.remove('albums', id);
 
     if (!entity) {
       throw new HttpException(
@@ -187,8 +191,10 @@ export class FavoritesController {
   @ApiUnprocessableEntityResponse({
     description: "Artist with id doesn't exist",
   })
-  createFavoriteArtist(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.favoritesService.create('artists', id);
+  private createFavoriteArtist(@Param('id', ParseUUIDPipe) id: string): {
+    message: string;
+  } {
+    const entity: string | null = this.favoritesService.create('artists', id);
 
     if (!entity) {
       throw new HttpException(
@@ -212,8 +218,8 @@ export class FavoritesController {
   })
   @ApiNotFoundResponse({ description: 'Artist was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  removeFavoriteArtist(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.favoritesService.remove('artists', id);
+  private removeFavoriteArtist(@Param('id', ParseUUIDPipe) id: string): void {
+    const entity: string | null = this.favoritesService.remove('artists', id);
 
     if (!entity) {
       throw new HttpException(

@@ -3,36 +3,42 @@ import { DB } from '../fake-db/db.service';
 import { v4 } from 'uuid';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { Album } from './entities/album.entity';
+import { Track } from '../tracks/entities/track.entity';
+import { Repository } from '../fake-db/repository.service';
 
 @Injectable()
 export class AlbumsService {
-  artistsRepository = DB.artistsRepository;
-  albumsRepository = DB.albumsRepository;
-  tracksRepository = DB.tracksRepository;
+  private albumsRepository: Repository<Album> = DB.albumsRepository;
+  private tracksRepository: Repository<Track> = DB.tracksRepository;
 
-  create(createAlbumDto: CreateAlbumDto) {
-    const album = { ...createAlbumDto, id: v4() };
+  public create(createAlbumDto: CreateAlbumDto): Album {
+    const album: Album = { ...createAlbumDto, id: v4() };
 
     return this.albumsRepository.save(album);
   }
 
-  findAll() {
+  public findAll(): Album[] {
     return this.albumsRepository.find();
   }
 
-  findOne(id: string) {
+  public findOne(id: string): Album | null {
     return this.albumsRepository.findOneBy({ id });
   }
 
-  update(id: string, updateData: Partial<Album>) {
-    const entity = this.albumsRepository.findOneBy({ id });
+  public update(id: string, updateData: Partial<Album>): Album | null {
+    const entity: Album | null = this.albumsRepository.findOneBy({ id });
+
+    if (!entity) {
+      return null;
+    }
+
     return this.albumsRepository.save({ ...entity, ...updateData });
   }
 
-  remove(album: Album) {
-    const deleted = this.albumsRepository.remove(album);
+  public remove(album: Album): Album {
+    const deleted: Album = this.albumsRepository.remove(album);
 
-    const tracks = this.tracksRepository.find({ albumId: album.id });
+    const tracks: Track[] = this.tracksRepository.find({ albumId: album.id });
     tracks.forEach((track) => {
       track.albumId = null;
     });

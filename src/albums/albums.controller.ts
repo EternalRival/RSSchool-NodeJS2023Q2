@@ -46,8 +46,8 @@ export class AlbumsController {
   @ApiBadRequestResponse({
     description: 'Bad request. body does not contain required fields',
   })
-  create(@Body() createAlbumDto: CreateAlbumDto) {
-    const entity = this.albumsService.create(createAlbumDto);
+  private create(@Body() createAlbumDto: CreateAlbumDto): Album {
+    const entity: Album = this.albumsService.create(createAlbumDto);
     return entity;
   }
 
@@ -61,7 +61,7 @@ export class AlbumsController {
     type: Album,
     isArray: true,
   })
-  findAll() {
+  private findAll(): Album[] {
     return this.albumsService.findAll();
   }
 
@@ -76,8 +76,8 @@ export class AlbumsController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Album was not found' })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.albumsService.findOne(id);
+  private findOne(@Param('id', ParseUUIDPipe) id: string): Album {
+    const entity: Album | null = this.albumsService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
@@ -98,17 +98,21 @@ export class AlbumsController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Album not found' })
-  update(
+  private update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateAlbumDto: UpdateAlbumDto,
-  ) {
-    const entity = this.albumsService.findOne(id);
+  ): Album {
+    const entity: Album | null = this.albumsService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
     }
 
-    const updated = this.albumsService.update(id, updateAlbumDto);
+    const updated: Album | null = this.albumsService.update(id, updateAlbumDto);
+
+    if (!updated) {
+      throw new IdNotFoundError(id);
+    }
 
     return updated;
   }
@@ -125,17 +129,14 @@ export class AlbumsController {
   })
   @ApiNotFoundResponse({ description: 'Album was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.albumsService.findOne(id);
+  private remove(@Param('id', ParseUUIDPipe) id: string): void {
+    const entity: Album | null = this.albumsService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
     }
 
     this.favoritesService.remove('albums', id);
-
-    const deleted = this.albumsService.remove(entity);
-
-    return deleted;
+    this.albumsService.remove(entity);
   }
 }

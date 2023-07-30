@@ -8,11 +8,11 @@ interface ArtistInterface {
 
 export class Artist implements ArtistInterface {
   @ApiProperty({ format: 'uuid' })
-  id: string;
+  public id: string;
 
   @ApiProperty({ example: 'Freddie Mercury' })
-  name: string;
+  public name: string;
 
   @ApiPropertyOptional({ example: false })
-  grammy: boolean;
+  public grammy: boolean;
 }

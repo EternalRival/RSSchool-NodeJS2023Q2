@@ -9,9 +9,9 @@ interface CreateUserDtoInterface {
 export class CreateUserDto implements CreateUserDtoInterface {
   @ApiProperty({ description: "The user's login" })
   @IsString()
-  login: string;
+  public login: string;
 
   @ApiProperty({ description: "The user's password" })
   @IsString()
-  password: string;
+  public password: string;
 }

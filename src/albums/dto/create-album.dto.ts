@@ -4,14 +4,14 @@ import { IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
 export class CreateAlbumDto {
   @ApiProperty()
   @IsString()
-  name: string;
+  public name: string;
 
   @ApiProperty()
   @IsInt()
-  year: number;
+  public year: number;
 
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
   @IsOptional()
   @IsUUID()
-  artistId: string | null;
+  public artistId: string | null;
 }

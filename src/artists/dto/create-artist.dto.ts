@@ -4,9 +4,9 @@ import { IsBoolean, IsString } from 'class-validator';
 export class CreateArtistDto {
   @ApiProperty()
   @IsString()
-  name: string;
+  public name: string;
 
   @ApiProperty()
   @IsBoolean()
-  grammy: boolean;
+  public grammy: boolean;
 }

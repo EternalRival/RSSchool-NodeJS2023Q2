@@ -44,8 +44,8 @@ export class UsersController {
   @ApiBadRequestResponse({
     description: 'Bad request. body does not contain required fields',
   })
-  create(@Body() createUserDto: CreateUserDto) {
-    const entity = this.usersService.create(createUserDto);
+  private create(@Body() createUserDto: CreateUserDto): User {
+    const entity: User = this.usersService.create(createUserDto);
 
     return new User(entity);
   }
@@ -57,7 +57,7 @@ export class UsersController {
     type: User,
     isArray: true,
   })
-  findAll(): User[] {
+  private findAll(): User[] {
     return this.usersService.findAll().map((user) => new User(user));
   }
 
@@ -72,8 +72,8 @@ export class UsersController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'User not found' })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.usersService.findOne(id);
+  private findOne(@Param('id', ParseUUIDPipe) id: string): User {
+    const entity: User | null = this.usersService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
@@ -107,11 +107,11 @@ export class UsersController {
   })
   @ApiForbiddenResponse({ description: 'oldPassword is wrong' })
   @ApiNotFoundResponse({ description: 'User not found' })
-  update(
+  private update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() { oldPassword, newPassword }: UpdatePasswordDto,
-  ) {
-    const entity = this.usersService.findOne(id);
+  ): User {
+    const entity: User | null = this.usersService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
@@ -121,7 +121,13 @@ export class UsersController {
       throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
     }
 
-    const updated = this.usersService.update(id, { password: newPassword });
+    const updated: User | null = this.usersService.update(id, {
+      password: newPassword,
+    });
+
+    if (!updated) {
+      throw new IdNotFoundError(id);
+    }
 
     return new User(updated);
   }
@@ -135,15 +141,13 @@ export class UsersController {
   })
   @ApiNotFoundResponse({ description: 'User not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.usersService.findOne(id);
+  private remove(@Param('id', ParseUUIDPipe) id: string): void {
+    const entity: User = this.usersService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
     }
 
-    const deleted = this.usersService.remove(entity);
-
-    return new User(deleted);
+    this.usersService.remove(entity);
   }
 }

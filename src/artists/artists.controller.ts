@@ -46,8 +46,8 @@ export class ArtistsController {
   @ApiBadRequestResponse({
     description: 'Bad request. body does not contain required fields',
   })
-  create(@Body() createArtistDto: CreateArtistDto) {
-    const entity = this.artistsService.create(createArtistDto);
+  private create(@Body() createArtistDto: CreateArtistDto): Artist {
+    const entity: Artist = this.artistsService.create(createArtistDto);
     return entity;
   }
 
@@ -61,7 +61,7 @@ export class ArtistsController {
     type: Artist,
     isArray: true,
   })
-  findAll() {
+  private findAll(): Artist[] {
     return this.artistsService.findAll();
   }
 
@@ -76,8 +76,8 @@ export class ArtistsController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Artist was not found' })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.artistsService.findOne(id);
+  private findOne(@Param('id', ParseUUIDPipe) id: string): Artist {
+    const entity: Artist | null = this.artistsService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
@@ -98,17 +98,24 @@ export class ArtistsController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Artist not found' })
-  update(
+  private update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateArtistDto: UpdateArtistDto,
-  ) {
-    const entity = this.artistsService.findOne(id);
+  ): Artist {
+    const entity: Artist | null = this.artistsService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
     }
 
-    const updated = this.artistsService.update(id, updateArtistDto);
+    const updated: Artist | null = this.artistsService.update(
+      id,
+      updateArtistDto,
+    );
+
+    if (!updated) {
+      throw new IdNotFoundError(id);
+    }
 
     return updated;
   }
@@ -125,8 +132,8 @@ export class ArtistsController {
   })
   @ApiNotFoundResponse({ description: 'Artist was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    const entity = this.artistsService.findOne(id);
+  private remove(@Param('id', ParseUUIDPipe) id: string): void {
+    const entity: Artist | null = this.artistsService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
@@ -134,8 +141,6 @@ export class ArtistsController {
 
     this.favoritesService.remove('artists', id);
 
-    const deleted = this.artistsService.remove(entity);
-
-    return deleted;
+    this.artistsService.remove(entity);
   }
 }

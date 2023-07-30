@@ -17,11 +17,11 @@ interface FavoritesResponse {
 
 export class Favorites implements FavoritesResponse {
   @ApiPropertyOptional({ type: Artist, isArray: true })
-  artists: Artist[];
+  public artists: Artist[];
 
   @ApiPropertyOptional({ type: Album, isArray: true })
-  albums: Album[];
+  public albums: Album[];
 
   @ApiPropertyOptional({ type: Track, isArray: true })
-  tracks: Track[];
+  public tracks: Track[];
 }
