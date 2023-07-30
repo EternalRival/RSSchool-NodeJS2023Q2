@@ -10,8 +10,6 @@ import {
   HttpStatus,
   HttpCode,
   ParseUUIDPipe,
-  UsePipes,
-  ValidationPipe,
   UseInterceptors,
   ClassSerializerInterceptor,
 } from '@nestjs/common';
@@ -46,7 +44,6 @@ export class UsersController {
   @ApiBadRequestResponse({
     description: 'Bad request. body does not contain required fields',
   })
-  @UsePipes(ValidationPipe)
   create(@Body() createUserDto: CreateUserDto) {
     const entity = this.usersService.create(createUserDto);
 
@@ -110,7 +107,6 @@ export class UsersController {
   })
   @ApiForbiddenResponse({ description: 'oldPassword is wrong' })
   @ApiNotFoundResponse({ description: 'User not found' })
-  @UsePipes(ValidationPipe)
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() { oldPassword, newPassword }: UpdatePasswordDto,

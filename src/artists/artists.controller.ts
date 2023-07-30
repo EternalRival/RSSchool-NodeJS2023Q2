@@ -5,8 +5,6 @@ import {
   Body,
   Param,
   Delete,
-  UsePipes,
-  ValidationPipe,
   Put,
   ParseUUIDPipe,
   HttpCode,
@@ -48,7 +46,6 @@ export class ArtistsController {
   @ApiBadRequestResponse({
     description: 'Bad request. body does not contain required fields',
   })
-  @UsePipes(ValidationPipe)
   create(@Body() createArtistDto: CreateArtistDto) {
     const entity = this.artistsService.create(createArtistDto);
     return entity;
@@ -101,7 +98,6 @@ export class ArtistsController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Artist not found' })
-  @UsePipes(ValidationPipe)
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateArtistDto: UpdateArtistDto,

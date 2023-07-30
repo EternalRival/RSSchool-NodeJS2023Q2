@@ -6,8 +6,6 @@ import {
   Param,
   Delete,
   Put,
-  UsePipes,
-  ValidationPipe,
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
@@ -48,7 +46,6 @@ export class TracksController {
   @ApiBadRequestResponse({
     description: 'Bad request. body does not contain required fields',
   })
-  @UsePipes(ValidationPipe)
   create(@Body() createTrackDto: CreateTrackDto) {
     const entity = this.tracksService.create(createTrackDto);
 
@@ -102,7 +99,6 @@ export class TracksController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Track not found' })
-  @UsePipes(ValidationPipe)
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateTrackDto: UpdateTrackDto,

@@ -5,8 +5,6 @@ import {
   Body,
   Param,
   Delete,
-  UsePipes,
-  ValidationPipe,
   ParseUUIDPipe,
   Put,
   HttpCode,
@@ -48,7 +46,6 @@ export class AlbumsController {
   @ApiBadRequestResponse({
     description: 'Bad request. body does not contain required fields',
   })
-  @UsePipes(ValidationPipe)
   create(@Body() createAlbumDto: CreateAlbumDto) {
     const entity = this.albumsService.create(createAlbumDto);
     return entity;
@@ -101,7 +98,6 @@ export class AlbumsController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Album not found' })
-  @UsePipes(ValidationPipe)
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateAlbumDto: UpdateAlbumDto,
