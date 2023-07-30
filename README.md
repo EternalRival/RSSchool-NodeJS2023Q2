@@ -17,6 +17,13 @@ git clone {repository URL}
 npm install
 ```
 
+## Setting server variables
+
+```sh
+# create .env file with PORT variable or copy example
+cp .env.example .env
+```
+
 ## Running application
 
 ```sh
@@ -26,6 +33,7 @@ npm start
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing <http://localhost:4000/doc/>.
 For more information about OpenAPI/Swagger please visit <https://swagger.io/>.
+>An `application/json` format should be used for request and response body.
 
 ## Testing
 
