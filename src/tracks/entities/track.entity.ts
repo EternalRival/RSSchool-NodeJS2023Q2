@@ -21,6 +21,6 @@ export class Track implements TrackInterface {
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
   albumId: string | null;
 
-  @ApiProperty({ format: 'uuid', description: 'In seconds', example: 262 })
+  @ApiProperty({ description: 'In seconds', example: 262 })
   duration: number;
 }

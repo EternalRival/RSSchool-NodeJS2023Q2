@@ -17,7 +17,17 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { IdNotFoundError } from '../shared/id-not-found.error';
 import { FavoritesService } from '../favorites/favorites.service';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Album } from './entities/album.entity';
 
 @ApiTags('Albums')
@@ -29,20 +39,46 @@ export class AlbumsController {
   ) {}
 
   @Post()
+  @ApiOperation({
+    summary: 'Add new album',
+    description: 'Add new album information',
+  })
+  @ApiBody({ type: CreateAlbumDto })
+  @ApiCreatedResponse({ description: 'Album is created', type: Album })
+  @ApiBadRequestResponse({
+    description: 'Bad request. body does not contain required fields',
+  })
   @UsePipes(ValidationPipe)
-  create(@Body() createArtistDto: CreateAlbumDto) {
-    const entity = this.albumsService.create(createArtistDto);
+  create(@Body() createAlbumDto: CreateAlbumDto) {
+    const entity = this.albumsService.create(createAlbumDto);
     return entity;
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all users', description: 'Gets all users' }) // TODO
-  @ApiOkResponse({ description: 'Successful  operation', type: Album })
+  @ApiOperation({
+    summary: 'Get album list',
+    description: 'Gets all library album list',
+  })
+  @ApiOkResponse({
+    description: 'Successful operation',
+    type: Album,
+    isArray: true,
+  })
   findAll() {
     return this.albumsService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({
+    summary: 'Get single album by id',
+    description: 'Get single album by id',
+  })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiOkResponse({ description: 'Successful operation', type: Album })
+  @ApiBadRequestResponse({
+    description: 'Bad request. id is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({ description: 'Album was not found' })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     const entity = this.albumsService.findOne(id);
 
@@ -54,10 +90,21 @@ export class AlbumsController {
   }
 
   @Put(':id')
+  @ApiOperation({
+    summary: 'Update album information',
+    description: 'Update library album information by UUID',
+  })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiBody({ type: UpdateAlbumDto })
+  @ApiOkResponse({ description: 'The album has been updated', type: Album })
+  @ApiBadRequestResponse({
+    description: 'Bad request. id is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({ description: 'Album not found' })
   @UsePipes(ValidationPipe)
   update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateArtistDto: UpdateAlbumDto,
+    @Body() updateAlbumDto: UpdateAlbumDto,
   ) {
     const entity = this.albumsService.findOne(id);
 
@@ -65,12 +112,22 @@ export class AlbumsController {
       throw new IdNotFoundError(id);
     }
 
-    const updated = this.albumsService.update(id, updateArtistDto);
+    const updated = this.albumsService.update(id, updateAlbumDto);
 
     return updated;
   }
 
   @Delete(':id')
+  @ApiOperation({
+    summary: 'Delete album',
+    description: 'Deletes album from library',
+  })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiNoContentResponse({ description: 'Deleted successfully' })
+  @ApiBadRequestResponse({
+    description: 'Bad request. id is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({ description: 'Album was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     const entity = this.albumsService.findOne(id);

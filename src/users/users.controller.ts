@@ -72,7 +72,7 @@ export class UsersController {
   @ApiParam({ name: 'id', format: 'uuid' })
   @ApiOkResponse({ description: 'Successful operation', type: User })
   @ApiBadRequestResponse({
-    description: 'Bad request. body does not contain required fields',
+    description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'User not found' })
   findOne(@Param('id', ParseUUIDPipe) id: string) {

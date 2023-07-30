@@ -17,7 +17,17 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { IdNotFoundError } from '../shared/id-not-found.error';
 import { FavoritesService } from '../favorites/favorites.service';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Artist } from './entities/artist.entity';
 
 @ApiTags('Artists')
@@ -29,6 +39,15 @@ export class ArtistsController {
   ) {}
 
   @Post()
+  @ApiOperation({
+    summary: 'Add new artist',
+    description: 'Add new artist information',
+  })
+  @ApiBody({ type: CreateArtistDto })
+  @ApiCreatedResponse({ description: 'Artist is created', type: Artist })
+  @ApiBadRequestResponse({
+    description: 'Bad request. body does not contain required fields',
+  })
   @UsePipes(ValidationPipe)
   create(@Body() createArtistDto: CreateArtistDto) {
     const entity = this.artistsService.create(createArtistDto);
@@ -36,7 +55,10 @@ export class ArtistsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all users', description: 'Gets all users' })
+  @ApiOperation({
+    summary: 'Get artist list',
+    description: 'Gets all library artist list',
+  })
   @ApiOkResponse({
     description: 'Successful operation',
     type: Artist,
@@ -47,6 +69,16 @@ export class ArtistsController {
   }
 
   @Get(':id')
+  @ApiOperation({
+    summary: 'Get single artist by id',
+    description: 'Get single artist by id',
+  })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiOkResponse({ description: 'Successful operation', type: Artist })
+  @ApiBadRequestResponse({
+    description: 'Bad request. id is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({ description: 'Artist was not found' })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     const entity = this.artistsService.findOne(id);
 
@@ -58,6 +90,17 @@ export class ArtistsController {
   }
 
   @Put(':id')
+  @ApiOperation({
+    summary: 'Update artist information',
+    description: 'Update library artist information by UUID',
+  })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiBody({ type: UpdateArtistDto })
+  @ApiOkResponse({ description: 'The artist has been updated', type: Artist })
+  @ApiBadRequestResponse({
+    description: 'Bad request. id is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({ description: 'Artist not found' })
   @UsePipes(ValidationPipe)
   update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -75,6 +118,16 @@ export class ArtistsController {
   }
 
   @Delete(':id')
+  @ApiOperation({
+    summary: 'Delete artist',
+    description: 'Deletes artist from library',
+  })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiNoContentResponse({ description: 'Deleted successfully' })
+  @ApiBadRequestResponse({
+    description: 'Bad request. id is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({ description: 'Artist was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     const entity = this.artistsService.findOne(id);
