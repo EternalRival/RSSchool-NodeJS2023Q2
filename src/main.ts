@@ -20,7 +20,7 @@ async function bootstrap(): Promise<void> {
   );
   SwaggerModule.setup('/doc', app, swaggerDocument);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
   await app.listen(configService.get('PORT', 4000));
 }
