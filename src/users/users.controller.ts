@@ -44,8 +44,8 @@ export class UsersController {
   @ApiBadRequestResponse({
     description: 'Bad request. body does not contain required fields',
   })
-  private create(@Body() createUserDto: CreateUserDto): User {
-    const entity: User = this.usersService.create(createUserDto);
+  private async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+    const entity: User = await this.usersService.create(createUserDto);
 
     return new User(entity);
   }
@@ -57,8 +57,8 @@ export class UsersController {
     type: User,
     isArray: true,
   })
-  private findAll(): User[] {
-    return this.usersService.findAll().map((user) => new User(user));
+  private async findAll(): Promise<User[]> {
+    return (await this.usersService.findAll()).map((user) => new User(user));
   }
 
   @Get(':id')
@@ -72,8 +72,8 @@ export class UsersController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'User not found' })
-  private findOne(@Param('id', ParseUUIDPipe) id: string): User {
-    const entity: User | null = this.usersService.findOne(id);
+  private async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
+    const entity: User | null = await this.usersService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
@@ -107,11 +107,11 @@ export class UsersController {
   })
   @ApiForbiddenResponse({ description: 'oldPassword is wrong' })
   @ApiNotFoundResponse({ description: 'User not found' })
-  private update(
+  private async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() { oldPassword, newPassword }: UpdatePasswordDto,
-  ): User {
-    const entity: User | null = this.usersService.findOne(id);
+  ): Promise<User> {
+    const entity: User | null = await this.usersService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
@@ -121,7 +121,7 @@ export class UsersController {
       throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
     }
 
-    const updated: User | null = this.usersService.update(id, {
+    const updated: User | null = await this.usersService.update(id, {
       password: newPassword,
     });
 
@@ -141,8 +141,8 @@ export class UsersController {
   })
   @ApiNotFoundResponse({ description: 'User not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  private remove(@Param('id', ParseUUIDPipe) id: string): void {
-    const entity: User = this.usersService.findOne(id);
+  private async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    const entity: User = await this.usersService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);

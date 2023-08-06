@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { DB } from '../fake-db/db.service';
 import { v4 } from 'uuid';
 import { User } from './entities/user.entity';
-import { Repository } from '../fake-db/repository.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  private usersRepository: Repository<User> = DB.usersRepository;
+  constructor(
+    @InjectRepository(User) private usersRepository: Repository<User>,
+  ) {}
 
-  public create(createUserDto: CreateUserDto): User {
+  public create(createUserDto: CreateUserDto): Promise<User> {
     const timestamp = Date.now();
     const user = {
       ...createUserDto,
@@ -22,16 +24,19 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  public findAll(): User[] {
+  public findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }
 
-  public findOne(id: string): User | null {
+  public findOne(id: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
 
-  public update(id: string, updateData: Partial<User>): User | null {
-    const entity: User | null = this.usersRepository.findOneBy({ id });
+  public async update(
+    id: string,
+    updateData: Partial<User>,
+  ): Promise<User | null> {
+    const entity: User | null = await this.usersRepository.findOneBy({ id });
 
     if (!entity) {
       return null;
@@ -47,7 +52,7 @@ export class UsersService {
     });
   }
 
-  public remove(user: User): User {
+  public remove(user: User): Promise<User> {
     return this.usersRepository.remove(user);
   }
 }
