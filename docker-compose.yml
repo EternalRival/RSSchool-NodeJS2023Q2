@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  db:
+    image: eternalrival/home-library-service-db
+    build: database
+    ports:
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+  api:
+    image: eternalrival/home-library-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '${PORT}:${PORT}'
+    depends_on:
+      - db
+    volumes:
+      - ./src:/usr/app/src
+    environment:
+      POSTGRES_HOST: db
