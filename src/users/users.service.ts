@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { v4 } from 'uuid';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,16 +11,7 @@ export class UsersService {
   ) {}
 
   public create(createUserDto: CreateUserDto): Promise<User> {
-    const timestamp = Date.now();
-    const user = {
-      ...createUserDto,
-      id: v4(),
-      version: 1,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    };
-
-    return this.usersRepository.save(user);
+    return this.usersRepository.save(createUserDto);
   }
 
   public findAll(): Promise<User[]> {
@@ -42,14 +32,7 @@ export class UsersService {
       return null;
     }
 
-    const version = entity.version + 1;
-    const updatedAt = Date.now();
-    return this.usersRepository.save({
-      ...entity,
-      ...updateData,
-      version,
-      updatedAt,
-    });
+    return this.usersRepository.save({ ...entity, ...updateData });
   }
 
   public remove(user: User): Promise<User> {

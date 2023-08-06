@@ -1,6 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Exclude, Type } from 'class-transformer';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  VersionColumn,
+} from 'typeorm';
 
 interface UserInterface {
   id: string; // uuid v4
@@ -11,30 +18,32 @@ interface UserInterface {
   updatedAt: number; // timestamp of last update
 }
 
-@Entity('users')
+@Entity()
 export class User implements UserInterface {
   @ApiProperty({ format: 'uuid' })
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('uuid')
   public id: string;
 
   @ApiProperty({ example: 'TestUser' })
   @Column()
   public login: string;
 
-  @Exclude()
   @Column()
+  @Exclude()
   public password: string;
 
   @ApiPropertyOptional({ example: 1 })
-  @Column()
+  @VersionColumn()
   public version: number;
 
   @ApiPropertyOptional({ example: 1655000000 })
-  @Column()
+  @CreateDateColumn()
+  @Type(() => Number)
   public createdAt: number;
 
   @ApiPropertyOptional({ example: 1655000000 })
-  @Column()
+  @UpdateDateColumn()
+  @Type(() => Number)
   public updatedAt: number;
 
   constructor(props: User) {
