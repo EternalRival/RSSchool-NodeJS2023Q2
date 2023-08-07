@@ -12,7 +12,7 @@ import {
 import { ArtistsService } from './artists.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { IdNotFoundError } from '../shared/id-not-found.error';
+import { IdNotFoundError } from '../shared/errors/id-not-found.error';
 import { FavoritesService } from '../favorites/favorites.service';
 import {
   ApiBadRequestResponse,

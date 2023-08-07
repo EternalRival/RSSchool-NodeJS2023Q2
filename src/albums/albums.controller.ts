@@ -12,7 +12,7 @@ import {
 import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { IdNotFoundError } from '../shared/id-not-found.error';
+import { IdNotFoundError } from '../shared/errors/id-not-found.error';
 import { FavoritesService } from '../favorites/favorites.service';
 import {
   ApiBadRequestResponse,

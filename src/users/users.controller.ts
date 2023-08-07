@@ -15,7 +15,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
-import { IdNotFoundError } from '../shared/id-not-found.error';
+import { IdNotFoundError } from '../shared/errors/id-not-found.error';
 import { User } from './entities/user.entity';
 import {
   ApiBadRequestResponse,

@@ -12,7 +12,7 @@ import {
 import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { IdNotFoundError } from '../shared/id-not-found.error';
+import { IdNotFoundError } from '../shared/errors/id-not-found.error';
 import { FavoritesService } from '../favorites/favorites.service';
 import {
   ApiBadRequestResponse,
