@@ -1,30 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
-import { DB } from '../fake-db/db.service';
-import { v4 } from 'uuid';
+
 import { Track } from './entities/track.entity';
-import { Repository } from '../fake-db/repository.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TracksService {
-  private tracksRepository: Repository<Track> = DB.tracksRepository;
+  constructor(
+    @InjectRepository(Track) private tracksRepository: Repository<Track>,
+  ) {}
 
-  public create(createTrackDto: CreateTrackDto): Track {
-    const track = { ...createTrackDto, id: v4() };
-
-    return this.tracksRepository.save(track);
+  public create(createTrackDto: CreateTrackDto): Promise<Track> {
+    return this.tracksRepository.save(createTrackDto);
   }
 
-  public findAll(): Track[] {
+  public findAll(): Promise<Track[]> {
     return this.tracksRepository.find();
   }
 
-  public findOne(id: string): Track | null {
+  public findOne(id: string): Promise<Track | null> {
     return this.tracksRepository.findOneBy({ id });
   }
 
-  public update(id: string, updateData: Partial<Track>): Track | null {
-    const entity = this.tracksRepository.findOneBy({ id });
+  public async update(
+    id: string,
+    updateData: Partial<Track>,
+  ): Promise<Track | null> {
+    const entity: Track | null = await this.tracksRepository.findOneBy({ id });
 
     if (!entity) {
       return null;
@@ -33,7 +36,7 @@ export class TracksService {
     return this.tracksRepository.save({ ...entity, ...updateData });
   }
 
-  public remove(track: Track): Track {
+  public remove(track: Track): Promise<Track> {
     return this.tracksRepository.remove(track);
   }
 }

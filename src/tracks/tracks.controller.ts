@@ -46,8 +46,8 @@ export class TracksController {
   @ApiBadRequestResponse({
     description: 'Bad request. body does not contain required fields',
   })
-  private create(@Body() createTrackDto: CreateTrackDto): Track {
-    const entity: Track = this.tracksService.create(createTrackDto);
+  private async create(@Body() createTrackDto: CreateTrackDto): Promise<Track> {
+    const entity: Track = await this.tracksService.create(createTrackDto);
 
     return entity;
   }
@@ -62,7 +62,7 @@ export class TracksController {
     type: Track,
     isArray: true,
   })
-  private findAll(): Track[] {
+  private findAll(): Promise<Track[]> {
     return this.tracksService.findAll();
   }
 
@@ -77,8 +77,10 @@ export class TracksController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Track was not found' })
-  private findOne(@Param('id', ParseUUIDV4Pipe) id: string): Track {
-    const entity: Track | null = this.tracksService.findOne(id);
+  private async findOne(
+    @Param('id', ParseUUIDV4Pipe) id: string,
+  ): Promise<Track> {
+    const entity: Track | null = await this.tracksService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
@@ -99,17 +101,20 @@ export class TracksController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Track not found' })
-  private update(
+  private async update(
     @Param('id', ParseUUIDV4Pipe) id: string,
     @Body() updateTrackDto: UpdateTrackDto,
-  ): Track {
-    const entity: Track | null = this.tracksService.findOne(id);
+  ): Promise<Track> {
+    const entity: Track | null = await this.tracksService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
     }
 
-    const updated: Track | null = this.tracksService.update(id, updateTrackDto);
+    const updated: Track | null = await this.tracksService.update(
+      id,
+      updateTrackDto,
+    );
 
     if (!updated) {
       throw new IdNotFoundError(id);
@@ -130,8 +135,10 @@ export class TracksController {
   })
   @ApiNotFoundResponse({ description: 'Track was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  private remove(@Param('id', ParseUUIDV4Pipe) id: string): void {
-    const entity: Track | null = this.tracksService.findOne(id);
+  private async remove(
+    @Param('id', ParseUUIDV4Pipe) id: string,
+  ): Promise<void> {
+    const entity: Track | null = await this.tracksService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
