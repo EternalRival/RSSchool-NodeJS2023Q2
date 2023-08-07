@@ -46,8 +46,8 @@ export class AlbumsController {
   @ApiBadRequestResponse({
     description: 'Bad request. body does not contain required fields',
   })
-  private create(@Body() createAlbumDto: CreateAlbumDto): Album {
-    const entity: Album = this.albumsService.create(createAlbumDto);
+  private async create(@Body() createAlbumDto: CreateAlbumDto): Promise<Album> {
+    const entity: Album = await this.albumsService.create(createAlbumDto);
     return entity;
   }
 
@@ -61,7 +61,7 @@ export class AlbumsController {
     type: Album,
     isArray: true,
   })
-  private findAll(): Album[] {
+  private findAll(): Promise<Album[]> {
     return this.albumsService.findAll();
   }
 
@@ -76,8 +76,10 @@ export class AlbumsController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Album was not found' })
-  private findOne(@Param('id', ParseUUIDV4Pipe) id: string): Album {
-    const entity: Album | null = this.albumsService.findOne(id);
+  private async findOne(
+    @Param('id', ParseUUIDV4Pipe) id: string,
+  ): Promise<Album> {
+    const entity: Album | null = await this.albumsService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
@@ -98,17 +100,20 @@ export class AlbumsController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Album not found' })
-  private update(
+  private async update(
     @Param('id', ParseUUIDV4Pipe) id: string,
     @Body() updateAlbumDto: UpdateAlbumDto,
-  ): Album {
-    const entity: Album | null = this.albumsService.findOne(id);
+  ): Promise<Album> {
+    const entity: Album | null = await this.albumsService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
     }
 
-    const updated: Album | null = this.albumsService.update(id, updateAlbumDto);
+    const updated: Album | null = await this.albumsService.update(
+      id,
+      updateAlbumDto,
+    );
 
     if (!updated) {
       throw new IdNotFoundError(id);
@@ -129,8 +134,10 @@ export class AlbumsController {
   })
   @ApiNotFoundResponse({ description: 'Album was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  private remove(@Param('id', ParseUUIDV4Pipe) id: string): void {
-    const entity: Album | null = this.albumsService.findOne(id);
+  private async remove(
+    @Param('id', ParseUUIDV4Pipe) id: string,
+  ): Promise<void> {
+    const entity: Album | null = await this.albumsService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);

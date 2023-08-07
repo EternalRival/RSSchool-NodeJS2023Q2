@@ -16,12 +16,15 @@ interface FavoritesResponse {
 }
 
 export class Favorites implements FavoritesResponse {
+  // TODO relations
   @ApiPropertyOptional({ type: Artist, isArray: true })
   public artists: Artist[];
 
+  // TODO relations
   @ApiPropertyOptional({ type: Album, isArray: true })
   public albums: Album[];
 
+  // TODO relations
   @ApiPropertyOptional({ type: Track, isArray: true })
   public tracks: Track[];
 }

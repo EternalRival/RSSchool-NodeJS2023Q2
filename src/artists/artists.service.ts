@@ -1,34 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
-import { v4 } from 'uuid';
-import { DB } from '../fake-db/db.service';
 import { Artist } from './entities/artist.entity';
-import { Repository } from '../fake-db/repository.service';
 import { Track } from '../tracks/entities/track.entity';
 import { Album } from '../albums/entities/album.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ArtistsService {
-  private artistsRepository: Repository<Artist> = DB.artistsRepository;
-  private albumsRepository: Repository<Album> = DB.albumsRepository;
-  private tracksRepository: Repository<Track> = DB.tracksRepository;
+  constructor(
+    @InjectRepository(Artist) private artistsRepository: Repository<Artist>,
+    @InjectRepository(Album) private albumsRepository: Repository<Album>,
+    @InjectRepository(Track) private tracksRepository: Repository<Track>,
+  ) {}
 
-  public create(createArtistDto: CreateArtistDto): Artist {
-    const artist: Artist = { ...createArtistDto, id: v4() };
-
-    return this.artistsRepository.save(artist);
+  public create(createArtistDto: CreateArtistDto): Promise<Artist> {
+    return this.artistsRepository.save(createArtistDto);
   }
 
-  public findAll(): Artist[] {
+  public findAll(): Promise<Artist[]> {
     return this.artistsRepository.find();
   }
 
-  public findOne(id: string): Artist | null {
+  public findOne(id: string): Promise<Artist | null> {
     return this.artistsRepository.findOneBy({ id });
   }
 
-  public update(id: string, updateData: Partial<Artist>): Artist | null {
-    const entity: Artist | null = this.artistsRepository.findOneBy({ id });
+  public async update(
+    id: string,
+    updateData: Partial<Artist>,
+  ): Promise<Artist | null> {
+    const entity: Artist | null = await this.artistsRepository.findOneBy({
+      id,
+    });
 
     if (!entity) {
       return null;
@@ -37,15 +41,19 @@ export class ArtistsService {
     return this.artistsRepository.save({ ...entity, ...updateData });
   }
 
-  public remove(artist: Artist): Artist {
-    const deleted: Artist = this.artistsRepository.remove(artist);
+  public async remove(artist: Artist): Promise<Artist> {
+    const deleted: Artist = await this.artistsRepository.remove(artist);
 
-    const tracks: Track[] = this.tracksRepository.find({ artistId: artist.id });
+    const tracks: Track[] = await this.tracksRepository.find({
+      where: { artistId: artist.id },
+    });
     tracks.forEach((track) => {
       track.artistId = null;
     });
 
-    const albums: Album[] = this.albumsRepository.find({ artistId: artist.id });
+    const albums: Album[] = await this.albumsRepository.find({
+      where: { artistId: artist.id },
+    });
     albums.forEach((album) => {
       album.artistId = null;
     });

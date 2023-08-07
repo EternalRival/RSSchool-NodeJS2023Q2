@@ -19,12 +19,14 @@ export class Track implements TrackInterface {
   @Column()
   public name: string;
 
+  // TODO relations
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   public artistId: string | null;
 
+  // TODO relations
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   public albumId: string | null;
 
   @ApiProperty({ description: 'In seconds', example: 262 })

@@ -46,8 +46,10 @@ export class ArtistsController {
   @ApiBadRequestResponse({
     description: 'Bad request. body does not contain required fields',
   })
-  private create(@Body() createArtistDto: CreateArtistDto): Artist {
-    const entity: Artist = this.artistsService.create(createArtistDto);
+  private async create(
+    @Body() createArtistDto: CreateArtistDto,
+  ): Promise<Artist> {
+    const entity: Artist = await this.artistsService.create(createArtistDto);
     return entity;
   }
 
@@ -61,7 +63,7 @@ export class ArtistsController {
     type: Artist,
     isArray: true,
   })
-  private findAll(): Artist[] {
+  private findAll(): Promise<Artist[]> {
     return this.artistsService.findAll();
   }
 
@@ -76,8 +78,10 @@ export class ArtistsController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Artist was not found' })
-  private findOne(@Param('id', ParseUUIDV4Pipe) id: string): Artist {
-    const entity: Artist | null = this.artistsService.findOne(id);
+  private async findOne(
+    @Param('id', ParseUUIDV4Pipe) id: string,
+  ): Promise<Artist> {
+    const entity: Artist | null = await this.artistsService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
@@ -98,17 +102,17 @@ export class ArtistsController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Artist not found' })
-  private update(
+  private async update(
     @Param('id', ParseUUIDV4Pipe) id: string,
     @Body() updateArtistDto: UpdateArtistDto,
-  ): Artist {
-    const entity: Artist | null = this.artistsService.findOne(id);
+  ): Promise<Artist> {
+    const entity: Artist | null = await this.artistsService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
     }
 
-    const updated: Artist | null = this.artistsService.update(
+    const updated: Artist | null = await this.artistsService.update(
       id,
       updateArtistDto,
     );
@@ -132,8 +136,10 @@ export class ArtistsController {
   })
   @ApiNotFoundResponse({ description: 'Artist was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  private remove(@Param('id', ParseUUIDV4Pipe) id: string): void {
-    const entity: Artist | null = this.artistsService.findOne(id);
+  private async remove(
+    @Param('id', ParseUUIDV4Pipe) id: string,
+  ): Promise<void> {
+    const entity: Artist | null = await this.artistsService.findOne(id);
 
     if (!entity) {
       throw new IdNotFoundError(id);
