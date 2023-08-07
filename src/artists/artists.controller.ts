@@ -6,7 +6,6 @@ import {
   Param,
   Delete,
   Put,
-  ParseUUIDPipe,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
@@ -27,6 +26,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Artist } from './entities/artist.entity';
+import { ParseUUIDV4Pipe } from '../shared/pipes/parse-uuid-v4.pipe';
 
 @ApiTags('Artists')
 @Controller('artist')
@@ -76,7 +76,7 @@ export class ArtistsController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Artist was not found' })
-  private findOne(@Param('id', ParseUUIDPipe) id: string): Artist {
+  private findOne(@Param('id', ParseUUIDV4Pipe) id: string): Artist {
     const entity: Artist | null = this.artistsService.findOne(id);
 
     if (!entity) {
@@ -99,7 +99,7 @@ export class ArtistsController {
   })
   @ApiNotFoundResponse({ description: 'Artist not found' })
   private update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseUUIDV4Pipe) id: string,
     @Body() updateArtistDto: UpdateArtistDto,
   ): Artist {
     const entity: Artist | null = this.artistsService.findOne(id);
@@ -132,7 +132,7 @@ export class ArtistsController {
   })
   @ApiNotFoundResponse({ description: 'Artist was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  private remove(@Param('id', ParseUUIDPipe) id: string): void {
+  private remove(@Param('id', ParseUUIDV4Pipe) id: string): void {
     const entity: Artist | null = this.artistsService.findOne(id);
 
     if (!entity) {

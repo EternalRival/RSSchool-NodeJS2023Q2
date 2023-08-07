@@ -5,7 +5,6 @@ import {
   Body,
   Param,
   Delete,
-  ParseUUIDPipe,
   Put,
   HttpCode,
   HttpStatus,
@@ -27,6 +26,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Album } from './entities/album.entity';
+import { ParseUUIDV4Pipe } from '../shared/pipes/parse-uuid-v4.pipe';
 
 @ApiTags('Albums')
 @Controller('album')
@@ -76,7 +76,7 @@ export class AlbumsController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Album was not found' })
-  private findOne(@Param('id', ParseUUIDPipe) id: string): Album {
+  private findOne(@Param('id', ParseUUIDV4Pipe) id: string): Album {
     const entity: Album | null = this.albumsService.findOne(id);
 
     if (!entity) {
@@ -99,7 +99,7 @@ export class AlbumsController {
   })
   @ApiNotFoundResponse({ description: 'Album not found' })
   private update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseUUIDV4Pipe) id: string,
     @Body() updateAlbumDto: UpdateAlbumDto,
   ): Album {
     const entity: Album | null = this.albumsService.findOne(id);
@@ -129,7 +129,7 @@ export class AlbumsController {
   })
   @ApiNotFoundResponse({ description: 'Album was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  private remove(@Param('id', ParseUUIDPipe) id: string): void {
+  private remove(@Param('id', ParseUUIDV4Pipe) id: string): void {
     const entity: Album | null = this.albumsService.findOne(id);
 
     if (!entity) {

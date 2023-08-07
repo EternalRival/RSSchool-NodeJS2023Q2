@@ -4,7 +4,6 @@ import {
   Post,
   Delete,
   Param,
-  ParseUUIDPipe,
   HttpException,
   HttpCode,
   HttpStatus,
@@ -23,6 +22,7 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Favorites } from './entities/favorites.entity';
+import { ParseUUIDV4Pipe } from '../shared/pipes/parse-uuid-v4.pipe';
 
 @ApiTags('Favorites')
 @Controller('favs')
@@ -67,7 +67,7 @@ export class FavoritesController {
   @ApiUnprocessableEntityResponse({
     description: "Track with id doesn't exist",
   })
-  private createFavoriteTrack(@Param('id', ParseUUIDPipe) id: string): {
+  private createFavoriteTrack(@Param('id', ParseUUIDV4Pipe) id: string): {
     message: string;
   } {
     const entity: string | null = this.favoritesService.create('tracks', id);
@@ -94,7 +94,7 @@ export class FavoritesController {
   })
   @ApiNotFoundResponse({ description: 'Track was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  private removeFavoriteTrack(@Param('id', ParseUUIDPipe) id: string): void {
+  private removeFavoriteTrack(@Param('id', ParseUUIDV4Pipe) id: string): void {
     const entity = this.favoritesService.remove('tracks', id);
 
     if (!entity) {
@@ -129,7 +129,7 @@ export class FavoritesController {
   @ApiUnprocessableEntityResponse({
     description: "Album with id doesn't exist",
   })
-  private createFavoriteAlbum(@Param('id', ParseUUIDPipe) id: string): {
+  private createFavoriteAlbum(@Param('id', ParseUUIDV4Pipe) id: string): {
     message: string;
   } {
     const entity: string | null = this.favoritesService.create('albums', id);
@@ -156,7 +156,7 @@ export class FavoritesController {
   })
   @ApiNotFoundResponse({ description: 'Album was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  private removeFavoriteAlbum(@Param('id', ParseUUIDPipe) id: string): void {
+  private removeFavoriteAlbum(@Param('id', ParseUUIDV4Pipe) id: string): void {
     const entity: string | null = this.favoritesService.remove('albums', id);
 
     if (!entity) {
@@ -191,7 +191,7 @@ export class FavoritesController {
   @ApiUnprocessableEntityResponse({
     description: "Artist with id doesn't exist",
   })
-  private createFavoriteArtist(@Param('id', ParseUUIDPipe) id: string): {
+  private createFavoriteArtist(@Param('id', ParseUUIDV4Pipe) id: string): {
     message: string;
   } {
     const entity: string | null = this.favoritesService.create('artists', id);
@@ -218,7 +218,7 @@ export class FavoritesController {
   })
   @ApiNotFoundResponse({ description: 'Artist was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  private removeFavoriteArtist(@Param('id', ParseUUIDPipe) id: string): void {
+  private removeFavoriteArtist(@Param('id', ParseUUIDV4Pipe) id: string): void {
     const entity: string | null = this.favoritesService.remove('artists', id);
 
     if (!entity) {

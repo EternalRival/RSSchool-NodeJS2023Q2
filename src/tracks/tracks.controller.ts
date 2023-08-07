@@ -6,7 +6,6 @@ import {
   Param,
   Delete,
   Put,
-  ParseUUIDPipe,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
@@ -27,6 +26,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Track } from './entities/track.entity';
+import { ParseUUIDV4Pipe } from '../shared/pipes/parse-uuid-v4.pipe';
 
 @ApiTags('Tracks')
 @Controller('track')
@@ -77,7 +77,7 @@ export class TracksController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'Track was not found' })
-  private findOne(@Param('id', ParseUUIDPipe) id: string): Track {
+  private findOne(@Param('id', ParseUUIDV4Pipe) id: string): Track {
     const entity: Track | null = this.tracksService.findOne(id);
 
     if (!entity) {
@@ -100,7 +100,7 @@ export class TracksController {
   })
   @ApiNotFoundResponse({ description: 'Track not found' })
   private update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseUUIDV4Pipe) id: string,
     @Body() updateTrackDto: UpdateTrackDto,
   ): Track {
     const entity: Track | null = this.tracksService.findOne(id);
@@ -130,7 +130,7 @@ export class TracksController {
   })
   @ApiNotFoundResponse({ description: 'Track was not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  private remove(@Param('id', ParseUUIDPipe) id: string): void {
+  private remove(@Param('id', ParseUUIDV4Pipe) id: string): void {
     const entity: Track | null = this.tracksService.findOne(id);
 
     if (!entity) {

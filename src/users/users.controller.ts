@@ -9,7 +9,6 @@ import {
   HttpException,
   HttpStatus,
   HttpCode,
-  ParseUUIDPipe,
   UseInterceptors,
   ClassSerializerInterceptor,
 } from '@nestjs/common';
@@ -30,6 +29,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { ParseUUIDV4Pipe } from '../shared/pipes/parse-uuid-v4.pipe';
 
 @ApiTags('Users')
 @Controller('user')
@@ -73,7 +73,9 @@ export class UsersController {
     description: 'Bad request. id is invalid (not uuid)',
   })
   @ApiNotFoundResponse({ description: 'User not found' })
-  private async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
+  private async findOne(
+    @Param('id', ParseUUIDV4Pipe) id: string,
+  ): Promise<User> {
     const entity: User | null = await this.usersService.findOne(id);
 
     if (!entity) {
@@ -109,7 +111,7 @@ export class UsersController {
   @ApiForbiddenResponse({ description: 'oldPassword is wrong' })
   @ApiNotFoundResponse({ description: 'User not found' })
   private async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseUUIDV4Pipe) id: string,
     @Body() { oldPassword, newPassword }: UpdatePasswordDto,
   ): Promise<User> {
     const entity: User | null = await this.usersService.findOne(id);
@@ -142,7 +144,9 @@ export class UsersController {
   })
   @ApiNotFoundResponse({ description: 'User not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  private async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  private async remove(
+    @Param('id', ParseUUIDV4Pipe) id: string,
+  ): Promise<void> {
     const entity: User = await this.usersService.findOne(id);
 
     if (!entity) {
