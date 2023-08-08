@@ -6,12 +6,12 @@ export class CreateTrackDto {
   @IsString()
   public name: string;
 
-  @ApiPropertyOptional({ format: 'uuid', nullable: true })
+  @ApiPropertyOptional({ type: 'string', format: 'uuid', nullable: true })
   @IsOptional()
   @IsUUID()
   public albumId: string | null;
 
-  @ApiPropertyOptional({ format: 'uuid', nullable: true })
+  @ApiPropertyOptional({ type: 'string', format: 'uuid', nullable: true })
   @IsOptional()
   @IsUUID()
   public artistId: string | null;

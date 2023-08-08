@@ -24,6 +24,7 @@ import {
 } from '@nestjs/swagger';
 import { ParseUUIDV4Pipe } from '../shared/pipes/parse-uuid-v4.pipe';
 import { isDatabaseError } from '../shared/helpers/is-database-error';
+import { Favorites } from './dto/favorites-response.dto';
 
 @ApiTags('Favorites')
 @Controller('favs')
@@ -38,7 +39,7 @@ export class FavoritesController {
   })
   @ApiOkResponse({
     description: 'Successful operation',
-    type: typeof {} /* todo {artists: Artist[],albums: Album[],tracks: Track[]} */,
+    type: Favorites,
     isArray: true,
   })
   private findAll() {
@@ -84,8 +85,7 @@ export class FavoritesController {
           throw new HttpException(response, StatusCodes.UNPROCESSABLE_ENTITY);
         }
         if (error.detail?.includes('already exists')) {
-          const response = 'UUID already in favorites';
-          throw new HttpException(response, StatusCodes.NOT_MODIFIED);
+          return { message: `the track ${id} was added to favorites` };
         }
         this.logger.error(error.detail);
       }
@@ -158,8 +158,7 @@ export class FavoritesController {
           throw new HttpException(response, StatusCodes.UNPROCESSABLE_ENTITY);
         }
         if (error.detail?.includes('already exists')) {
-          const response = 'UUID already in favorites';
-          throw new HttpException(response, StatusCodes.NOT_MODIFIED);
+          return { message: `the album ${id} was added to favorites` };
         }
         this.logger.error(error.detail);
       }
@@ -232,8 +231,7 @@ export class FavoritesController {
           throw new HttpException(response, StatusCodes.UNPROCESSABLE_ENTITY);
         }
         if (error.detail?.includes('already exists')) {
-          const response = 'UUID already in favorites';
-          throw new HttpException(response, StatusCodes.NOT_MODIFIED);
+          return { message: `the artist ${id} was added to favorites` };
         }
         this.logger.error(error.detail);
       }

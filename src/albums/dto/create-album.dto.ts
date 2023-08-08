@@ -10,7 +10,7 @@ export class CreateAlbumDto {
   @IsInt()
   public year: number;
 
-  @ApiPropertyOptional({ format: 'uuid', nullable: true })
+  @ApiPropertyOptional({ type: 'string', format: 'uuid', nullable: true })
   @IsOptional()
   @IsUUID()
   public artistId: string | null;
