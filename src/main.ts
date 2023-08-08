@@ -12,6 +12,7 @@ async function bootstrap(): Promise<void> {
   const swaggerConfig: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
     .setTitle('Home Library Service')
     .setDescription('Home music library service')
+    .setVersion('1.1.0')
     .build();
 
   const swaggerDocument: OpenAPIObject = SwaggerModule.createDocument(
