@@ -27,16 +27,12 @@ export class Track implements TrackInterface {
   @Column()
   public name: string;
 
-  // TODO relations
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
-  @Column({ type: 'uuid', nullable: true })
   @OneToOne(() => Artist, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'artistId' })
   public artistId: string | null;
 
-  // TODO relations
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
-  @Column({ type: 'uuid', nullable: true })
   @OneToOne(() => Album, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'albumId' })
   public albumId: string | null;
