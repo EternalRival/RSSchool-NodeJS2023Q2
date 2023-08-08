@@ -30,6 +30,7 @@ export class Album implements AlbumInterface {
   public year: number;
 
   @ApiPropertyOptional({ type: 'string', format: 'uuid', nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   @OneToOne(() => Artist, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'artistId' })
   public artistId: string | null;
