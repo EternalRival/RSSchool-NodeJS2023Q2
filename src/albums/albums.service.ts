@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { Album } from './entities/album.entity';
-import { Track } from '../tracks/entities/track.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -9,7 +8,6 @@ import { Repository } from 'typeorm';
 export class AlbumsService {
   constructor(
     @InjectRepository(Album) private albumsRepository: Repository<Album>,
-    @InjectRepository(Track) private tracksRepository: Repository<Track>,
   ) {}
 
   public create(createAlbumDto: CreateAlbumDto): Promise<Album> {
@@ -37,16 +35,7 @@ export class AlbumsService {
     return this.albumsRepository.save({ ...entity, ...updateData });
   }
 
-  public async remove(album: Album): Promise<Album> {
-    const deleted: Album = await this.albumsRepository.remove(album);
-
-    const tracks: Track[] = await this.tracksRepository.find({
-      where: { albumId: album.id },
-    });
-    tracks.forEach((track) => {
-      track.albumId = null;
-    });
-
-    return deleted;
+  public remove(album: Album): Promise<Album> {
+    return this.albumsRepository.remove(album);
   }
 }

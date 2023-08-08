@@ -153,6 +153,6 @@ export class UsersController {
       throw new IdNotFoundError(id);
     }
 
-    this.usersService.remove(entity);
+    await this.usersService.remove(entity);
   }
 }

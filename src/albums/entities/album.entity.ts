@@ -1,5 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  Entity,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
+import { Artist } from '../../artists/entities/artist.entity';
 
 interface AlbumInterface {
   id: string; // uuid v4
@@ -22,8 +29,9 @@ export class Album implements AlbumInterface {
   @Column()
   public year: number;
 
-  // TODO relations
-  @ApiPropertyOptional({ format: 'uuid', nullable: true })
   @Column({ type: 'uuid', nullable: true })
+  @ApiPropertyOptional({ type: 'string', format: 'uuid', nullable: true })
+  @OneToOne(() => Artist, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'artistId' })
   public artistId: string | null;
 }

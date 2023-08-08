@@ -8,10 +8,6 @@ import { TracksModule } from './tracks/tracks.module';
 import { ArtistsModule } from './artists/artists.module';
 import { AlbumsModule } from './albums/albums.module';
 import { FavoritesModule } from './favorites/favorites.module';
-import { User } from './users/entities/user.entity';
-import { Album } from './albums/entities/album.entity';
-import { Artist } from './artists/entities/artist.entity';
-import { Track } from './tracks/entities/track.entity';
 
 @Module({
   imports: [
@@ -25,7 +21,7 @@ import { Track } from './tracks/entities/track.entity';
         host: configService.get('POSTGRES_HOST'),
         port: configService.get('POSTGRES_PORT'),
         database: configService.get('POSTGRES_DB'),
-        entities: [User, Album, Artist, Track],
+        autoLoadEntities: true,
         synchronize: true,
       }),
     }),

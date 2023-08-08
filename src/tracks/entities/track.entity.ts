@@ -1,5 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Artist } from '../../artists/entities/artist.entity';
+import { Album } from '../../albums/entities/album.entity';
 
 interface TrackInterface {
   id: string; // uuid v4
@@ -22,11 +30,15 @@ export class Track implements TrackInterface {
   // TODO relations
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
   @Column({ type: 'uuid', nullable: true })
+  @OneToOne(() => Artist, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'artistId' })
   public artistId: string | null;
 
   // TODO relations
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
   @Column({ type: 'uuid', nullable: true })
+  @OneToOne(() => Album, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'albumId' })
   public albumId: string | null;
 
   @ApiProperty({ description: 'In seconds', example: 262 })

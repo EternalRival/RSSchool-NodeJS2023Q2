@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { Artist } from './entities/artist.entity';
-import { Track } from '../tracks/entities/track.entity';
-import { Album } from '../albums/entities/album.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -10,8 +8,6 @@ import { Repository } from 'typeorm';
 export class ArtistsService {
   constructor(
     @InjectRepository(Artist) private artistsRepository: Repository<Artist>,
-    @InjectRepository(Album) private albumsRepository: Repository<Album>,
-    @InjectRepository(Track) private tracksRepository: Repository<Track>,
   ) {}
 
   public create(createArtistDto: CreateArtistDto): Promise<Artist> {
@@ -41,23 +37,7 @@ export class ArtistsService {
     return this.artistsRepository.save({ ...entity, ...updateData });
   }
 
-  public async remove(artist: Artist): Promise<Artist> {
-    const deleted: Artist = await this.artistsRepository.remove(artist);
-
-    const tracks: Track[] = await this.tracksRepository.find({
-      where: { artistId: artist.id },
-    });
-    tracks.forEach((track) => {
-      track.artistId = null;
-    });
-
-    const albums: Album[] = await this.albumsRepository.find({
-      where: { artistId: artist.id },
-    });
-    albums.forEach((album) => {
-      album.artistId = null;
-    });
-
-    return deleted;
+  public remove(artist: Artist): Promise<Artist> {
+    return this.artistsRepository.remove(artist);
   }
 }
