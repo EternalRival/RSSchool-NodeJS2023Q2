@@ -145,7 +145,6 @@ export class ArtistsController {
       throw new IdNotFoundError(id);
     }
 
-    await this.favoritesService.remove('artists', id);
     await this.artistsService.remove(entity);
   }
 }

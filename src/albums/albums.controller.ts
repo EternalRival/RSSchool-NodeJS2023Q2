@@ -143,7 +143,6 @@ export class AlbumsController {
       throw new IdNotFoundError(id);
     }
 
-    await this.favoritesService.remove('albums', id);
     await this.albumsService.remove(entity);
   }
 }

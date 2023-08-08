@@ -1,58 +1,64 @@
 import { Injectable } from '@nestjs/common';
-import { DB } from '../fake-db/db.service';
-import { Favorites, FavoritesInterface } from './entities/favorites.entity';
-import { Album } from '../albums/entities/album.entity';
-import { Artist } from '../artists/entities/artist.entity';
-import { Track } from '../tracks/entities/track.entity';
-import { Repository } from '../fake-db/repository.service';
-
-type Entity = Album | Artist | Track;
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { FavoriteAlbum, FavoriteArtist, FavoriteTrack } from './entities';
+import { Favorite } from './interfaces/favorite.interface';
 
 @Injectable()
 export class FavoritesService {
-  private albumsRepository: Repository<Album> = DB.albumsRepository;
-  private artistsRepository: Repository<Artist> = DB.artistsRepository;
-  private tracksRepository: Repository<Track> = DB.tracksRepository;
-  private favorites: FavoritesInterface = {
-    artists: [],
-    albums: [],
-    tracks: [],
-  };
+  constructor(
+    @InjectRepository(FavoriteArtist)
+    private favoriteArtistRepository: Repository<FavoriteArtist>,
+    @InjectRepository(FavoriteAlbum)
+    private favoriteAlbumRepository: Repository<FavoriteAlbum>,
+    @InjectRepository(FavoriteTrack)
+    private favoriteTrackRepository: Repository<FavoriteTrack>,
+  ) {}
 
-  public findAll(): Favorites {
-    const response: Favorites = { artists: [], albums: [], tracks: [] };
+  public async findAll() {
+    const promises = [
+      this.favoriteArtistRepository,
+      this.favoriteAlbumRepository,
+      this.favoriteTrackRepository,
+    ].map((repo) => repo.find({ relations: { favorite: true } }));
 
-    Object.entries(this.favorites).forEach(([key, list]) => {
-      const repo = this[`${key}Repository`];
-      response[key] = list.map((id: string) => repo.findOneBy({ id }));
+    const results = await Promise.allSettled<Favorite[]>(promises);
+    const [artists, albums, tracks] = results.map((result) => {
+      return result.status === 'fulfilled'
+        ? result.value.map((v) => v.favorite)
+        : [];
     });
 
-    return response;
+    return { artists, albums, tracks };
   }
 
-  public create(path: keyof Favorites, id: string): string | null {
-    const entity: Entity | null = this[`${path}Repository`].findOneBy({ id });
-
-    if (!entity) {
-      return null;
-    }
-
-    this.favorites[path].push(id);
-
-    return id;
+  public findFavoriteArtist(id: string) {
+    return this.favoriteArtistRepository.findOneBy({ favorite: { id } });
+  }
+  public findFavoriteAlbum(id: string) {
+    return this.favoriteAlbumRepository.findOneBy({ favorite: { id } });
+  }
+  public findFavoriteTrack(id: string) {
+    return this.favoriteTrackRepository.findOneBy({ favorite: { id } });
   }
 
-  public remove(path: keyof Favorites, id: string): string | null {
-    const entity: Entity | null = this[`${path}Repository`].findOneBy({ id });
+  public createFavoriteArtist(id: string) {
+    return this.favoriteArtistRepository.save({ favorite: { id } });
+  }
+  public createFavoriteAlbum(id: string) {
+    return this.favoriteAlbumRepository.save({ favorite: { id } });
+  }
+  public createFavoriteTrack(id: string) {
+    return this.favoriteTrackRepository.save({ favorite: { id } });
+  }
 
-    if (!entity) {
-      return null;
-    }
-
-    this.favorites[path] = this.favorites[path].filter(
-      (item: string) => id !== item,
-    );
-
-    return id;
+  public removeFavoriteArtist(favoriteArtist) {
+    return this.favoriteArtistRepository.remove(favoriteArtist);
+  }
+  public removeFavoriteAlbum(favoriteAlbum) {
+    return this.favoriteAlbumRepository.remove(favoriteAlbum);
+  }
+  public removeFavoriteTrack(favoriteTrack) {
+    return this.favoriteTrackRepository.remove(favoriteTrack);
   }
 }
