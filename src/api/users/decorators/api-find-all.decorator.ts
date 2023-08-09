@@ -1,6 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { ApiDecoratorData } from '../../shared/interfaces/api-decorator.interface';
+import { ApiDecoratorData } from '../../../shared/interfaces/api-decorator.interface';
 
 export function ApiFindAll({ name, type }: ApiDecoratorData) {
   return applyDecorators(

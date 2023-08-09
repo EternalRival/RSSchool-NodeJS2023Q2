@@ -12,8 +12,8 @@ import {
 import { FavoritesService } from './favorites.service';
 import { StatusCodes } from 'http-status-codes';
 import { ApiTags } from '@nestjs/swagger';
-import { ParseUUIDV4Pipe } from '../shared/pipes/parse-uuid-v4.pipe';
-import { isDatabaseError } from '../shared/helpers/is-database-error';
+import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
+import { isDatabaseError } from '../../shared/helpers/is-database-error';
 import { Favorites } from './dto/favorites-response.dto';
 import { ApiFindAll, ApiCreate, ApiDelete } from './decorators';
 

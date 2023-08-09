@@ -12,17 +12,17 @@ import {
 import { ArtistsService } from './artists.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { IdNotFoundError } from '../shared/errors/id-not-found.error';
+import { IdNotFoundError } from '../../shared/errors/id-not-found.error';
 import { ApiTags } from '@nestjs/swagger';
 import { Artist } from './entities/artist.entity';
-import { ParseUUIDV4Pipe } from '../shared/pipes/parse-uuid-v4.pipe';
+import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
 import {
   ApiCreate,
   ApiFindAll,
   ApiFind,
   ApiUpdate,
   ApiDelete,
-} from '../shared/decorators';
+} from '../../shared/decorators';
 
 @ApiTags('Artists')
 @Controller('artist')

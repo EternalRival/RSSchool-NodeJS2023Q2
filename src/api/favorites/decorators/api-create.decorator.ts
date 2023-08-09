@@ -6,7 +6,7 @@ import {
   ApiParam,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ApiDecoratorData } from '../../shared/interfaces/api-decorator.interface';
+import { ApiDecoratorData } from '../../../shared/interfaces/api-decorator.interface';
 
 export function ApiCreate({ name }: ApiDecoratorData) {
   return applyDecorators(

@@ -12,17 +12,17 @@ import {
 import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { IdNotFoundError } from '../shared/errors/id-not-found.error';
+import { IdNotFoundError } from '../../shared/errors/id-not-found.error';
 import { ApiTags } from '@nestjs/swagger';
 import { Album } from './entities/album.entity';
-import { ParseUUIDV4Pipe } from '../shared/pipes/parse-uuid-v4.pipe';
+import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
 import {
   ApiCreate,
   ApiFindAll,
   ApiFind,
   ApiUpdate,
   ApiDelete,
-} from '../shared/decorators';
+} from '../../shared/decorators';
 
 @ApiTags('Albums')
 @Controller('album')

@@ -8,7 +8,7 @@ import {
   ApiOperation,
   ApiParam,
 } from '@nestjs/swagger';
-import { ApiDecoratorData } from '../../shared/interfaces/api-decorator.interface';
+import { ApiDecoratorData } from '../../../shared/interfaces/api-decorator.interface';
 
 export function ApiUpdate({ name, dto }: ApiDecoratorData) {
   return applyDecorators(

@@ -42,10 +42,10 @@ services:
     networks:
       - hls
 
-
 networks:
   hls:
     name: ${NETWORK}
+    driver: bridge
 
 volumes:
   db-volume:

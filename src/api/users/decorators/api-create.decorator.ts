@@ -5,7 +5,7 @@ import {
   ApiCreatedResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { ApiDecoratorData } from '../../shared/interfaces/api-decorator.interface';
+import { ApiDecoratorData } from '../../../shared/interfaces/api-decorator.interface';
 
 export function ApiCreate({ name, type, dto }: ApiDecoratorData) {
   return applyDecorators(

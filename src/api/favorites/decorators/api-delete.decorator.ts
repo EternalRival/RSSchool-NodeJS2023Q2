@@ -6,7 +6,7 @@ import {
   ApiOperation,
   ApiParam,
 } from '@nestjs/swagger';
-import { ApiDecoratorData } from '../../shared/interfaces/api-decorator.interface';
+import { ApiDecoratorData } from '../../../shared/interfaces/api-decorator.interface';
 
 export function ApiDelete({ name }: ApiDecoratorData) {
   return applyDecorators(

@@ -3,11 +3,11 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
-import { TracksModule } from './tracks/tracks.module';
-import { ArtistsModule } from './artists/artists.module';
-import { AlbumsModule } from './albums/albums.module';
-import { FavoritesModule } from './favorites/favorites.module';
+import { UsersModule } from './api/users/users.module';
+import { TracksModule } from './api/tracks/tracks.module';
+import { ArtistsModule } from './api/artists/artists.module';
+import { AlbumsModule } from './api/albums/albums.module';
+import { FavoritesModule } from './api/favorites/favorites.module';
 
 @Module({
   imports: [
@@ -23,6 +23,7 @@ import { FavoritesModule } from './favorites/favorites.module';
         database: configService.get('POSTGRES_DB'),
         autoLoadEntities: true,
         synchronize: true,
+        migrations: [],
       }),
     }),
     UsersModule,
