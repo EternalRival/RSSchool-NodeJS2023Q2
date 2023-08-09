@@ -8,6 +8,6 @@ export class FavoriteAlbum implements Favorite<Album> {
   id: number;
 
   @OneToOne(() => Album, { onDelete: 'CASCADE' })
-  @JoinColumn()
+  @JoinColumn({ name: 'albumId' })
   public favorite: Album;
 }
