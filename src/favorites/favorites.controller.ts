@@ -11,20 +11,11 @@ import {
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 import { StatusCodes } from 'http-status-codes';
-import {
-  ApiBadRequestResponse,
-  ApiCreatedResponse,
-  ApiNoContentResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiTags,
-  ApiUnprocessableEntityResponse,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ParseUUIDV4Pipe } from '../shared/pipes/parse-uuid-v4.pipe';
 import { isDatabaseError } from '../shared/helpers/is-database-error';
 import { Favorites } from './dto/favorites-response.dto';
+import { ApiFindAll, ApiCreate, ApiDelete } from './decorators';
 
 @ApiTags('Favorites')
 @Controller('favs')
@@ -33,43 +24,13 @@ export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
-  @ApiOperation({
-    summary: 'Get all favorites',
-    description: 'Gets all favorites movies, tracks and books',
-  })
-  @ApiOkResponse({
-    description: 'Successful operation',
-    type: Favorites,
-    isArray: true,
-  })
+  @ApiFindAll({ name: 'Favorite', type: Favorites })
   private findAll() {
     return this.favoritesService.findAll();
   }
 
   @Post('/track/:id')
-  @ApiOperation({
-    summary: 'Add track to the favorites',
-    description: 'Add track to the favorites',
-  })
-  @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiCreatedResponse({
-    description: 'Added successfully',
-    schema: {
-      properties: {
-        message: {
-          type: 'string',
-          example:
-            'the track 3fa85f64-5717-4562-b3fc-2c963f66afa6 was added to favorites',
-        },
-      },
-    },
-  })
-  @ApiBadRequestResponse({
-    description: 'Bad request. id is invalid (not uuid)',
-  })
-  @ApiUnprocessableEntityResponse({
-    description: "Track with id doesn't exist",
-  })
+  @ApiCreate({ name: 'Track' })
   private async createFavoriteTrack(
     @Param('id', ParseUUIDV4Pipe) id: string,
   ): Promise<{ message: string }> {
@@ -95,16 +56,7 @@ export class FavoritesController {
   }
 
   @Delete('/track/:id')
-  @ApiOperation({
-    summary: 'Delete track from favorites',
-    description: 'Delete track from favorites',
-  })
-  @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiNoContentResponse({ description: 'Deleted successfully' })
-  @ApiBadRequestResponse({
-    description: 'Bad request. id is invalid (not uuid)',
-  })
-  @ApiNotFoundResponse({ description: 'Track was not found' })
+  @ApiDelete({ name: 'Track' })
   @HttpCode(HttpStatus.NO_CONTENT)
   private async removeFavoriteTrack(
     @Param('id', ParseUUIDV4Pipe) id: string,
@@ -120,29 +72,7 @@ export class FavoritesController {
   }
 
   @Post('/album/:id')
-  @ApiOperation({
-    summary: 'Add album to the favorites',
-    description: 'Add album to the favorites',
-  })
-  @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiCreatedResponse({
-    description: 'Added successfully',
-    schema: {
-      properties: {
-        message: {
-          type: 'string',
-          example:
-            'the album 3fa85f64-5717-4562-b3fc-2c963f66afa6 was added to favorites',
-        },
-      },
-    },
-  })
-  @ApiBadRequestResponse({
-    description: 'Bad request. id is invalid (not uuid)',
-  })
-  @ApiUnprocessableEntityResponse({
-    description: "Album with id doesn't exist",
-  })
+  @ApiCreate({ name: 'Album' })
   private async createFavoriteAlbum(
     @Param('id', ParseUUIDV4Pipe) id: string,
   ): Promise<{ message: string }> {
@@ -168,16 +98,7 @@ export class FavoritesController {
   }
 
   @Delete('/album/:id')
-  @ApiOperation({
-    summary: 'Delete album from favorites',
-    description: 'Delete album from favorites',
-  })
-  @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiNoContentResponse({ description: 'Deleted successfully' })
-  @ApiBadRequestResponse({
-    description: 'Bad request. id is invalid (not uuid)',
-  })
-  @ApiNotFoundResponse({ description: 'Album was not found' })
+  @ApiDelete({ name: 'Album' })
   @HttpCode(HttpStatus.NO_CONTENT)
   private async removeFavoriteAlbum(
     @Param('id', ParseUUIDV4Pipe) id: string,
@@ -193,29 +114,7 @@ export class FavoritesController {
   }
 
   @Post('/artist/:id')
-  @ApiOperation({
-    summary: 'Add artist to the favorites',
-    description: 'Add artist to the favorites',
-  })
-  @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiCreatedResponse({
-    description: 'Added successfully',
-    schema: {
-      properties: {
-        message: {
-          type: 'string',
-          example:
-            'the artist 3fa85f64-5717-4562-b3fc-2c963f66afa6 was added to favorites',
-        },
-      },
-    },
-  })
-  @ApiBadRequestResponse({
-    description: 'Bad request. id is invalid (not uuid)',
-  })
-  @ApiUnprocessableEntityResponse({
-    description: "Artist with id doesn't exist",
-  })
+  @ApiCreate({ name: 'Artist' })
   private async createFavoriteArtist(
     @Param('id', ParseUUIDV4Pipe) id: string,
   ): Promise<{ message: string }> {
@@ -241,16 +140,7 @@ export class FavoritesController {
   }
 
   @Delete('/artist/:id')
-  @ApiOperation({
-    summary: 'Delete artist from favorites',
-    description: 'Delete artist from favorites',
-  })
-  @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiNoContentResponse({ description: 'Deleted successfully' })
-  @ApiBadRequestResponse({
-    description: 'Bad request. id is invalid (not uuid)',
-  })
-  @ApiNotFoundResponse({ description: 'Artist was not found' })
+  @ApiDelete({ name: 'Artist' })
   @HttpCode(HttpStatus.NO_CONTENT)
   private async removeFavoriteArtist(
     @Param('id', ParseUUIDV4Pipe) id: string,

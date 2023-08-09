@@ -17,19 +17,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { IdNotFoundError } from '../shared/errors/id-not-found.error';
 import { User } from './entities/user.entity';
-import {
-  ApiBadRequestResponse,
-  ApiBody,
-  ApiCreatedResponse,
-  ApiForbiddenResponse,
-  ApiNoContentResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ParseUUIDV4Pipe } from '../shared/pipes/parse-uuid-v4.pipe';
+import {
+  ApiCreate,
+  ApiFindAll,
+  ApiFind,
+  ApiUpdate,
+  ApiDelete,
+} from './decorators';
 
 @ApiTags('Users')
 @Controller('user')
@@ -38,12 +34,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create user', description: 'Creates a new user' })
-  @ApiBody({ type: CreateUserDto })
-  @ApiCreatedResponse({ description: 'The user has been created', type: User })
-  @ApiBadRequestResponse({
-    description: 'Bad request. body does not contain required fields',
-  })
+  @ApiCreate({ name: 'User', type: User, dto: CreateUserDto })
   private async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     const entity: User = await this.usersService.create(createUserDto);
 
@@ -51,28 +42,14 @@ export class UsersController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all users', description: 'Gets all users' })
-  @ApiOkResponse({
-    description: 'Successful operation',
-    type: User,
-    isArray: true,
-  })
+  @ApiFindAll({ name: 'User', type: User })
   private async findAll(): Promise<User[]> {
     const entities: User[] = await this.usersService.findAll();
     return entities.map((user) => new User(user));
   }
 
   @Get(':id')
-  @ApiOperation({
-    summary: 'Get single user by id',
-    description: 'Get single user by id',
-  })
-  @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiOkResponse({ description: 'Successful operation', type: User })
-  @ApiBadRequestResponse({
-    description: 'Bad request. id is invalid (not uuid)',
-  })
-  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiFind({ name: 'User', type: User })
   private async findOne(
     @Param('id', ParseUUIDV4Pipe) id: string,
   ): Promise<User> {
@@ -86,30 +63,7 @@ export class UsersController {
   }
 
   @Put(':id')
-  @ApiOperation({
-    summary: "Update a user's password",
-    description: "Updates a user's password by ID",
-  })
-  @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiBody({ type: UpdatePasswordDto })
-  @ApiOkResponse({
-    description: 'The user has been updated',
-    schema: {
-      title: 'User',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        login: { type: 'string', example: 'TestUser' },
-        version: { type: 'integer', example: 2 },
-        createdAt: { type: 'integer', example: 1655000000 },
-        updatedAt: { type: 'integer', example: 1655999999 },
-      },
-    },
-  })
-  @ApiBadRequestResponse({
-    description: 'Bad request. id is invalid (not uuid)',
-  })
-  @ApiForbiddenResponse({ description: 'oldPassword is wrong' })
-  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiUpdate({ name: 'User', dto: UpdatePasswordDto })
   private async update(
     @Param('id', ParseUUIDV4Pipe) id: string,
     @Body() { oldPassword, newPassword }: UpdatePasswordDto,
@@ -136,13 +90,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete user', description: 'Deletes user by ID' })
-  @ApiParam({ name: 'id', format: 'uuid' })
-  @ApiNoContentResponse({ description: 'The user has been deleted' })
-  @ApiBadRequestResponse({
-    description: 'Bad request. id is invalid (not uuid)',
-  })
-  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiDelete({ name: 'User' })
   @HttpCode(HttpStatus.NO_CONTENT)
   private async remove(
     @Param('id', ParseUUIDV4Pipe) id: string,
