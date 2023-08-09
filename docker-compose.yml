@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   api:
+    container_name: api
     image: eternalrival/home-library-service
+    restart: on-failure
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,13 +15,37 @@ services:
     volumes:
       - ./src:/usr/app/src
     environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    networks:
+      - hls
   db:
+    container_name: db
     image: eternalrival/home-library-service-db
-    build: database
+    restart: on-failure
+    build:
+      context: ./database
+      dockerfile: Dockerfile
     ports:
       - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    volumes:
+      - db-volume:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    networks:
+      - hls
+
+
+networks:
+  hls:
+    name: ${NETWORK}
+
+volumes:
+  db-volume:
