@@ -1,12 +1,3 @@
 FROM postgres:15-alpine
 
-ENV POSTGRES_USER=hls-user
-ENV POSTGRES_PASSWORD=hls-password
-ENV POSTGRES_DB=hls-db
-
-ENV POSTGRES_HOST=localhost
-ENV POSTGRES_PORT=5432
-
-EXPOSE 5432
-
 CMD ["postgres"]

@@ -4,7 +4,7 @@ services:
   api:
     container_name: api
     image: eternalrival/home-library-service
-    restart: on-failure
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
@@ -15,37 +15,38 @@ services:
     volumes:
       - ./src:/usr/app/src
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST: db
-      POSTGRES_PORT: ${POSTGRES_PORT}
+      PORT: ${PORT}
+      PGHOST: db
+      PGPORT: ${PGPORT}
+      PGDATABASE: ${PGDATABASE}
+      PGUSER: ${PGUSER}
+      PGPASSWORD: ${PGPASSWORD}
     networks:
       - hls
   db:
     container_name: db
     image: eternalrival/home-library-service-db
-    restart: on-failure
+    restart: unless-stopped
     build:
       context: ./database
       dockerfile: Dockerfile
     ports:
-      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+      - '${PGPORT}:${PGPORT}'
     volumes:
       - db-volume:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_DB: ${PGDATABASE}
+      POSTGRES_HOST: ${PGHOST}
+      POSTGRES_PORT: ${PGPORT}
     networks:
       - hls
 
 networks:
   hls:
     name: ${NETWORK}
-    driver: bridge
+    driver: ${DRIVER}
 
 volumes:
   db-volume:
