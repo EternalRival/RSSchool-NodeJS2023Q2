@@ -19,6 +19,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "env:generate": "ts-node ./generate-env.ts",
     "lintf": "npm run lint && npm run format",
     "docker:test": "docker-compose exec api npm run test",
     "docker:dev": "docker-compose up --build",
@@ -26,7 +27,8 @@
     "docker:down": "docker-compose down",
     "docker:push": "docker-compose build && docker-compose push",
     "docker:prune": "docker image prune -f",
-    "typeorm:generate": "typeorm-ts-node-esm migration:generate -d ./src/database/data-source.ts ./src/database/migrations/$npm_config_name"
+    "typeorm:create": "typeorm-ts-node-esm migration:create -d ./src/database/data-source.ts ./src/database/migrations/$npm_config_name && prettier --write ./src/database",
+    "typeorm:generate": "typeorm-ts-node-esm migration:generate -d ./src/database/data-source.ts ./src/database/migrations/$npm_config_name && prettier --write ./src/database"
   },
   "jest": {
     "moduleFileExtensions": [
