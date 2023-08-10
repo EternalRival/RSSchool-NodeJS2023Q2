@@ -4,18 +4,17 @@ import {
   Post,
   Delete,
   Param,
-  HttpException,
   HttpCode,
   HttpStatus,
   Logger,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { StatusCodes } from 'http-status-codes';
 import { ApiTags } from '@nestjs/swagger';
 import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
 import { isDatabaseError } from '../../shared/helpers/is-database-error';
 import { Favorites } from './dto/favorites-response.dto';
 import { ApiFindAll, ApiCreate, ApiDelete } from './decorators';
+import { EntityNotExistException, IsNotFavoriteException } from './exceptions';
 
 @ApiTags('Favorites')
 @Controller('favs')
@@ -42,8 +41,7 @@ export class FavoritesController {
     } catch (error) {
       if (isDatabaseError(error)) {
         if (error.detail?.includes('is not present in table')) {
-          const response = `track with \`id === ${id}\` doesn't exist`;
-          throw new HttpException(response, StatusCodes.UNPROCESSABLE_ENTITY);
+          throw new EntityNotExistException(id, 'track');
         }
         if (error.detail?.includes('already exists')) {
           return { message: `the track ${id} was added to favorites` };
@@ -64,8 +62,7 @@ export class FavoritesController {
     const entity = await this.favoritesService.findFavoriteTrack(id);
 
     if (!entity) {
-      const response = 'corresponding track is not favorite';
-      throw new HttpException(response, StatusCodes.NOT_FOUND);
+      throw new IsNotFavoriteException('track');
     }
 
     await this.favoritesService.removeFavoriteTrack(entity);
@@ -84,8 +81,7 @@ export class FavoritesController {
     } catch (error) {
       if (isDatabaseError(error)) {
         if (error.detail?.includes('is not present in table')) {
-          const response = `album with \`id === ${id}\` doesn't exist`;
-          throw new HttpException(response, StatusCodes.UNPROCESSABLE_ENTITY);
+          throw new EntityNotExistException(id, 'album');
         }
         if (error.detail?.includes('already exists')) {
           return { message: `the album ${id} was added to favorites` };
@@ -106,8 +102,7 @@ export class FavoritesController {
     const entity = await this.favoritesService.findFavoriteAlbum(id);
 
     if (!entity) {
-      const response = 'corresponding album is not favorite';
-      throw new HttpException(response, StatusCodes.NOT_FOUND);
+      throw new IsNotFavoriteException('album');
     }
 
     await this.favoritesService.removeFavoriteAlbum(entity);
@@ -126,8 +121,7 @@ export class FavoritesController {
     } catch (error) {
       if (isDatabaseError(error)) {
         if (error.detail?.includes('is not present in table')) {
-          const response = `artist with \`id === ${id}\` doesn't exist`;
-          throw new HttpException(response, StatusCodes.UNPROCESSABLE_ENTITY);
+          throw new EntityNotExistException(id, 'artist');
         }
         if (error.detail?.includes('already exists')) {
           return { message: `the artist ${id} was added to favorites` };
@@ -148,8 +142,7 @@ export class FavoritesController {
     const entity = await this.favoritesService.findFavoriteArtist(id);
 
     if (!entity) {
-      const response = 'corresponding artist is not favorite';
-      throw new HttpException(response, StatusCodes.NOT_FOUND);
+      throw new IsNotFavoriteException('artist');
     }
 
     await this.favoritesService.removeFavoriteArtist(entity);

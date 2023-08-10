@@ -12,7 +12,7 @@ import {
 import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { IdNotFoundError } from '../../shared/errors/id-not-found.error';
+import { IdNotFoundException } from '../../shared/exceptions/id-not-found.exception';
 import { ApiTags } from '@nestjs/swagger';
 import { Track } from './entities/track.entity';
 import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
@@ -51,7 +51,7 @@ export class TracksController {
     const entity: Track | null = await this.tracksService.findOne(id);
 
     if (!entity) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     return entity;
@@ -66,7 +66,7 @@ export class TracksController {
     const entity: Track | null = await this.tracksService.findOne(id);
 
     if (!entity) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     const updated: Track | null = await this.tracksService.update(
@@ -75,7 +75,7 @@ export class TracksController {
     );
 
     if (!updated) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     return updated;
@@ -90,7 +90,7 @@ export class TracksController {
     const entity: Track | null = await this.tracksService.findOne(id);
 
     if (!entity) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     await this.tracksService.remove(entity);

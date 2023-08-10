@@ -6,16 +6,16 @@ import {
   Param,
   Delete,
   Put,
-  HttpException,
   HttpStatus,
   HttpCode,
   UseInterceptors,
   ClassSerializerInterceptor,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
-import { IdNotFoundError } from '../../shared/errors/id-not-found.error';
+import { IdNotFoundException } from '../../shared/exceptions/id-not-found.exception';
 import { User } from './entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
 import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
@@ -56,7 +56,7 @@ export class UsersController {
     const entity: User | null = await this.usersService.findOne(id);
 
     if (!entity) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     return new User(entity);
@@ -71,11 +71,11 @@ export class UsersController {
     const entity: User | null = await this.usersService.findOne(id);
 
     if (!entity) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     if (entity.password !== oldPassword) {
-      throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
+      throw new ForbiddenException('oldPassword is wrong');
     }
 
     const updated: User | null = await this.usersService.update(id, {
@@ -83,7 +83,7 @@ export class UsersController {
     });
 
     if (!updated) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     return new User(updated);
@@ -98,7 +98,7 @@ export class UsersController {
     const entity: User | null = await this.usersService.findOne(id);
 
     if (!entity) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     await this.usersService.remove(entity);

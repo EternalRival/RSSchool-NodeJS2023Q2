@@ -12,7 +12,7 @@ import {
 import { ArtistsService } from './artists.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { IdNotFoundError } from '../../shared/errors/id-not-found.error';
+import { IdNotFoundException } from '../../shared/exceptions/id-not-found.exception';
 import { ApiTags } from '@nestjs/swagger';
 import { Artist } from './entities/artist.entity';
 import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
@@ -52,7 +52,7 @@ export class ArtistsController {
     const entity: Artist | null = await this.artistsService.findOne(id);
 
     if (!entity) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     return entity;
@@ -67,7 +67,7 @@ export class ArtistsController {
     const entity: Artist | null = await this.artistsService.findOne(id);
 
     if (!entity) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     const updated: Artist | null = await this.artistsService.update(
@@ -76,7 +76,7 @@ export class ArtistsController {
     );
 
     if (!updated) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     return updated;
@@ -91,7 +91,7 @@ export class ArtistsController {
     const entity: Artist | null = await this.artistsService.findOne(id);
 
     if (!entity) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     await this.artistsService.remove(entity);

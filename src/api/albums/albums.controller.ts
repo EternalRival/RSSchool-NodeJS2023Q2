@@ -12,7 +12,7 @@ import {
 import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { IdNotFoundError } from '../../shared/errors/id-not-found.error';
+import { IdNotFoundException } from '../../shared/exceptions/id-not-found.exception';
 import { ApiTags } from '@nestjs/swagger';
 import { Album } from './entities/album.entity';
 import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
@@ -50,7 +50,7 @@ export class AlbumsController {
     const entity: Album | null = await this.albumsService.findOne(id);
 
     if (!entity) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     return entity;
@@ -65,7 +65,7 @@ export class AlbumsController {
     const entity: Album | null = await this.albumsService.findOne(id);
 
     if (!entity) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     const updated: Album | null = await this.albumsService.update(
@@ -74,7 +74,7 @@ export class AlbumsController {
     );
 
     if (!updated) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     return updated;
@@ -89,7 +89,7 @@ export class AlbumsController {
     const entity: Album | null = await this.albumsService.findOne(id);
 
     if (!entity) {
-      throw new IdNotFoundError(id);
+      throw new IdNotFoundException(id);
     }
 
     await this.albumsService.remove(entity);
