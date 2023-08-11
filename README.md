@@ -4,37 +4,72 @@
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+- Docker - [Download & Install Docker Desktop](https://docs.docker.com/engine/install/) (Docker + Docker Compose)
 
-## Downloading
+## Git & NodeJS
+
+### Notes
+
+> Use 18 LTS version of Node.js
+
+### Downloading
 
 ```sh
 git clone {repository URL}
 ```
 
-## Installing NPM modules
+### Installing NPM modules
 
 ```sh
 npm install
 ```
 
-## Setting server variables
+### Setting server variables
 
 ```sh
-# create .env file with PORT variable or copy example
+# create .env file from example
 cp .env.example .env
+# or use `env:generate` npm script and generate `.env` file with REPL
+npm run env:generate
 ```
 
-## Running application
+## Docker
+
+### Notes
+
+> NB! Make sure you are not running any third-party containers/applications that may conflict with the current application (busy ports, etc.)
+
+### Running application
 
 ```sh
-npm start
+# create and start containers
+npm run docker:up
 ```
 
+### Other useful scripts
+
+```sh
+# launch tests
+npm run docker:test
+
+# stop and remove docker containers, networks
+npm run docker:down
+
+# create empty migration file
+npm run typeorm:create --name=MigrationName
+
+# generate migration file from code
+npm run typeorm:generate --name=MigrationName
+
+# lint with --fix and format
+npm run lintf
+```
+<!-- 
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing <http://localhost:4000/doc/>.
 For more information about OpenAPI/Swagger please visit <https://swagger.io/>.
->An `application/json` format should be used for request and response body.
-
+>An `application/json` format should be used for request and response body. -->
+<!-- 
 ## Testing
 
 After application running open new terminal and enter:
@@ -62,7 +97,7 @@ To run only specific test suite with authorization
 ```sh
 npm run test:auth -- <path to suite>
 ```
-
+ -->
 ### Auto-fix and format
 
 ```sh
