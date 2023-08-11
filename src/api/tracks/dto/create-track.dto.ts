@@ -8,12 +8,12 @@ export class CreateTrackDto {
 
   @ApiPropertyOptional({ type: 'string', format: 'uuid', nullable: true })
   @IsOptional()
-  @IsUUID()
+  @IsUUID(4)
   public albumId: string | null;
 
   @ApiPropertyOptional({ type: 'string', format: 'uuid', nullable: true })
   @IsOptional()
-  @IsUUID()
+  @IsUUID(4)
   public artistId: string | null;
 
   @ApiProperty({ description: 'In seconds' })

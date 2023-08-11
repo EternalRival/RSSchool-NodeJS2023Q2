@@ -12,6 +12,6 @@ export class CreateAlbumDto {
 
   @ApiPropertyOptional({ type: 'string', format: 'uuid', nullable: true })
   @IsOptional()
-  @IsUUID()
+  @IsUUID(4)
   public artistId: string | null;
 }
