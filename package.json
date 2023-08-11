@@ -27,6 +27,9 @@
     "docker:build": "docker-compose build",
     "docker:push": "docker-compose build && docker-compose push",
     "docker:prune": "docker image prune -f",
+    "docker:scout": "npm run docker:scout:db && npm run docker:scout:api",
+    "docker:scout:db": "docker scout cves eternalrival/home-library-service-db",
+    "docker:scout:api": "docker scout cves eternalrival/home-library-service-api",
     "typeorm:create": "typeorm-ts-node-esm migration:create ./src/database/migrations/$npm_config_name && prettier --write ./src/database",
     "typeorm:generate": "typeorm-ts-node-esm migration:generate -d ./src/database/data-source.ts ./src/database/migrations/$npm_config_name && prettier --write ./src/database"
   },

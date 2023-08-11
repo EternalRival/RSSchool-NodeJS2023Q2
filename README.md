@@ -55,6 +55,9 @@ npm run docker:test
 # stop and remove docker containers, networks
 npm run docker:down
 
+# vulnerability scan
+npm run docker:scout
+
 # create empty migration file
 npm run typeorm:create --name=MigrationName
 
