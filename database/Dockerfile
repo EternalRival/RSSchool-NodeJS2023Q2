@@ -1,3 +1,3 @@
 FROM postgres:15-alpine
 
-CMD ["postgres"]
+CMD ["postgres", "-c", "logging_collector=on"]
