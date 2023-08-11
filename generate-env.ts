@@ -102,6 +102,14 @@ async function generateDotEnv(): Promise<void> {
   envVariables.set('PGUSER', await getString('PGUSER', 'hls-user'));
   envVariables.set('PGPASSWORD', await getString('PGPASSWORD', 'hls-password'));
   envVariables.set('NETWORK', await getString('NETWORK', 'hls-network'));
+  envVariables.set('DRIVER', 'bridge');
+
+  //? yet unused
+  envVariables.set('CRYPT_SALT', '10');
+  envVariables.set('JWT_SECRET_KEY', 'secret123123');
+  envVariables.set('JWT_SECRET_REFRESH_KEY', 'secret123123');
+  envVariables.set('TOKEN_EXPIRE_TIME', '1h');
+  envVariables.set('TOKEN_REFRESH_EXPIRE_TIME', '24h');
 
   console.log(colorize(getFramedLine('ATTENTION!'), 'yellow'));
   const confirmAnswer = await getConfirm();
