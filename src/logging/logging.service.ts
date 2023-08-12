@@ -41,6 +41,10 @@ export class LoggingService implements LoggerService {
   ) {}
 
   private printMessage(level: LogLevel, message: string, scope?: string) {
+    if (!this.levels.includes(level)) {
+      return;
+    }
+
     const color = LogLevelColor[level];
     const date = dateFormatter.format(Date.now());
 
@@ -57,30 +61,25 @@ export class LoggingService implements LoggerService {
     console.log(result);
   }
 
-  public log(message: any, scope?: string) {
-    if (this.levels.includes('log')) {
-      this.printMessage('log', message, scope);
-    }
+  private printStackMessage(stack?: string | null) {
+    stack && console.log(stack);
   }
-  public error(message: any, stack?: string, scope?: string) {
-    if (this.levels.includes('error')) {
-      this.printMessage('error', message, scope);
-    }
+
+  public log(message: any, scope?: string) {
+    this.printMessage('log', message, scope);
+  }
+  public error(message: any, stack?: string | null, scope?: string) {
+    this.printMessage('error', message, scope);
+    this.printStackMessage(stack);
   }
   public warn(message: any, scope?: string) {
-    if (this.levels.includes('warn')) {
-      this.printMessage('warn', message, scope);
-    }
+    this.printMessage('warn', message, scope);
   }
   public debug(message: any, scope?: string) {
-    if (this.levels.includes('debug')) {
-      this.printMessage('debug', message, scope);
-    }
+    this.printMessage('debug', message, scope);
   }
   public verbose(message: any, scope?: string) {
-    if (this.levels.includes('verbose')) {
-      this.printMessage('verbose', message, scope);
-    }
+    this.printMessage('verbose', message, scope);
   }
 
   public setLogLevels(levels: LogLevel[]) {
