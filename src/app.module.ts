@@ -8,6 +8,7 @@ import { TracksModule } from './api/tracks/tracks.module';
 import { ArtistsModule } from './api/artists/artists.module';
 import { AlbumsModule } from './api/albums/albums.module';
 import { FavoritesModule } from './api/favorites/favorites.module';
+import { LoggingModule } from './logging/logging.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { FavoritesModule } from './api/favorites/favorites.module';
     ArtistsModule,
     AlbumsModule,
     FavoritesModule,
+    LoggingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
