@@ -2,19 +2,9 @@ import { resolve } from 'path';
 import { writeFile } from 'fs/promises';
 import { createInterface } from 'readline/promises';
 import { stdin as input, stdout as output } from 'process';
+import { colorize } from './src/shared/helpers/colorize';
 
 const rl = createInterface({ input, output });
-
-enum Design {
-  default = 0,
-  bold = 1,
-  faint = 2,
-  black = 30,
-  red = 31,
-  green = 32,
-  yellow = 33,
-  cyan = 36,
-}
 
 function getFramedLine(line: string): string {
   const width = line.length + 2;
@@ -24,19 +14,12 @@ function getFramedLine(line: string): string {
   return `${top}\n${mid}\n${bot}`;
 }
 
-function colorize(str: string, ...params: (keyof typeof Design)[]): string {
-  const designParams = params ?? [Design.default];
-  const head = `\x1b[${designParams.map((param) => Design[param]).join(';')}m`;
-  const tail = `\x1b[${Design.default}m`;
-  return `${head}${str}${tail}`;
-}
-
 async function getString(
   question: string,
   defaultValue: string = '',
 ): Promise<string> {
   const coloredQuestion = colorize(question, 'cyan');
-  const coloredDefaultValue = colorize(`(${defaultValue})`, 'black');
+  const coloredDefaultValue = colorize(`(${defaultValue})`, 'gray');
   const coloredPrompt = `${coloredQuestion}${coloredDefaultValue} = `;
   const answer = await rl.question(coloredPrompt);
   return answer || defaultValue;
