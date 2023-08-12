@@ -1,5 +1,10 @@
 import { Injectable, LogLevel, LoggerService } from '@nestjs/common';
 
+/** default logs example
+api  | `#green`[Nest] 257  - `#white`08/12/2023, 2:05:28 AM     `#green`LOG `#yellow`[NestFactory] `#green`Starting Nest application...
+api  | `#green`[Nest] 257  - `#white`08/12/2023, 2:05:28 AM     `#green`LOG `#yellow`[InstanceLoader] `#green`TypeOrmModule dependencies initialized `#yellow`+1ms
+*/
+
 @Injectable()
 export class LoggingService implements LoggerService {
   log(message: any, ...optionalParams: any[]) {
