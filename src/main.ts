@@ -10,9 +10,12 @@ async function bootstrap(): Promise<void> {
     bufferLogs: true,
   });
 
-  app.useLogger(app.get(LoggingService));
-
   const configService: ConfigService = app.get(ConfigService);
+
+  const logger = app.get(LoggingService);
+  const loggingLevel = configService.get<number>('LOGGING_LEVEL', 5);
+  logger.setLogLevelsByNumber(loggingLevel);
+  app.useLogger(logger);
 
   const swaggerConfig: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
     .setTitle('Home Library Service')

@@ -86,6 +86,7 @@ async function generateDotEnv(): Promise<void> {
   envVariables.set('PGPASSWORD', await getString('PGPASSWORD', 'hls-password'));
   envVariables.set('NETWORK', await getString('NETWORK', 'hls-network'));
   envVariables.set('DRIVER', 'bridge');
+  envVariables.set('LOGGING_LEVEL', 5);
 
   //? yet unused
   envVariables.set('CRYPT_SALT', '10');
