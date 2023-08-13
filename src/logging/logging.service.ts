@@ -1,19 +1,11 @@
 import { Injectable, LogLevel, LoggerService, Optional } from '@nestjs/common';
 import { colorize } from '../shared/helpers/colorize';
+import { DateFormatter } from '../shared/helpers/date-formatter';
 
 /** default logs example
 api  | `#green`[Nest] 257  - `#white`08/12/2023, 2:05:28 AM     `#green`LOG `#yellow`[NestFactory] `#green`Starting Nest application...
 api  | `#green`[Nest] 257  - `#white`08/12/2023, 2:05:28 AM     `#green`LOG `#yellow`[InstanceLoader] `#green`TypeOrmModule dependencies initialized `#yellow`+1ms
 */
-
-const dateFormatter = new Intl.DateTimeFormat([], {
-  year: '2-digit',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit',
-});
 
 enum LogLevelColor {
   log = 'green',
@@ -46,7 +38,7 @@ export class LoggingService implements LoggerService {
     }
 
     const color = LogLevelColor[level];
-    const date = dateFormatter.format(Date.now());
+    const date = DateFormatter.format(Date.now());
 
     const processMessage = colorize(`[Nest] ${process.pid} -`, color);
     const timestamp = colorize(date, 'white');
