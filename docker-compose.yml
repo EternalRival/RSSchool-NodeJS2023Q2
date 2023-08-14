@@ -33,7 +33,8 @@ services:
     ports:
       - '${PGPORT}:${PGPORT}'
     volumes:
-      - db-volume:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
+      - db-logs:/var/log/postgresql
     environment:
       POSTGRES_PASSWORD: ${PGPASSWORD}
       POSTGRES_USER: ${PGUSER}
@@ -49,4 +50,5 @@ networks:
     driver: ${DRIVER}
 
 volumes:
-  db-volume:
+  db-data:
+  db-logs:
