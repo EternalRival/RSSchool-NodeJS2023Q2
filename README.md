@@ -27,10 +27,10 @@ npm install
 ### Setting server variables
 
 ```sh
-# create .env file from example
-cp .env.example .env
-# or use `env:generate` npm script and generate `.env` file with REPL
+# use `env:generate` npm script to generate `.env` file with REPL
 npm run env:generate
+# or just copy .env file from example
+cp .env.example .env
 ```
 
 ## Docker
