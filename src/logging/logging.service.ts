@@ -5,11 +5,6 @@ import { createWriteStream } from 'fs';
 import { resolve } from 'path';
 import { EOL } from 'os';
 
-/** default logs example
-api  | `#green`[Nest] 257  - `#white`08/12/2023, 2:05:28 AM     `#green`LOG `#yellow`[NestFactory] `#green`Starting Nest application...
-api  | `#green`[Nest] 257  - `#white`08/12/2023, 2:05:28 AM     `#green`LOG `#yellow`[InstanceLoader] `#green`TypeOrmModule dependencies initialized `#yellow`+1ms
-*/
-
 enum LogLevelColor {
   log = 'green',
   warn = 'yellow',
@@ -31,6 +26,7 @@ interface LogMessage {
   level: string;
   scope?: string;
   message: string;
+  stack?: string | null;
 }
 
 @Injectable()
@@ -45,6 +41,7 @@ export class LoggingService implements LoggerService {
 
   private levels: LogLevel[] = [...this.defaultLogLevels];
 
+  // TODO пути
   private logWriteStream = createWriteStream(
     resolve(__dirname, `${Date.now()}-logs.txt`),
   );
@@ -61,13 +58,14 @@ export class LoggingService implements LoggerService {
     return this.levels.includes(level);
   }
 
-  private buildMessage({ level, message, scope }: LogData): LogMessage {
+  private buildMessage({ level, message, scope, stack }: LogData): LogMessage {
     return {
       processMessage: `[Nest] ${process.pid} -`,
       timestamp: DateFormatter.format(Date.now()),
       level: `[${level.toUpperCase()}]`,
       scope: scope ? `[${scope}]` : '',
       message,
+      stack: stack ? `${stack}${EOL}` : '',
     };
   }
 
@@ -81,6 +79,7 @@ export class LoggingService implements LoggerService {
       level: colorize(logMessage.level, color),
       scope: logMessage.scope ? colorize(logMessage.scope, 'yellow') : '',
       message: colorize(logMessage.message, color),
+      stack: colorize(logMessage.stack ?? '', 'gray'),
     };
   }
 
@@ -89,7 +88,7 @@ export class LoggingService implements LoggerService {
     const logString = [processMessage, timestamp, level, scope, message]
       .filter(Boolean)
       .join('\xa0');
-    return `${logString}${EOL}`;
+    return `${logString}${EOL}${logMessage.stack}`;
   }
 
   private writeLogToFile(logMessage: LogMessage, options = { isError: false }) {
@@ -106,19 +105,11 @@ export class LoggingService implements LoggerService {
     process.stdout.write(logStringColored);
   }
 
-  private handleIncomingLog({ level, message, scope }: LogData) {
-    if (this.isEnabledLevel(level)) {
-      const logMessage = this.buildMessage({ level, message, scope });
-      this.writeLogToFile(logMessage);
-      this.writeLogToStdout(logMessage, LogLevelColor[level]);
-    }
-  }
-  private handleIncomingErrorLog({ level, message, scope, stack }: LogData) {
-    if (this.isEnabledLevel(level)) {
-      const logMessage = this.buildMessage({ level, message, scope });
-      logMessage.message += `${stack}${EOL}`;
-      this.writeLogToFile(logMessage, { isError: true });
-      this.writeLogToStdout(logMessage, LogLevelColor[level]);
+  private handleIncomingLog(logData: LogData) {
+    if (this.isEnabledLevel(logData.level)) {
+      const logMessage = this.buildMessage(logData);
+      this.writeLogToFile(logMessage, { isError: logData.level === 'error' });
+      this.writeLogToStdout(logMessage, LogLevelColor[logData.level]);
     }
   }
 
@@ -126,7 +117,7 @@ export class LoggingService implements LoggerService {
     this.handleIncomingLog({ level: 'log', message, scope });
   }
   public error(message: any, stack?: string | null, scope?: string) {
-    this.handleIncomingErrorLog({ level: 'error', message, scope, stack });
+    this.handleIncomingLog({ level: 'error', message, scope, stack });
   }
   public warn(message: any, scope?: string) {
     this.handleIncomingLog({ level: 'warn', message, scope });
