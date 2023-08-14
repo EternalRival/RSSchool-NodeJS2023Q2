@@ -28,7 +28,9 @@ npm install
 
 ```sh
 # use `env:generate` npm script to generate `.env` file with REPL
+# (leave blank by pressing Enter to use the default values)
 npm run env:generate
+
 # or just copy .env file from example
 cp .env.example .env
 ```
@@ -38,6 +40,9 @@ cp .env.example .env
 ### Notes
 
 > NB! Make sure you are not running any third-party containers/applications that may conflict with the current application (busy ports, etc.)
+>
+> Database logs are written in the `db-logs:/var/log/postgresql` volume
+> Database data is written to `db-data:/var/lib/postgresql/data` volume
 
 ### Running application
 
