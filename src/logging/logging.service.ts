@@ -82,7 +82,7 @@ export class LoggingService implements LoggerService {
       level: colorize(logMessage.level, color),
       scope: logMessage.scope ? colorize(logMessage.scope, 'yellow') : '',
       message: colorize(logMessage.message, color),
-      stack: colorize(logMessage.stack ?? '', 'gray'),
+      stack: logMessage.stack,
     };
   }
 
@@ -91,28 +91,30 @@ export class LoggingService implements LoggerService {
     const logString = [processMessage, timestamp, level, scope, message]
       .filter(Boolean)
       .join('\xa0');
-    return `${logString}${logMessage.stack}${EOL}`;
+    return `${logString}${logMessage.stack}`;
   }
 
   private writeLogToFile(logMessage: LogMessage, options = { isError: false }) {
-    const logString = this.buildLogString(logMessage);
+    const logString = `${this.buildLogString(logMessage)}${EOL}`;
     this.logWriteStream.write(logString);
     if (options.isError) {
       this.errorWriteStream.write(logString);
     }
   }
 
-  private writeLogToStdout(logMessage: LogMessage, color: LogLevelColor) {
+  private writeLogToStdout(logMessage: LogMessage, level: LogLevel) {
+    const color = LogLevelColor[level];
     const logMessageColored = this.colorizeMessage(logMessage, color);
     const logStringColored = this.buildLogString(logMessageColored);
-    process.stdout.write(logStringColored);
+
+    console[level === 'verbose' ? 'debug' : level](logStringColored);
   }
 
   private handleIncomingLog(logData: LogData) {
     if (this.isEnabledLevel(logData.level)) {
       const logMessage = this.buildMessage(logData);
       this.writeLogToFile(logMessage, { isError: logData.level === 'error' });
-      this.writeLogToStdout(logMessage, LogLevelColor[logData.level]);
+      this.writeLogToStdout(logMessage, logData.level);
     }
   }
 
