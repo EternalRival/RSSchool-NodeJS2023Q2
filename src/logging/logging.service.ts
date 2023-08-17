@@ -1,9 +1,9 @@
 import { Injectable, LogLevel, LoggerService, Optional } from '@nestjs/common';
 import { colorize } from '../shared/helpers/colorize';
-import { DateFormatter } from '../shared/helpers/date-formatter';
-import { createWriteStream } from 'fs';
+import { WriteStream, createWriteStream } from 'fs';
 import { resolve } from 'path';
 import { EOL } from 'os';
+import { getFormattedDate } from '../shared/helpers/get-formatted-date';
 
 enum LogLevelColor {
   log = 'green',
@@ -41,18 +41,21 @@ export class LoggingService implements LoggerService {
 
   private levels: LogLevel[] = [...this.defaultLogLevels];
 
-  // TODO пути
-  private logWriteStream = createWriteStream(
-    resolve(__dirname, `${Date.now()}-logs.txt`),
-  );
-  private errorWriteStream = createWriteStream(
-    resolve(__dirname, `${Date.now()}-errors.txt`),
-  );
+  private logWriteStream: WriteStream;
+  private errorWriteStream: WriteStream;
 
   constructor(
     @Optional() protected scope: string,
     @Optional() protected options?: { timestamp?: boolean },
-  ) {}
+  ) {
+    const getLogFilePath = (level: string) => {
+      const date = getFormattedDate(new Date(), { uncluttered: true });
+      return resolve('logs', `${date}-${level}.txt`);
+    };
+
+    this.logWriteStream = createWriteStream(getLogFilePath('logs'));
+    this.errorWriteStream = createWriteStream(getLogFilePath('errors'));
+  }
 
   private isEnabledLevel(level: LogLevel): boolean {
     return this.levels.includes(level);
@@ -60,12 +63,12 @@ export class LoggingService implements LoggerService {
 
   private buildMessage({ level, message, scope, stack }: LogData): LogMessage {
     return {
-      processMessage: `[Nest] ${process.pid} -`,
-      timestamp: DateFormatter.format(Date.now()),
+      processMessage: `[Nest-HLS] ${process.pid} -`,
+      timestamp: getFormattedDate(new Date()),
       level: `[${level.toUpperCase()}]`,
       scope: scope ? `[${scope}]` : '',
       message,
-      stack: stack ? `${stack}${EOL}` : '',
+      stack: stack ? `${EOL}${stack}` : '',
     };
   }
 
@@ -88,7 +91,7 @@ export class LoggingService implements LoggerService {
     const logString = [processMessage, timestamp, level, scope, message]
       .filter(Boolean)
       .join('\xa0');
-    return `${logString}${EOL}${logMessage.stack}`;
+    return `${logString}${logMessage.stack}${EOL}`;
   }
 
   private writeLogToFile(logMessage: LogMessage, options = { isError: false }) {

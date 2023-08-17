@@ -5,7 +5,7 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { DateFormatter } from '../helpers/date-formatter';
+import { getFormattedDate } from '../helpers/get-formatted-date';
 
 @Catch()
 export class CustomHttpExceptionFilter implements ExceptionFilter {
@@ -15,7 +15,7 @@ export class CustomHttpExceptionFilter implements ExceptionFilter {
     const responseBody = {
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Internal server error',
-      timestamp: DateFormatter.format(Date.now()),
+      timestamp: getFormattedDate(new Date()),
       path: ctx.getRequest().url,
     };
 
