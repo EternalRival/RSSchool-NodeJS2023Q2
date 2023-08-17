@@ -35,6 +35,24 @@ npm run env:generate
 cp .env.example .env
 ```
 
+```sh
+# .env notes
+PGHOST=localhost
+PGPORT=5432 # valid port (0 <= n <= 65535)
+PGDATABASE=hls-db
+PGUSER=hls-user
+PGPASSWORD=hls-password
+PORT=4000 # valid port (0 <= n <= 65535)
+LOGGING_LEVEL=5 # valid logging level (0 <= n <= 5)
+MAX_FILE_SIZE=10240 # max log file size in bytes
+ENABLE_LOGS_FILES=1 # 0 for `off` / 1 for `on` (logs are stored in the `/logs` dir)
+CRYPT_SALT=10
+JWT_SECRET_KEY=secret123123
+JWT_SECRET_REFRESH_KEY=secret123123
+TOKEN_EXPIRE_TIME=1h
+TOKEN_REFRESH_EXPIRE_TIME=24h
+```
+
 ## Docker
 
 ### Notes

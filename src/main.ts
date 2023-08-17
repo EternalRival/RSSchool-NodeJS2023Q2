@@ -5,16 +5,17 @@ import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { LoggingService } from './logging/logging.service';
 import { CustomHttpExceptionFilter } from './shared/filters/custom-exception.filter';
+import { toNumber } from './shared/helpers/to-number';
 
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
 
-  const configService: ConfigService = app.get(ConfigService);
+  const configService = app.get(ConfigService);
 
   const logger = app.get(LoggingService);
-  const loggingLevel = configService.get<number>('LOGGING_LEVEL', 5);
+  const loggingLevel = toNumber(configService.get('LOGGING_LEVEL')) ?? 5;
   logger.setLogLevelsByNumber(loggingLevel);
   app.useLogger(logger);
 
@@ -34,7 +35,7 @@ async function bootstrap(): Promise<void> {
 
   app.useGlobalFilters(new CustomHttpExceptionFilter());
 
-  const port = configService.get('PORT', 4000);
+  const port = toNumber(configService.get('PORT')) ?? 4000;
 
   await app.listen(port, () => {
     new Logger('PORT').log(`Server started at port: ${port}`);

@@ -16,12 +16,7 @@ services:
       - ./src:/usr/app/src
       - ./logs:/usr/app/logs
     environment:
-      PORT: ${PORT}
       PGHOST: db
-      PGPORT: ${PGPORT}
-      PGDATABASE: ${PGDATABASE}
-      PGUSER: ${PGUSER}
-      PGPASSWORD: ${PGPASSWORD}
     networks:
       - hls
   db:
@@ -47,8 +42,6 @@ services:
 
 networks:
   hls:
-    name: ${NETWORK}
-    driver: ${DRIVER}
 
 volumes:
   db-data:

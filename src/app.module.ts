@@ -9,6 +9,7 @@ import { ArtistsModule } from './api/artists/artists.module';
 import { AlbumsModule } from './api/albums/albums.module';
 import { FavoritesModule } from './api/favorites/favorites.module';
 import { LoggingModule } from './logging/logging.module';
+import { toNumber } from './shared/helpers/to-number';
 
 @Module({
   imports: [
@@ -17,11 +18,11 @@ import { LoggingModule } from './logging/logging.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService): TypeOrmModuleOptions => ({
         type: 'postgres',
-        username: configService.get('PGUSER'),
-        password: configService.get('PGPASSWORD'),
-        host: configService.get('PGHOST'),
-        port: configService.get('PGPORT'),
-        database: configService.get('PGDATABASE'),
+        username: configService.get('PGUSER', 'hls-user'),
+        password: configService.get('PGPASSWORD', 'hls-password'),
+        host: configService.get('PGHOST', 'localhost'),
+        port: toNumber(configService.get('PGPORT')) ?? 5432,
+        database: configService.get('PGDATABASE', 'hls-db'),
         synchronize: false,
         entities: [`${__dirname}/**/*.entity.js`],
         migrations: [`${__dirname}/database/migrations/*.js`],
