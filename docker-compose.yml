@@ -14,6 +14,7 @@ services:
       - db
     volumes:
       - ./src:/usr/app/src
+      - ./logs:/usr/app/logs
     environment:
       PORT: ${PORT}
       PGHOST: db
