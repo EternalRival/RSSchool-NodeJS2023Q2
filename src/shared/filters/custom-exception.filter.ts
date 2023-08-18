@@ -29,6 +29,10 @@ export class CustomExceptionFilter implements ExceptionFilter {
       responseBody.message = exception.message;
     }
 
+    const logLevel =
+      Math.floor(responseBody.statusCode / 100) === 5 ? 'error' : 'warn';
+
+    this.logger[logLevel](JSON.stringify(responseBody));
     ctx.getResponse().status(responseBody.statusCode).json(responseBody);
   }
 }
