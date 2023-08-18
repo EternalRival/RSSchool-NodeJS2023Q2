@@ -4,10 +4,10 @@ services:
   api:
     container_name: api
     image: eternalrival/home-library-service:api
-    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
+    restart: always
     ports:
       - '${PORT}:${PORT}'
     depends_on:
@@ -22,10 +22,10 @@ services:
   db:
     container_name: db
     image: eternalrival/home-library-service:db
-    restart: unless-stopped
     build:
       context: ./database
       dockerfile: Dockerfile
+    restart: always
     ports:
       - '${PGPORT}:${PGPORT}'
     volumes:

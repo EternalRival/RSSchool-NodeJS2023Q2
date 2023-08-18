@@ -1,11 +1,35 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { LoggingService } from './logging/logging.service';
-import { CustomHttpExceptionFilter } from './shared/filters/custom-exception.filter';
+import { CustomExceptionFilter } from './shared/filters/custom-exception.filter';
 import { toNumber } from './shared/helpers/to-number';
+import { emitUnhandledErrors } from './shared/helpers/emit-unhandled-errors';
+
+function setupSwagger(app: INestApplication): void {
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Home Library Service')
+    .setDescription('Home music library service')
+    .setVersion('1.1.0')
+    .build();
+
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('/doc', app, swaggerDocument);
+}
+
+function initUnhandledRejectionUncaughtExceptionHandlers(
+  logger: LoggingService,
+): void {
+  process.on('uncaughtException', (error: Error) => {
+    logger.error(error.message, error.stack, 'UncaughtException');
+    // process.exit(1); // doesn't work with nestjs --watch mode
+  });
+  process.on('unhandledRejection', (reason: unknown) => {
+    logger.error(reason, null, 'UnhandledRejection');
+  });
+}
 
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule, {
@@ -17,29 +41,23 @@ async function bootstrap(): Promise<void> {
   const logger = app.get(LoggingService);
   const loggingLevel = toNumber(configService.get('LOGGING_LEVEL')) ?? 5;
   logger.setLogLevelsByNumber(loggingLevel);
-  app.useLogger(logger);
 
-  const swaggerConfig: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
-    .setTitle('Home Library Service')
-    .setDescription('Home music library service')
-    .setVersion('1.1.0')
-    .build();
+  initUnhandledRejectionUncaughtExceptionHandlers(logger);
 
-  const swaggerDocument: OpenAPIObject = SwaggerModule.createDocument(
-    app,
-    swaggerConfig,
-  );
-  SwaggerModule.setup('/doc', app, swaggerDocument);
+  app
+    .useGlobalFilters(new CustomExceptionFilter())
+    .useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }))
+    .useLogger(logger);
 
-  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
-
-  app.useGlobalFilters(new CustomHttpExceptionFilter());
+  setupSwagger(app);
 
   const port = toNumber(configService.get('PORT')) ?? 4000;
-
   await app.listen(port, () => {
     new Logger('PORT').log(`Server started at port: ${port}`);
   });
+
+  //? comment or remove it after uncaughtException and unhandledRejection check
+  emitUnhandledErrors(3000).then((res) => logger.verbose(...res));
 }
 
 bootstrap();

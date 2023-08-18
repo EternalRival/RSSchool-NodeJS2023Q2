@@ -19,7 +19,7 @@ import { EntityNotExistException, IsNotFavoriteException } from './exceptions';
 @ApiTags('Favorites')
 @Controller('favs')
 export class FavoritesController {
-  private logger = new Logger('Favorites');
+  private readonly logger = new Logger('Favorites');
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
