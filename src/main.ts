@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
+import { INestApplication, Logger } from '@nestjs/common';
 import { LoggingService } from './logging/logging.service';
 import { CustomExceptionFilter } from './shared/filters/custom-exception.filter';
 import { toNumber } from './shared/helpers/to-number';
@@ -48,7 +48,6 @@ async function bootstrap(): Promise<void> {
   app
     .useGlobalInterceptors(new LoggingInterceptor())
     .useGlobalFilters(new CustomExceptionFilter())
-    .useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }))
     .useLogger(logger);
 
   setupSwagger(app);

@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  UsePipes,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -15,9 +16,11 @@ import { isDatabaseError } from '../../shared/helpers/is-database-error';
 import { Favorites } from './dto/favorites-response.dto';
 import { ApiFindAll, ApiCreate, ApiDelete } from './decorators';
 import { EntityNotExistException, IsNotFavoriteException } from './exceptions';
+import { WhiteListPipe } from '../../shared/pipes/whitelist.pipe';
 
 @ApiTags('Favorites')
 @Controller('favs')
+@UsePipes(WhiteListPipe)
 export class FavoritesController {
   private readonly logger = new Logger('Favorites');
   constructor(private readonly favoritesService: FavoritesService) {}
