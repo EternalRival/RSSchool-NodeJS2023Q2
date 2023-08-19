@@ -35,19 +35,17 @@ export class FavoritesController {
   @ApiCreate({ name: 'Track' })
   private async createFavoriteTrack(
     @Param('id', ParseUUIDV4Pipe) id: string,
-  ): Promise<{ message: string }> {
+  ): Promise<string> {
     try {
       const entity = await this.favoritesService.createFavoriteTrack(id);
-      return {
-        message: `the track ${entity.favorite.id} was added to favorites`,
-      };
+      return `the track ${entity.favorite.id} was added to favorites`;
     } catch (error) {
       if (isDatabaseError(error)) {
         if (error.detail?.includes('is not present in table')) {
           throw new EntityNotExistException(id, 'track');
         }
         if (error.detail?.includes('already exists')) {
-          return { message: `the track ${id} was added to favorites` };
+          return `the track ${id} was added to favorites`;
         }
         this.logger.error(error.detail);
       }
@@ -75,19 +73,17 @@ export class FavoritesController {
   @ApiCreate({ name: 'Album' })
   private async createFavoriteAlbum(
     @Param('id', ParseUUIDV4Pipe) id: string,
-  ): Promise<{ message: string }> {
+  ): Promise<string> {
     try {
       const entity = await this.favoritesService.createFavoriteAlbum(id);
-      return {
-        message: `the album ${entity.favorite.id} was added to favorites`,
-      };
+      return `the album ${entity.favorite.id} was added to favorites`;
     } catch (error) {
       if (isDatabaseError(error)) {
         if (error.detail?.includes('is not present in table')) {
           throw new EntityNotExistException(id, 'album');
         }
         if (error.detail?.includes('already exists')) {
-          return { message: `the album ${id} was added to favorites` };
+          return `the album ${id} was added to favorites`;
         }
         this.logger.error(error.detail);
       }
@@ -115,19 +111,17 @@ export class FavoritesController {
   @ApiCreate({ name: 'Artist' })
   private async createFavoriteArtist(
     @Param('id', ParseUUIDV4Pipe) id: string,
-  ): Promise<{ message: string }> {
+  ): Promise<string> {
     try {
       const entity = await this.favoritesService.createFavoriteArtist(id);
-      return {
-        message: `the artist ${entity.favorite.id} was added to favorites`,
-      };
+      return `the artist ${entity.favorite.id} was added to favorites`;
     } catch (error) {
       if (isDatabaseError(error)) {
         if (error.detail?.includes('is not present in table')) {
           throw new EntityNotExistException(id, 'artist');
         }
         if (error.detail?.includes('already exists')) {
-          return { message: `the artist ${id} was added to favorites` };
+          return `the artist ${id} was added to favorites`;
         }
         this.logger.error(error.detail);
       }

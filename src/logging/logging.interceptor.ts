@@ -5,7 +5,8 @@ import {
   Logger,
   NestInterceptor,
 } from '@nestjs/common';
-import { Observable, tap } from 'rxjs';
+import { isString } from 'class-validator';
+import { Observable, map } from 'rxjs';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -15,8 +16,12 @@ export class LoggingInterceptor implements NestInterceptor {
     const { statusCode } = context.switchToHttp().getResponse();
 
     return next.handle().pipe(
-      tap((message) => {
-        return this.logger.debug(JSON.stringify({ statusCode, message }));
+      map((responseMessage) => {
+        const message = isString(responseMessage)
+          ? { message: responseMessage }
+          : responseMessage;
+        this.logger.debug(JSON.stringify({ statusCode, ...message }));
+        return message;
       }),
     );
   }
