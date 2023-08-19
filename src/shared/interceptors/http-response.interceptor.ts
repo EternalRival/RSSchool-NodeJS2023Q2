@@ -9,11 +9,14 @@ import { isString } from 'class-validator';
 import { Observable, map } from 'rxjs';
 
 @Injectable()
-export class LoggingInterceptor implements NestInterceptor {
+export class HttpResponseInterceptor implements NestInterceptor {
   constructor(private readonly logger = new Logger('ResponseLogger')) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const { statusCode } = context.switchToHttp().getResponse();
+    const response = context.switchToHttp().getResponse();
+    const { statusCode } = response;
+
+    response.type('application/json');
 
     return next.handle().pipe(
       map((responseMessage) => {

@@ -7,7 +7,7 @@ import { LoggingService } from './logging/logging.service';
 import { CustomExceptionFilter } from './shared/filters/custom-exception.filter';
 import { toNumber } from './shared/helpers/to-number';
 import { emitUnhandledErrors } from './shared/helpers/emit-unhandled-errors';
-import { LoggingInterceptor } from './logging/logging.interceptor';
+import { HttpResponseInterceptor } from './shared/interceptors/http-response.interceptor';
 
 function setupSwagger(app: INestApplication): void {
   const swaggerConfig = new DocumentBuilder()
@@ -46,7 +46,7 @@ async function bootstrap(): Promise<void> {
   initUnhandledRejectionUncaughtExceptionHandlers(logger);
 
   app
-    .useGlobalInterceptors(new LoggingInterceptor())
+    .useGlobalInterceptors(new HttpResponseInterceptor())
     .useGlobalFilters(new CustomExceptionFilter())
     .useLogger(logger);
 
