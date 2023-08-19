@@ -11,6 +11,7 @@ import { FavoritesModule } from './api/favorites/favorites.module';
 import { LoggingModule } from './logging/logging.module';
 import { toNumber } from './shared/helpers/to-number';
 import { LoggingMiddleware } from './logging/logging.middleware';
+import { AuthModule } from './api/auth/auth.module';
 
 @Module({
   imports: [
@@ -30,12 +31,13 @@ import { LoggingMiddleware } from './logging/logging.middleware';
         migrationsRun: true,
       }),
     }),
+    LoggingModule,
+    AuthModule,
     UsersModule,
-    TracksModule,
     ArtistsModule,
     AlbumsModule,
+    TracksModule,
     FavoritesModule,
-    LoggingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
