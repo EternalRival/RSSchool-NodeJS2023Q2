@@ -12,13 +12,17 @@ export class HttpExceptionResponseBodyDto
   implements HttpExceptionResponseBodyInterface
 {
   @ApiProperty()
-  statusCode: number;
+  public statusCode: number;
+
   @ApiProperty()
-  message: string | string[];
+  public message: string | string[];
+
   @ApiProperty()
-  error: string;
+  public error: string;
+
   @ApiProperty()
-  timestamp: string;
+  public timestamp: string;
+
   @ApiProperty()
-  path: string;
+  public path: string;
 }

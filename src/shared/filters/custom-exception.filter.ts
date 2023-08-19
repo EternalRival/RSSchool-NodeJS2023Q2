@@ -17,7 +17,7 @@ export class CustomExceptionFilter implements ExceptionFilter {
     private readonly logger: Logger = new Logger('ExceptionFilter'),
   ) {}
 
-  isHttpExceptionBodyObject(body: object): body is HttpExceptionBody {
+  private isHttpExceptionBodyObject(body: object): body is HttpExceptionBody {
     return (
       (isString(body['message']) || isArray<string>(body['message'])) &&
       (!body['error'] || isString(body['error'])) &&
@@ -25,7 +25,7 @@ export class CustomExceptionFilter implements ExceptionFilter {
     );
   }
 
-  catch(exception: unknown, host: ArgumentsHost) {
+  public catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
 
     const responseBody: HttpExceptionResponseBodyDto = {

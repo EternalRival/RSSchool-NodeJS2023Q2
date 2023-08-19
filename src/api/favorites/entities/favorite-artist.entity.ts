@@ -5,7 +5,7 @@ import { Favorite } from '../interfaces/favorite.interface';
 @Entity()
 export class FavoriteArtist implements Favorite<Artist> {
   @PrimaryGeneratedColumn()
-  id: number;
+  public id: number;
 
   @OneToOne(() => Artist, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'artistId' })

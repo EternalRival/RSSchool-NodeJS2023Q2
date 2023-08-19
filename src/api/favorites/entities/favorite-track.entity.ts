@@ -5,7 +5,7 @@ import { Favorite } from '../interfaces/favorite.interface';
 @Entity()
 export class FavoriteTrack implements Favorite<Track> {
   @PrimaryGeneratedColumn()
-  id: number;
+  public id: number;
 
   @OneToOne(() => Track, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'trackId' })
