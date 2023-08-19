@@ -93,12 +93,23 @@ async function generateDotEnv(): Promise<void> {
     await getString('ENABLE_LOGS_FILES', '1'),
   );
 
-  //? yet unused
-  envVariables.set('CRYPT_SALT', '10');
-  envVariables.set('JWT_SECRET_KEY', 'secret123123');
-  envVariables.set('JWT_SECRET_REFRESH_KEY', 'secret123123');
-  envVariables.set('TOKEN_EXPIRE_TIME', '1h');
-  envVariables.set('TOKEN_REFRESH_EXPIRE_TIME', '24h');
+  envVariables.set('CRYPT_SALT', await getString('CRYPT_SALT', '10'));
+  envVariables.set(
+    'JWT_SECRET_KEY',
+    await getString('JWT_SECRET_KEY', 'secret123123'),
+  );
+  envVariables.set(
+    'JWT_SECRET_REFRESH_KEY',
+    await getString('JWT_SECRET_REFRESH_KEY', 'secret123123'),
+  );
+  envVariables.set(
+    'TOKEN_EXPIRE_TIME',
+    await getString('TOKEN_EXPIRE_TIME', '1h'),
+  );
+  envVariables.set(
+    'TOKEN_REFRESH_EXPIRE_TIME',
+    await getString('TOKEN_REFRESH_EXPIRE_TIME', '24h'),
+  );
 
   console.log(colorize(getFramedLine('ATTENTION!'), 'yellow'));
   const confirmAnswer = await getConfirm();
