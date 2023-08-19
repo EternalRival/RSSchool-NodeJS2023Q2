@@ -12,6 +12,7 @@ import { LoggingModule } from './logging/logging.module';
 import { toNumber } from './shared/helpers/to-number';
 import { LoggingMiddleware } from './logging/logging.middleware';
 import { AuthModule } from './api/auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AuthModule } from './api/auth/auth.module';
         migrationsRun: true,
       }),
     }),
+    JwtModule,
     LoggingModule,
     AuthModule,
     UsersModule,

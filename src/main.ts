@@ -8,7 +8,8 @@ import { CustomExceptionFilter } from './shared/filters/custom-exception.filter'
 import { toNumber } from './shared/helpers/to-number';
 import { emitUnhandledErrors } from './shared/helpers/emit-unhandled-errors';
 import { HttpResponseInterceptor } from './shared/interceptors/http-response.interceptor';
-import { JwtGuard } from './api/auth/guards/jwt.guard';
+import { AccessGuard } from './api/auth/guards/access.guard';
+import { JwtService } from '@nestjs/jwt';
 
 function setupSwagger(app: INestApplication): void {
   const swaggerConfig = new DocumentBuilder()
@@ -47,7 +48,7 @@ async function bootstrap(): Promise<void> {
   initUnhandledRejectionUncaughtExceptionHandlers(logger);
 
   app
-    .useGlobalGuards(new JwtGuard())
+    .useGlobalGuards(new AccessGuard(app.get(JwtService), configService))
     .useGlobalInterceptors(new HttpResponseInterceptor())
     .useGlobalFilters(new CustomExceptionFilter())
     .useLogger(logger);

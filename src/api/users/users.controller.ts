@@ -56,7 +56,7 @@ export class UsersController {
   private async findOne(
     @Param('id', ParseUUIDV4Pipe) id: string,
   ): Promise<User> {
-    const entity: User | null = await this.usersService.findOne(id);
+    const entity: User | null = await this.usersService.findOne({ id });
 
     if (!entity) {
       throw new IdNotFoundException(id);
@@ -71,7 +71,7 @@ export class UsersController {
     @Param('id', ParseUUIDV4Pipe) id: string,
     @Body() { oldPassword, newPassword }: UpdatePasswordDto,
   ): Promise<User> {
-    const entity: User | null = await this.usersService.findOne(id);
+    const entity: User | null = await this.usersService.findOne({ id });
 
     if (!entity) {
       throw new IdNotFoundException(id);
@@ -98,7 +98,7 @@ export class UsersController {
   private async remove(
     @Param('id', ParseUUIDV4Pipe) id: string,
   ): Promise<void> {
-    const entity: User | null = await this.usersService.findOne(id);
+    const entity: User | null = await this.usersService.findOne({ id });
 
     if (!entity) {
       throw new IdNotFoundException(id);

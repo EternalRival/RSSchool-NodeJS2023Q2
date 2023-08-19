@@ -31,17 +31,31 @@ export class AuthController {
       throw new InternalServerErrorException('auth signUp failed');
     }
 
-    return 'successfully signed up';
+    return entity;
   }
 
   @Post('/login')
-  private login(@Body() loginDto: LoginDto) {
+  private async login(@Body() loginDto: LoginDto) {
     // POST auth/login - send login and password to get Access token and Refresh token (optionally)
     // Server should answer with status code 200 and tokens if dto is valid
     // Server should answer with status code 400 and corresponding message if dto is invalid (no login or password, or they are not a strings)
     // Server should answer with status code 403 and corresponding message if authentication failed (no user with such login, password doesn't match actual one, etc.)
-    this.authService.login();
-    return "login'd";
+
+    const { login, password } = loginDto;
+
+    const entity = await this.authService.getUserByLogin(login);
+
+    if (!entity) {
+      throw new ForbiddenException('no user with such login');
+    }
+
+    const isAllowed = await this.authService.verifyPassword(entity, password);
+
+    if (!isAllowed) {
+      throw new ForbiddenException("password doesn't match actual one");
+    }
+
+    return this.authService.login(entity);
   }
 
   @Post('/refresh')
@@ -51,7 +65,7 @@ export class AuthController {
   ) {
     // POST auth/refresh - send refresh token in body as { refreshToken } to get new pair of Access token and Refresh token
     // Server should answer with status code 200 and tokens in body if dto is valid
-    // Server should answer with status code 401 and corresponding message if dto is invalid (no refreshToken in body) 
+    // Server should answer with status code 401 and corresponding message if dto is invalid (no refreshToken in body)
     // Server should answer with status code 403 and corresponding message if authentication failed (Refresh token is invalid or expired)
     if (!isJWT(refreshDto.refreshToken)) {
       throw new ForbiddenException('Refresh token is invalid');
