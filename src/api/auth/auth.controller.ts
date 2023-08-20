@@ -9,14 +9,12 @@ import {
   Post,
   UseGuards,
   UseInterceptors,
-  UsePipes,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
-import { WhiteListPipe } from '../../shared/pipes/whitelist.pipe';
 import { User } from '../users/entities/user.entity';
 import { isDatabaseError } from '../../shared/helpers/is-database-error';
 import { RefreshGuard } from './guards/refresh.guard';
@@ -33,7 +31,6 @@ export class AuthController {
   ) {}
 
   @Post('/signup')
-  @UsePipes(WhiteListPipe)
   private async signUp(@Body() signUpDto: SignUpDto): Promise<User> {
     try {
       const entity = await this.usersService.create(signUpDto);
@@ -46,7 +43,6 @@ export class AuthController {
   }
 
   @Post('/login')
-  @UsePipes(WhiteListPipe)
   @HttpCode(HttpStatus.OK)
   private async login(@Body() loginDto: LoginDto): Promise<JwtTokensResponse> {
     const { login, password } = loginDto;

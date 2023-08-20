@@ -10,7 +10,7 @@ import { Observable, map } from 'rxjs';
 
 @Injectable()
 export class HttpResponseInterceptor implements NestInterceptor {
-  constructor(private readonly logger = new Logger('ResponseLogger')) {}
+  private logger: Logger = new Logger('ResponseLogger');
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const response = context.switchToHttp().getResponse();

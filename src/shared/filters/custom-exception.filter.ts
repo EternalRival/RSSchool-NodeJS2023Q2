@@ -13,9 +13,7 @@ import { HttpExceptionResponseBodyDto } from '../dto/http-exception-response-bod
 
 @Catch()
 export class CustomExceptionFilter implements ExceptionFilter {
-  constructor(
-    private readonly logger: Logger = new Logger('ExceptionFilter'),
-  ) {}
+  private logger: Logger = new Logger('ExceptionFilter');
 
   private isHttpExceptionBodyObject(body: object): body is HttpExceptionBody {
     return (

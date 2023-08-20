@@ -13,6 +13,11 @@ import { toNumber } from './shared/helpers/to-number';
 import { LoggingMiddleware } from './logging/logging.middleware';
 import { AuthModule } from './api/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
+import { AccessGuard } from './api/auth/guards/access.guard';
+import { CustomExceptionFilter } from './shared/filters/custom-exception.filter';
+import { HttpResponseInterceptor } from './shared/interceptors/http-response.interceptor';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { WhiteListPipe } from './shared/pipes/whitelist.pipe';
 
 @Module({
   imports: [
@@ -42,7 +47,13 @@ import { JwtModule } from '@nestjs/jwt';
     FavoritesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: AccessGuard },
+    { provide: APP_INTERCEPTOR, useClass: HttpResponseInterceptor },
+    { provide: APP_PIPE, useClass: WhiteListPipe },
+    { provide: APP_FILTER, useClass: CustomExceptionFilter },
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer): void {

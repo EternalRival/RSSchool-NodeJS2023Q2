@@ -8,7 +8,6 @@ import {
   Put,
   HttpCode,
   HttpStatus,
-  UsePipes,
 } from '@nestjs/common';
 import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -24,11 +23,9 @@ import {
   ApiUpdate,
   ApiDelete,
 } from '../../shared/decorators';
-import { WhiteListPipe } from '../../shared/pipes/whitelist.pipe';
 
 @ApiTags('Tracks')
 @Controller('track')
-@UsePipes(WhiteListPipe)
 export class TracksController {
   constructor(private readonly tracksService: TracksService) {}
 

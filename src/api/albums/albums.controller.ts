@@ -8,7 +8,6 @@ import {
   Put,
   HttpCode,
   HttpStatus,
-  UsePipes,
 } from '@nestjs/common';
 import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -24,11 +23,9 @@ import {
   ApiUpdate,
   ApiDelete,
 } from '../../shared/decorators';
-import { WhiteListPipe } from '../../shared/pipes/whitelist.pipe';
 
 @ApiTags('Albums')
 @Controller('album')
-@UsePipes(WhiteListPipe)
 export class AlbumsController {
   constructor(private readonly albumsService: AlbumsService) {}
 

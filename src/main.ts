@@ -2,14 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { INestApplication, Logger } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { LoggingService } from './logging/logging.service';
-import { CustomExceptionFilter } from './shared/filters/custom-exception.filter';
 import { toNumber } from './shared/helpers/to-number';
 import { emitUnhandledErrors } from './shared/helpers/emit-unhandled-errors';
-import { HttpResponseInterceptor } from './shared/interceptors/http-response.interceptor';
-import { AccessGuard } from './api/auth/guards/access.guard';
-import { JwtService } from '@nestjs/jwt';
 
 function setupSwagger(app: INestApplication): void {
   const swaggerConfig = new DocumentBuilder()
@@ -47,17 +43,13 @@ async function bootstrap(): Promise<void> {
 
   initUnhandledRejectionUncaughtExceptionHandlers(logger);
 
-  app
-    .useGlobalGuards(new AccessGuard(app.get(JwtService), configService))
-    .useGlobalInterceptors(new HttpResponseInterceptor())
-    .useGlobalFilters(new CustomExceptionFilter())
-    .useLogger(logger);
+  app.useLogger(logger);
 
   setupSwagger(app);
 
   const port = toNumber(configService.get('PORT')) ?? 4000;
   await app.listen(port, () => {
-    new Logger('PORT').log(`Server started at port: ${port}`);
+    logger.log(`Server started at port: ${port}`, 'PORT');
   });
 
   //? comment or remove it after uncaughtException and unhandledRejection check

@@ -11,7 +11,6 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   ForbiddenException,
-  UsePipes,
   BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -28,13 +27,11 @@ import {
   ApiUpdate,
   ApiDelete,
 } from './decorators';
-import { WhiteListPipe } from '../../shared/pipes/whitelist.pipe';
 import { isDatabaseError } from '../../shared/helpers/is-database-error';
 
 @ApiTags('Users')
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
-@UsePipes(WhiteListPipe)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
