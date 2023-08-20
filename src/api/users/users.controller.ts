@@ -84,8 +84,8 @@ export class UsersController {
       throw new IdNotFoundException(id);
     }
 
-    if (entity.password !== oldPassword) {
-      throw new ForbiddenException('oldPassword is wrong');
+    if (!(await this.usersService.verifyPassword(entity, oldPassword))) {
+      throw new ForbiddenException('old password is wrong');
     }
 
     const updated: User | null = await this.usersService.update(id, {

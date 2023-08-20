@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UseGuards,
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
@@ -15,22 +16,27 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
-import { isJWT } from 'class-validator';
 import { WhiteListPipe } from '../../shared/pipes/whitelist.pipe';
 import { User } from '../users/entities/user.entity';
 import { isDatabaseError } from '../../shared/helpers/is-database-error';
+import { RefreshGuard } from './guards/refresh.guard';
+import { JwtTokensResponse } from './interfaces/jwt-tokens-response.interface';
+import { UsersService } from '../users/users.service';
 
 @ApiTags('Auth')
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
-@UsePipes(WhiteListPipe)
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Post('/signup')
-  private async signUp(@Body() signUpDto: SignUpDto) {
+  @UsePipes(WhiteListPipe)
+  private async signUp(@Body() signUpDto: SignUpDto): Promise<User> {
     try {
-      const entity = await this.authService.signUp(signUpDto);
+      const entity = await this.usersService.create(signUpDto);
       return new User(entity);
     } catch (error) {
       throw isDatabaseError(error) && error.detail?.includes('already exists')
@@ -40,39 +46,33 @@ export class AuthController {
   }
 
   @Post('/login')
+  @UsePipes(WhiteListPipe)
   @HttpCode(HttpStatus.OK)
-  private async login(@Body() loginDto: LoginDto) {
+  private async login(@Body() loginDto: LoginDto): Promise<JwtTokensResponse> {
     const { login, password } = loginDto;
 
-    const entity = await this.authService.getUserByLogin(login);
+    const entity = await this.usersService.findOne({ login });
 
     if (!entity) {
       throw new ForbiddenException('no user with such login');
     }
 
-    const isAllowed = await this.authService.verifyPassword(entity, password);
+    const isAllowed = await this.usersService.verifyPassword(entity, password);
 
     if (!isAllowed) {
       throw new ForbiddenException("password doesn't match actual one");
     }
 
-    return this.authService.login(entity);
+    const payload = { userId: entity.id, login: entity.login };
+
+    return this.authService.generateTokenPair(payload);
   }
 
   @Post('/refresh')
-  private refresh(
-    @Body(new WhiteListPipe({ errorHttpStatusCode: HttpStatus.UNAUTHORIZED }))
-    refreshDto: RefreshDto,
-  ) {
-    // POST auth/refresh - send refresh token in body as { refreshToken } to get new pair of Access token and Refresh token
-    // Server should answer with status code 200 and tokens in body if dto is valid
-    // Server should answer with status code 401 and corresponding message if dto is invalid (no refreshToken in body)
-    // Server should answer with status code 403 and corresponding message if authentication failed (Refresh token is invalid or expired)
-    if (!isJWT(+refreshDto.refreshToken)) {
-      throw new ForbiddenException('Refresh token is invalid');
-    }
-
-    this.authService.refresh();
-    return 'refreshed';
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(RefreshGuard)
+  private refresh(@Body() refreshDto: RefreshDto): Promise<JwtTokensResponse> {
+    const { userId, login } = refreshDto.refreshTokenPayload;
+    return this.authService.generateTokenPair({ userId, login });
   }
 }
