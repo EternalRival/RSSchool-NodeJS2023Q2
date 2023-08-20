@@ -6,7 +6,6 @@ import {
   Param,
   HttpCode,
   HttpStatus,
-  Logger,
   UsePipes,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
@@ -22,7 +21,6 @@ import { WhiteListPipe } from '../../shared/pipes/whitelist.pipe';
 @Controller('favs')
 @UsePipes(WhiteListPipe)
 export class FavoritesController {
-  private readonly logger = new Logger('Favorites');
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
@@ -47,9 +45,7 @@ export class FavoritesController {
         if (error.detail?.includes('already exists')) {
           return `the track ${id} was added to favorites`;
         }
-        this.logger.error(error.detail);
       }
-      this.logger.error(error.message);
       throw error;
     }
   }
@@ -85,9 +81,7 @@ export class FavoritesController {
         if (error.detail?.includes('already exists')) {
           return `the album ${id} was added to favorites`;
         }
-        this.logger.error(error.detail);
       }
-      this.logger.error(error.message);
       throw error;
     }
   }
@@ -123,9 +117,7 @@ export class FavoritesController {
         if (error.detail?.includes('already exists')) {
           return `the artist ${id} was added to favorites`;
         }
-        this.logger.error(error.detail);
       }
-      this.logger.error(error.message);
       throw error;
     }
   }

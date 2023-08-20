@@ -49,10 +49,12 @@ export class CustomExceptionFilter implements ExceptionFilter {
       }
     }
 
-    const logLevel =
-      Math.floor(responseBody.statusCode / 100) === 5 ? 'error' : 'debug';
+    if (Math.floor(responseBody.statusCode / 100) === 5) {
+      this.logger.error(JSON.stringify(responseBody), exception?.['stack']);
+    } else {
+      this.logger.debug(JSON.stringify(responseBody));
+    }
 
-    this.logger[logLevel](JSON.stringify(responseBody));
     ctx.getResponse().status(responseBody.statusCode).json(responseBody);
   }
 }

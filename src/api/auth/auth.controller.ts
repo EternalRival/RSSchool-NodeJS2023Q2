@@ -1,10 +1,13 @@
 import {
+  BadRequestException,
   Body,
+  ClassSerializerInterceptor,
   Controller,
   ForbiddenException,
+  HttpCode,
   HttpStatus,
-  InternalServerErrorException,
   Post,
+  UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -14,33 +17,31 @@ import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { isJWT } from 'class-validator';
 import { WhiteListPipe } from '../../shared/pipes/whitelist.pipe';
+import { User } from '../users/entities/user.entity';
+import { isDatabaseError } from '../../shared/helpers/is-database-error';
 
 @ApiTags('Auth')
 @Controller('auth')
+@UseInterceptors(ClassSerializerInterceptor)
 @UsePipes(WhiteListPipe)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/signup')
   private async signUp(@Body() signUpDto: SignUpDto) {
-    // POST auth/signup - send login and password to create a new user
-    // Server should answer with status code 201 and corresponding message if dto is valid
-    const entity = await this.authService.signUp(signUpDto);
-
-    if (!entity) {
-      throw new InternalServerErrorException('auth signUp failed');
+    try {
+      const entity = await this.authService.signUp(signUpDto);
+      return new User(entity);
+    } catch (error) {
+      throw isDatabaseError(error) && error.detail?.includes('already exists')
+        ? new BadRequestException('This login is not unique')
+        : error;
     }
-
-    return entity;
   }
 
   @Post('/login')
+  @HttpCode(HttpStatus.OK)
   private async login(@Body() loginDto: LoginDto) {
-    // POST auth/login - send login and password to get Access token and Refresh token (optionally)
-    // Server should answer with status code 200 and tokens if dto is valid
-    // Server should answer with status code 400 and corresponding message if dto is invalid (no login or password, or they are not a strings)
-    // Server should answer with status code 403 and corresponding message if authentication failed (no user with such login, password doesn't match actual one, etc.)
-
     const { login, password } = loginDto;
 
     const entity = await this.authService.getUserByLogin(login);
@@ -67,7 +68,7 @@ export class AuthController {
     // Server should answer with status code 200 and tokens in body if dto is valid
     // Server should answer with status code 401 and corresponding message if dto is invalid (no refreshToken in body)
     // Server should answer with status code 403 and corresponding message if authentication failed (Refresh token is invalid or expired)
-    if (!isJWT(refreshDto.refreshToken)) {
+    if (!isJWT(+refreshDto.refreshToken)) {
       throw new ForbiddenException('Refresh token is invalid');
     }
 

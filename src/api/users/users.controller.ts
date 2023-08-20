@@ -12,6 +12,7 @@ import {
   ClassSerializerInterceptor,
   ForbiddenException,
   UsePipes,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -28,6 +29,7 @@ import {
   ApiDelete,
 } from './decorators';
 import { WhiteListPipe } from '../../shared/pipes/whitelist.pipe';
+import { isDatabaseError } from '../../shared/helpers/is-database-error';
 
 @ApiTags('Users')
 @Controller('user')
@@ -39,9 +41,14 @@ export class UsersController {
   @Post()
   @ApiCreate({ name: 'User', type: User, dto: CreateUserDto })
   private async create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    const entity: User = await this.usersService.create(createUserDto);
-
-    return new User(entity);
+    try {
+      const entity: User = await this.usersService.create(createUserDto);
+      return new User(entity);
+    } catch (error) {
+      throw isDatabaseError(error) && error.detail?.includes('already exists')
+        ? new BadRequestException('This login is not unique')
+        : error;
+    }
   }
 
   @Get()

@@ -29,26 +29,27 @@ export class AccessGuard implements CanActivate {
 
     if (!token) {
       const message =
-        'authentication failed (refresh token is invalid or expired)';
+        'authentication failed (authorization header is absent or doesn’t follow Bearer scheme: `Authorization: Bearer <jwt_token>`)';
       throw new UnauthorizedException(message);
     }
 
-    try {
-      await this.jwtService.verifyAsync(token, {
-        secret: this.secret,
-      });
-    } catch {
-      const message =
-        'authentication failed (refresh token is invalid or expired)';
-      throw new UnauthorizedException(message);
-    }
+    await this.verifyToken(token);
 
     return true;
   }
 
-  private getToken(request): string | null {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+  public verifyToken(token: string): Promise<unknown> {
+    try {
+      const verifyOptions = { secret: this.secret };
+      return this.jwtService.verifyAsync(token, verifyOptions);
+    } catch {
+      const message = 'authentication failed (token is invalid or expired)';
+      throw new UnauthorizedException(message);
+    }
+  }
 
+  private getToken(request: Request): string | null {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : null;
   }
 }
