@@ -9,17 +9,17 @@ import {
 } from '@nestjs/swagger';
 import { ApiDecoratorData } from '../interfaces/api-decorator.interface';
 
-export function ApiUpdate({ name, type, dto }: ApiDecoratorData) {
+export function ApiUpdate({ name, responseType, bodyType }: ApiDecoratorData) {
   return applyDecorators(
     ApiOperation({
       summary: `Update ${name.toLowerCase()} information`,
       description: `Update library ${name.toLowerCase()} information by UUID`,
     }),
     ApiParam({ name: 'id', format: 'uuid' }),
-    ApiBody({ type: dto }),
+    ApiBody({ type: bodyType }),
     ApiOkResponse({
       description: `The ${name.toLowerCase()} has been updated`,
-      type,
+      type: responseType,
     }),
     ApiBadRequestResponse({
       description: 'Bad request. id is invalid (not uuid)',

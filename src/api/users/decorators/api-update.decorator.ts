@@ -10,14 +10,14 @@ import {
 } from '@nestjs/swagger';
 import { ApiDecoratorData } from '../../../shared/interfaces/api-decorator.interface';
 
-export function ApiUpdate({ name, dto }: ApiDecoratorData) {
+export function ApiUpdate({ name, bodyType }: ApiDecoratorData) {
   return applyDecorators(
     ApiOperation({
       summary: `Update a ${name.toLowerCase()}'s password`,
       description: `Updates a ${name.toLowerCase()}'s password by ID`,
     }),
     ApiParam({ name: 'id', format: 'uuid' }),
-    ApiBody({ type: dto }),
+    ApiBody({ type: bodyType }),
     ApiOkResponse({
       description: `The ${name.toLowerCase()} has been updated`,
       schema: {

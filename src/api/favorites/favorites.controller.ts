@@ -23,7 +23,7 @@ export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
-  @ApiFindAll({ name: 'Favorite', type: Favorites })
+  @ApiFindAll({ name: 'Favorite', responseType: Favorites })
   private findAll() {
     return this.favoritesService.findAll();
   }

@@ -1,25 +1,25 @@
 import { applyDecorators } from '@nestjs/common';
 import {
-  ApiBadRequestResponse,
   ApiBody,
-  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
   ApiOperation,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ApiDecoratorData } from '../../../shared/interfaces/api-decorator.interface';
 
-export function ApiRefresh({ name, type, dto }: ApiDecoratorData) {
+export function ApiRefresh({ name, responseType, bodyType }: ApiDecoratorData) {
   return applyDecorators(
     ApiOperation({
-      summary: `Create ${name.toLowerCase()}`,
-      description: `Creates a new ${name.toLowerCase()}`,
+      summary: `Refresh ${name} tokens`,
+      description: `Refresh ${name} tokens`,
     }),
-    ApiBody({ type: dto }),
-    ApiCreatedResponse({
-      description: `The ${name.toLowerCase()} has been created`,
-      type,
+    ApiBody({ type: bodyType }),
+    ApiOkResponse({
+      description: 'tokens refreshed',
+      type: responseType,
     }),
-    ApiBadRequestResponse({
-      description: 'Bad request. body does not contain required fields',
-    }),
+    ApiUnauthorizedResponse({ description: 'dto is invalid' }),
+    ApiForbiddenResponse({ description: 'authentication failed' }),
   );
 }

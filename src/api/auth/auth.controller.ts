@@ -12,13 +12,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
-import {
-  ApiForbiddenResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { User } from '../users/entities/user.entity';
@@ -26,7 +20,7 @@ import { isDatabaseError } from '../../shared/helpers/is-database-error';
 import { RefreshGuard } from './guards/refresh.guard';
 import { UsersService } from '../users/users.service';
 import { JwtTokensResponseDto } from './dto/jwt-tokens-response.dto';
-import { ApiLogin } from './decorators';
+import { ApiLogin, ApiRefresh } from './decorators';
 import { ApiCreate } from '../../shared/decorators';
 
 @ApiTags('Auth')
@@ -39,7 +33,7 @@ export class AuthController {
   ) {}
 
   @Post('signup')
-  @ApiCreate({ name: 'User', type: User, dto: SignUpDto })
+  @ApiCreate({ name: 'User', responseType: User, bodyType: SignUpDto })
   private async signUp(@Body() signUpDto: SignUpDto): Promise<User> {
     try {
       const entity = await this.usersService.create(signUpDto);
@@ -52,7 +46,11 @@ export class AuthController {
   }
 
   @Post('login')
-  @ApiLogin({ name: 'User', type: JwtTokensResponseDto, dto: LoginDto })
+  @ApiLogin({
+    name: 'User',
+    responseType: JwtTokensResponseDto,
+    bodyType: LoginDto,
+  })
   @HttpCode(HttpStatus.OK)
   private async login(
     @Body() loginDto: LoginDto,
@@ -77,16 +75,11 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @ApiOperation({
-    summary: 'Refresh JWT tokens',
-    description: 'Refresh JWT tokens',
+  @ApiRefresh({
+    name: 'JWT',
+    responseType: JwtTokensResponseDto,
+    bodyType: RefreshDto,
   })
-  @ApiOkResponse({
-    description: 'tokens refreshed',
-    type: JwtTokensResponseDto,
-  })
-  @ApiUnauthorizedResponse({ description: 'dto is invalid' })
-  @ApiForbiddenResponse({ description: 'authentication failed' })
   @UseGuards(RefreshGuard)
   @HttpCode(HttpStatus.OK)
   private refresh(

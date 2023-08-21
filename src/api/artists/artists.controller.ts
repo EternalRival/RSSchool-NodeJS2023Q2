@@ -31,7 +31,11 @@ export class ArtistsController {
   constructor(private readonly artistsService: ArtistsService) {}
 
   @Post()
-  @ApiCreate({ name: 'Artist', type: Artist, dto: CreateArtistDto })
+  @ApiCreate({
+    name: 'Artist',
+    responseType: Artist,
+    bodyType: CreateArtistDto,
+  })
   private async create(
     @Body() createArtistDto: CreateArtistDto,
   ): Promise<Artist> {
@@ -40,13 +44,13 @@ export class ArtistsController {
   }
 
   @Get()
-  @ApiFindAll({ name: 'Artist', type: Artist })
+  @ApiFindAll({ name: 'Artist', responseType: Artist })
   private findAll(): Promise<Artist[]> {
     return this.artistsService.findAll();
   }
 
   @Get(':id')
-  @ApiFind({ name: 'Artist', type: Artist })
+  @ApiFind({ name: 'Artist', responseType: Artist })
   private async findOne(
     @Param('id', ParseUUIDV4Pipe) id: string,
   ): Promise<Artist> {
@@ -60,7 +64,11 @@ export class ArtistsController {
   }
 
   @Put(':id')
-  @ApiUpdate({ name: 'Artist', type: Artist, dto: UpdateArtistDto })
+  @ApiUpdate({
+    name: 'Artist',
+    responseType: Artist,
+    bodyType: UpdateArtistDto,
+  })
   private async update(
     @Param('id', ParseUUIDV4Pipe) id: string,
     @Body() updateArtistDto: UpdateArtistDto,

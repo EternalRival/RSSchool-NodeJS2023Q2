@@ -37,7 +37,7 @@ export class TracksController {
   constructor(private readonly tracksService: TracksService) {}
 
   @Post()
-  @ApiCreate({ name: 'Track', type: Track, dto: CreateTrackDto })
+  @ApiCreate({ name: 'Track', responseType: Track, bodyType: CreateTrackDto })
   @ApiUnprocessableEntityResponse({
     description: "album with albumId or artist with artistId doesn't exists",
   })
@@ -57,13 +57,13 @@ export class TracksController {
   }
 
   @Get()
-  @ApiFindAll({ name: 'Track', type: Track })
+  @ApiFindAll({ name: 'Track', responseType: Track })
   private findAll(): Promise<Track[]> {
     return this.tracksService.findAll();
   }
 
   @Get(':id')
-  @ApiFind({ name: 'Track', type: Track })
+  @ApiFind({ name: 'Track', responseType: Track })
   private async findOne(
     @Param('id', ParseUUIDV4Pipe) id: string,
   ): Promise<Track> {
@@ -77,7 +77,7 @@ export class TracksController {
   }
 
   @Put(':id')
-  @ApiUpdate({ name: 'Track', type: Track, dto: UpdateTrackDto })
+  @ApiUpdate({ name: 'Track', responseType: Track, bodyType: UpdateTrackDto })
   @ApiUnprocessableEntityResponse({
     description: "album with albumId or artist with artistId doesn't exists",
   })

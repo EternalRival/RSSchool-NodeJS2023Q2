@@ -37,7 +37,7 @@ export class AlbumsController {
   constructor(private readonly albumsService: AlbumsService) {}
 
   @Post()
-  @ApiCreate({ name: 'Album', type: Album, dto: CreateAlbumDto })
+  @ApiCreate({ name: 'Album', responseType: Album, bodyType: CreateAlbumDto })
   @ApiUnprocessableEntityResponse({
     description: "artist with artistId doesn't exists",
   })
@@ -57,13 +57,13 @@ export class AlbumsController {
   }
 
   @Get()
-  @ApiFindAll({ name: 'Album', type: Album })
+  @ApiFindAll({ name: 'Album', responseType: Album })
   private findAll(): Promise<Album[]> {
     return this.albumsService.findAll();
   }
 
   @Get(':id')
-  @ApiFind({ name: 'Album', type: Album })
+  @ApiFind({ name: 'Album', responseType: Album })
   private async findOne(
     @Param('id', ParseUUIDV4Pipe) id: string,
   ): Promise<Album> {
@@ -77,7 +77,7 @@ export class AlbumsController {
   }
 
   @Put(':id')
-  @ApiUpdate({ name: 'Album', type: Album, dto: UpdateAlbumDto })
+  @ApiUpdate({ name: 'Album', responseType: Album, bodyType: UpdateAlbumDto })
   @ApiUnprocessableEntityResponse({
     description: "artist with artistId doesn't exists",
   })

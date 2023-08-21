@@ -37,7 +37,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @ApiCreate({ name: 'User', type: User, dto: CreateUserDto })
+  @ApiCreate({ name: 'User', responseType: User, bodyType: CreateUserDto })
   private async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     try {
       const entity: User = await this.usersService.create(createUserDto);
@@ -50,14 +50,14 @@ export class UsersController {
   }
 
   @Get()
-  @ApiFindAll({ name: 'User', type: User })
+  @ApiFindAll({ name: 'User', responseType: User })
   private async findAll(): Promise<User[]> {
     const entities: User[] = await this.usersService.findAll();
     return entities.map((user) => new User(user));
   }
 
   @Get(':id')
-  @ApiFind({ name: 'User', type: User })
+  @ApiFind({ name: 'User', responseType: User })
   private async findOne(
     @Param('id', ParseUUIDV4Pipe) id: string,
   ): Promise<User> {
@@ -71,7 +71,7 @@ export class UsersController {
   }
 
   @Put(':id')
-  @ApiUpdate({ name: 'User', dto: UpdatePasswordDto })
+  @ApiUpdate({ name: 'User', bodyType: UpdatePasswordDto })
   private async update(
     @Param('id', ParseUUIDV4Pipe) id: string,
     @Body() { oldPassword, newPassword }: UpdatePasswordDto,
