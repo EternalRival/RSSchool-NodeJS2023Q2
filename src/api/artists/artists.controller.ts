@@ -13,7 +13,7 @@ import { ArtistsService } from './artists.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { IdNotFoundException } from '../../shared/exceptions/id-not-found.exception';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Artist } from './entities/artist.entity';
 import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
 import {
@@ -25,6 +25,7 @@ import {
 } from '../../shared/decorators';
 
 @ApiTags('Artists')
+@ApiBearerAuth()
 @Controller('artist')
 export class ArtistsController {
   constructor(private readonly artistsService: ArtistsService) {}

@@ -6,7 +6,7 @@ export function ApiFindAll({ name, type }: ApiDecoratorData) {
   return applyDecorators(
     ApiOperation({
       summary: `Get ${name.toLowerCase()}s list`,
-      description: `Gets all library ${name.toLowerCase()}s list`,
+      description: `Gets all ${name.toLowerCase()}s list`,
     }),
     ApiOkResponse({
       description: 'Successful operation',

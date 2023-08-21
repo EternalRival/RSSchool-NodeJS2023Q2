@@ -8,14 +8,16 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
 import { isDatabaseError } from '../../shared/helpers/is-database-error';
 import { Favorites } from './dto/favorites-response.dto';
 import { ApiFindAll, ApiCreate, ApiDelete } from './decorators';
-import { EntityNotExistException, IsNotFavoriteException } from './exceptions';
+import { IsNotFavoriteException } from './exceptions/is-not-favorite.exception';
+import { EntityNotExistException } from '../../shared/exceptions/entity-not-exist.exception';
 
 @ApiTags('Favorites')
+@ApiBearerAuth()
 @Controller('favs')
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
@@ -37,7 +39,7 @@ export class FavoritesController {
     } catch (error) {
       if (isDatabaseError(error)) {
         if (error.detail?.includes('is not present in table')) {
-          throw new EntityNotExistException(id, 'track');
+          throw new EntityNotExistException(error.detail);
         }
         if (error.detail?.includes('already exists')) {
           return `the track ${id} was added to favorites`;
@@ -73,7 +75,7 @@ export class FavoritesController {
     } catch (error) {
       if (isDatabaseError(error)) {
         if (error.detail?.includes('is not present in table')) {
-          throw new EntityNotExistException(id, 'album');
+          throw new EntityNotExistException(error.detail);
         }
         if (error.detail?.includes('already exists')) {
           return `the album ${id} was added to favorites`;
@@ -109,7 +111,7 @@ export class FavoritesController {
     } catch (error) {
       if (isDatabaseError(error)) {
         if (error.detail?.includes('is not present in table')) {
-          throw new EntityNotExistException(id, 'artist');
+          throw new EntityNotExistException(error.detail);
         }
         if (error.detail?.includes('already exists')) {
           return `the artist ${id} was added to favorites`;

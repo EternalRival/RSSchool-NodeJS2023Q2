@@ -12,14 +12,23 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { User } from '../users/entities/user.entity';
 import { isDatabaseError } from '../../shared/helpers/is-database-error';
 import { RefreshGuard } from './guards/refresh.guard';
-import { JwtTokensResponse } from './interfaces/jwt-tokens-response.interface';
 import { UsersService } from '../users/users.service';
+import { JwtTokensResponseDto } from './dto/jwt-tokens-response.dto';
+import { ApiLogin } from './decorators';
+import { ApiCreate } from '../../shared/decorators';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -30,7 +39,8 @@ export class AuthController {
     private readonly usersService: UsersService,
   ) {}
 
-  @Post('/signup')
+  @Post('signup')
+  @ApiCreate({ name: 'User', type: User, dto: SignUpDto })
   private async signUp(@Body() signUpDto: SignUpDto): Promise<User> {
     try {
       const entity = await this.usersService.create(signUpDto);
@@ -42,9 +52,12 @@ export class AuthController {
     }
   }
 
-  @Post('/login')
+  @Post('login')
+  @ApiLogin({ name: 'User', type: JwtTokensResponseDto, dto: LoginDto })
   @HttpCode(HttpStatus.OK)
-  private async login(@Body() loginDto: LoginDto): Promise<JwtTokensResponse> {
+  private async login(
+    @Body() loginDto: LoginDto,
+  ): Promise<JwtTokensResponseDto> {
     const { login, password } = loginDto;
 
     const entity = await this.usersService.findOne({ login });
@@ -64,10 +77,24 @@ export class AuthController {
     return this.authService.generateTokenPair(payload);
   }
 
-  @Post('/refresh')
-  @HttpCode(HttpStatus.OK)
+  @Post('refresh')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Refresh JWT tokens',
+    description: 'Refresh JWT tokens',
+  })
+  @ApiOkResponse({
+    description: 'tokens refreshed',
+    type: JwtTokensResponseDto,
+  })
+  @ApiUnauthorizedResponse({ description: 'dto is invalid' })
+  @ApiForbiddenResponse({ description: 'authentication failed' })
   @UseGuards(RefreshGuard)
-  private refresh(@Body() refreshDto: RefreshDto): Promise<JwtTokensResponse> {
+  @HttpCode(HttpStatus.OK)
+  private refresh(
+    @Body() refreshDto: RefreshDto,
+  ): Promise<JwtTokensResponseDto> {
+    console.log(refreshDto);
     const { userId, login } = refreshDto.refreshTokenPayload;
     return this.authService.generateTokenPair({ userId, login });
   }

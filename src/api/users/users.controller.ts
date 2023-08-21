@@ -18,18 +18,19 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { IdNotFoundException } from '../../shared/exceptions/id-not-found.exception';
 import { User } from './entities/user.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
+import { ApiUpdate } from './decorators/api-update.decorator';
+import { isDatabaseError } from '../../shared/helpers/is-database-error';
 import {
   ApiCreate,
-  ApiFindAll,
-  ApiFind,
-  ApiUpdate,
   ApiDelete,
-} from './decorators';
-import { isDatabaseError } from '../../shared/helpers/is-database-error';
+  ApiFind,
+  ApiFindAll,
+} from '../../shared/decorators';
 
 @ApiTags('Users')
+@ApiBearerAuth()
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {

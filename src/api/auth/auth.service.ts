@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { JwtPayloadInterface as JwtPayload } from './interfaces/jwt-payload.interface';
-import { JwtTokensResponse } from './interfaces/jwt-tokens-response.interface';
+import { JwtPayloadDto } from './dto/jwt-payload.dto';
+import { JwtTokensResponseDto } from './dto/jwt-tokens-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -24,8 +24,8 @@ export class AuthService {
   }
 
   public async generateTokenPair(
-    payload: JwtPayload,
-  ): Promise<JwtTokensResponse> {
+    payload: JwtPayloadDto,
+  ): Promise<JwtTokensResponseDto> {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, this.accessTokenOptions),
       this.jwtService.signAsync(payload, this.refreshTokenOptions),

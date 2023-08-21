@@ -9,6 +9,7 @@ import { emitUnhandledErrors } from './shared/helpers/emit-unhandled-errors';
 
 function setupSwagger(app: INestApplication): void {
   const swaggerConfig = new DocumentBuilder()
+    .addBearerAuth()
     .setTitle('Home Library Service')
     .setDescription('Home music library service')
     .setVersion('1.1.0')

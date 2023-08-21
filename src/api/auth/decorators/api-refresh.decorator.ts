@@ -7,7 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { ApiDecoratorData } from '../../../shared/interfaces/api-decorator.interface';
 
-export function ApiCreate({ name, type, dto }: ApiDecoratorData) {
+export function ApiRefresh({ name, type, dto }: ApiDecoratorData) {
   return applyDecorators(
     ApiOperation({
       summary: `Create ${name.toLowerCase()}`,

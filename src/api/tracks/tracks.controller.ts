@@ -13,7 +13,11 @@ import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { IdNotFoundException } from '../../shared/exceptions/id-not-found.exception';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import { Track } from './entities/track.entity';
 import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
 import {
@@ -23,18 +27,33 @@ import {
   ApiUpdate,
   ApiDelete,
 } from '../../shared/decorators';
+import { isDatabaseError } from '../../shared/helpers/is-database-error';
+import { EntityNotExistException } from '../../shared/exceptions/entity-not-exist.exception';
 
 @ApiTags('Tracks')
+@ApiBearerAuth()
 @Controller('track')
 export class TracksController {
   constructor(private readonly tracksService: TracksService) {}
 
   @Post()
   @ApiCreate({ name: 'Track', type: Track, dto: CreateTrackDto })
+  @ApiUnprocessableEntityResponse({
+    description: "album with albumId or artist with artistId doesn't exists",
+  })
   private async create(@Body() createTrackDto: CreateTrackDto): Promise<Track> {
-    const entity: Track = await this.tracksService.create(createTrackDto);
-
-    return entity;
+    try {
+      const entity: Track = await this.tracksService.create(createTrackDto);
+      return entity;
+    } catch (error) {
+      if (
+        isDatabaseError(error) &&
+        error.detail?.includes('is not present in table')
+      ) {
+        throw new EntityNotExistException(error.detail);
+      }
+      throw error;
+    }
   }
 
   @Get()
@@ -59,6 +78,9 @@ export class TracksController {
 
   @Put(':id')
   @ApiUpdate({ name: 'Track', type: Track, dto: UpdateTrackDto })
+  @ApiUnprocessableEntityResponse({
+    description: "album with albumId or artist with artistId doesn't exists",
+  })
   private async update(
     @Param('id', ParseUUIDV4Pipe) id: string,
     @Body() updateTrackDto: UpdateTrackDto,
@@ -69,16 +91,26 @@ export class TracksController {
       throw new IdNotFoundException(id);
     }
 
-    const updated: Track | null = await this.tracksService.update(
-      id,
-      updateTrackDto,
-    );
+    try {
+      const updated: Track | null = await this.tracksService.update(
+        id,
+        updateTrackDto,
+      );
 
-    if (!updated) {
-      throw new IdNotFoundException(id);
+      if (!updated) {
+        throw new IdNotFoundException(id);
+      }
+
+      return updated;
+    } catch (error) {
+      if (
+        isDatabaseError(error) &&
+        error.detail?.includes('is not present in table')
+      ) {
+        throw new EntityNotExistException(error.detail);
+      }
+      throw error;
     }
-
-    return updated;
   }
 
   @Delete(':id')

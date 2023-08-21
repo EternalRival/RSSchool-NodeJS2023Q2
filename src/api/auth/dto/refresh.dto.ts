@@ -1,13 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
-import { JwtPayloadInterface } from '../interfaces/jwt-payload.interface';
+import { IsOptional, IsString } from 'class-validator';
+import { JwtPayloadDto } from './jwt-payload.dto';
 
 export class RefreshDto {
   @ApiProperty({ description: "The user's refreshToken" })
   @IsString()
   public refreshToken: string;
 
-  public refreshTokenPayload: JwtPayloadInterface & {
+  @IsOptional()
+  public refreshTokenPayload: JwtPayloadDto & {
     iat: number;
     exp: number;
   };

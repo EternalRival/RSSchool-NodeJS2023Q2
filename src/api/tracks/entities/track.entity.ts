@@ -3,7 +3,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Artist } from '../../artists/entities/artist.entity';
@@ -29,13 +29,13 @@ export class Track implements TrackInterface {
 
   @ApiPropertyOptional({ type: 'string', format: 'uuid', nullable: true })
   @Column({ type: 'uuid', nullable: true })
-  @OneToOne(() => Artist, { onDelete: 'SET NULL' })
+  @ManyToOne(() => Artist, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'artistId' })
   public artistId: string | null;
 
   @ApiPropertyOptional({ type: 'string', format: 'uuid', nullable: true })
   @Column({ type: 'uuid', nullable: true })
-  @OneToOne(() => Album, { onDelete: 'SET NULL' })
+  @ManyToOne(() => Album, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'albumId' })
   public albumId: string | null;
 
