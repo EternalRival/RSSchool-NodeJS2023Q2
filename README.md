@@ -1,5 +1,20 @@
 # Home Library Service
 
+## Table of Contents
+
+1. [Prerequisites](#prerequisites)
+2. [Git & NodeJS](#git--nodejs)
+    1. [Notes](#notes)
+    2. [Downloading](#downloading)
+    3. [Installing NPM modules](#installing-npm-modules)
+    4. [Setting server variables](#setting-server-variables)
+3. [Docker](#docker)
+    1. [Notes](#notes)
+    2. [Running application](#running-application)
+    3. [Other useful scripts](#other-useful-scripts)
+4. [Documentation](#documentation)
+    1. [Swagger (OpenAPI)](#swagger-openapi)
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
@@ -43,7 +58,7 @@ PGDATABASE=hls-db
 PGUSER=hls-user
 PGPASSWORD=hls-password
 PORT=4000 # valid port (0 <= n <= 65535)
-LOGGING_LEVEL=5 # valid logging level (0 <= n <= 5)
+LOGGING_LEVEL=5 # valid logging level (0 <= n <= 5) where 0===`no logs` and 5===`all logs`
 MAX_FILE_SIZE=10240 # max log file size in bytes
 ENABLE_LOGS_FILES=1 # 0 for `off` / 1 for `on` (logs are stored in the `/logs` dir)
 CRYPT_SALT=10
@@ -59,8 +74,9 @@ TOKEN_REFRESH_EXPIRE_TIME=24h
 
 > NB! Make sure you are not running any third-party containers/applications that may conflict with the current application (busy ports, etc.)
 >
-> Database logs are written in the `db-logs:/var/log/postgresql` volume
-> Database data is written to `db-data:/var/lib/postgresql/data` volume
+> - App logs are written in the `./logs:/usr/app/logs` volume (`/logs` dir in app root)
+> - Database logs are written in the `db-logs:/var/log/postgresql` volume
+> - Database data is written to `db-data:/var/lib/postgresql/data` volume
 
 ### Running application
 
@@ -73,7 +89,7 @@ npm run docker:up
 
 ```sh
 # launch tests
-npm run docker:test
+npm run test:auth
 
 # stop and remove docker containers, networks
 npm run docker:down
@@ -90,52 +106,17 @@ npm run typeorm:generate --name=MigrationName
 # lint with --fix and format
 npm run lintf
 ```
-<!-- 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing <http://localhost:4000/doc/>.
-For more information about OpenAPI/Swagger please visit <https://swagger.io/>.
->An `application/json` format should be used for request and response body. -->
-<!-- 
-## Testing
 
-After application running open new terminal and enter:
+## Documentation
 
-To run all tests without authorization
+### Swagger (OpenAPI)
 
-```sh
-npm run test
-```
+link for `localhost:4000` server: [http://localhost:4000/doc](http://localhost:4000/doc)
 
-To run only one of all test suites
+All endpoints (except `auth/signup`, `auth/login`, `/doc` and `/`) are protected with JWT authentication
+You should provide JWT token in `Authorization: Bearer <jwt_token>` request header
 
-```sh
-npm run test -- <path to suite>
-```
-
-To run all test with authorization
-
-```sh
-npm run test:auth
-```
-
-To run only specific test suite with authorization
-
-```sh
-npm run test:auth -- <path to suite>
-```
- -->
-### Auto-fix and format
-
-```sh
-npm run lint
-```
-
-```sh
-npm run format
-```
-
-### Debugging in VSCode
-
-Press **`F5`** to debug.
-
-For more information, visit: <https://code.visualstudio.com/docs/editor/debugging>
+1. Sign Up (if you haven't done it before) via `auth/signup`
+2. Login with your `login` and `password` and get tokens via `auth/login`
+3. Press `Authorize` button and use your `accessToken`
+![Authorization](https://github.com/EternalRival/nodejs2023Q2-service/assets/59611223/22d81d77-efe9-41cb-9e4e-20358ee9fe4f)

@@ -1,4 +1,10 @@
-export function emitUnhandledErrors(delay: number): Promise<[string, string]> {
+export function emitUnhandledErrors(
+  delay: number,
+  enabled = false,
+): Promise<[string, string]> {
+  if (!enabled) {
+    return Promise.resolve(['Hello!', 'EternalRival']);
+  }
   setTimeout(() => {
     Promise.reject('Never gonna give you up');
   }, delay);

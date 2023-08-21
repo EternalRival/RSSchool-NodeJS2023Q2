@@ -11,7 +11,13 @@ import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 
 @Injectable()
 export class AccessGuard implements CanActivate {
-  public publicRoutes = ['/auth/signup', '/auth/login', '/doc', '/'];
+  public publicRoutes = [
+    '/auth/signup',
+    '/auth/login',
+    '/auth/refresh',
+    '/doc',
+    '/',
+  ];
   private secret: string;
 
   constructor(

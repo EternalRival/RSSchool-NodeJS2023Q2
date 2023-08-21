@@ -8,11 +8,23 @@ import { toNumber } from './shared/helpers/to-number';
 import { emitUnhandledErrors } from './shared/helpers/emit-unhandled-errors';
 
 function setupSwagger(app: INestApplication): void {
+  const publicEndpoints = ['auth/signup', 'auth/login', '/doc', '/']
+    .map((endpoint) => `\`${endpoint}\``)
+    .join(', ');
+
+  const description = `
+#### All endpoints (except ${publicEndpoints}) are protected with JWT authentication
+#### You should provide JWT token in \`Authorization: Bearer <jwt_token>\` request header
+1. Sign Up (if you haven't done it before) via \`auth/signup\`
+2. Login with your \`login\` and \`password\` and get tokens via \`auth/login\`
+3. Press \`Authorize\` button and use your \`accessToken\`
+    > ![Authorization](https://github.com/EternalRival/nodejs2023Q2-service/assets/59611223/22d81d77-efe9-41cb-9e4e-20358ee9fe4f)
+`;
   const swaggerConfig = new DocumentBuilder()
     .addBearerAuth()
     .setTitle('Home Library Service')
-    .setDescription('Home music library service')
-    .setVersion('1.1.0')
+    .setDescription(description)
+    .setVersion('1.2.0')
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
@@ -53,8 +65,8 @@ async function bootstrap(): Promise<void> {
     logger.log(`Server started at port: ${port}`, 'PORT');
   });
 
-  //? comment or remove it after uncaughtException and unhandledRejection check
-  emitUnhandledErrors(3000).then((res) => logger.verbose(...res));
+  //? remove `true` argument after uncaughtException and unhandledRejection check
+  emitUnhandledErrors(3000, true).then((res) => logger.verbose(...res));
 }
 
 bootstrap();

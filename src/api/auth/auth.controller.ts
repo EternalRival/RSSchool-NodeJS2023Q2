@@ -13,7 +13,6 @@ import {
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import {
-  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
@@ -78,7 +77,6 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Refresh JWT tokens',
     description: 'Refresh JWT tokens',
