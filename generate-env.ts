@@ -78,21 +78,38 @@ async function generateDotEnv(): Promise<void> {
   console.log(colorize(getFramedLine('Enter ENV variables'), 'green', 'bold'));
 
   const envVariables: Map<string, unknown> = new Map();
-  envVariables.set('PORT', await getPort('PORT', '4000'));
   envVariables.set('PGHOST', await getString('PGHOST', 'localhost'));
   envVariables.set('PGPORT', await getPort('PGPORT', '5432'));
   envVariables.set('PGDATABASE', await getString('PGDATABASE', 'hls-db'));
   envVariables.set('PGUSER', await getString('PGUSER', 'hls-user'));
   envVariables.set('PGPASSWORD', await getString('PGPASSWORD', 'hls-password'));
-  envVariables.set('NETWORK', await getString('NETWORK', 'hls-network'));
-  envVariables.set('DRIVER', 'bridge');
 
-  //? yet unused
-  envVariables.set('CRYPT_SALT', '10');
-  envVariables.set('JWT_SECRET_KEY', 'secret123123');
-  envVariables.set('JWT_SECRET_REFRESH_KEY', 'secret123123');
-  envVariables.set('TOKEN_EXPIRE_TIME', '1h');
-  envVariables.set('TOKEN_REFRESH_EXPIRE_TIME', '24h');
+  envVariables.set('PORT', await getPort('PORT', '4000'));
+
+  envVariables.set('LOGGING_LEVEL', await getString('LOGGING_LEVEL', '5'));
+  envVariables.set('MAX_FILE_SIZE', await getString('MAX_FILE_SIZE', '10240'));
+  envVariables.set(
+    'ENABLE_LOGS_FILES',
+    await getString('ENABLE_LOGS_FILES', '1'),
+  );
+
+  envVariables.set('CRYPT_SALT', await getString('CRYPT_SALT', '10'));
+  envVariables.set(
+    'JWT_SECRET_KEY',
+    await getString('JWT_SECRET_KEY', 'secret123123'),
+  );
+  envVariables.set(
+    'JWT_SECRET_REFRESH_KEY',
+    await getString('JWT_SECRET_REFRESH_KEY', 'secret123123'),
+  );
+  envVariables.set(
+    'TOKEN_EXPIRE_TIME',
+    await getString('TOKEN_EXPIRE_TIME', '1h'),
+  );
+  envVariables.set(
+    'TOKEN_REFRESH_EXPIRE_TIME',
+    await getString('TOKEN_REFRESH_EXPIRE_TIME', '24h'),
+  );
 
   console.log(colorize(getFramedLine('ATTENTION!'), 'yellow'));
   const confirmAnswer = await getConfirm();

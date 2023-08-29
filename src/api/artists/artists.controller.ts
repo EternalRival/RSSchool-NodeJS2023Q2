@@ -13,7 +13,7 @@ import { ArtistsService } from './artists.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { IdNotFoundException } from '../../shared/exceptions/id-not-found.exception';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Artist } from './entities/artist.entity';
 import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
 import {
@@ -25,12 +25,17 @@ import {
 } from '../../shared/decorators';
 
 @ApiTags('Artists')
+@ApiBearerAuth()
 @Controller('artist')
 export class ArtistsController {
   constructor(private readonly artistsService: ArtistsService) {}
 
   @Post()
-  @ApiCreate({ name: 'Artist', type: Artist, dto: CreateArtistDto })
+  @ApiCreate({
+    name: 'Artist',
+    responseType: Artist,
+    bodyType: CreateArtistDto,
+  })
   private async create(
     @Body() createArtistDto: CreateArtistDto,
   ): Promise<Artist> {
@@ -39,13 +44,13 @@ export class ArtistsController {
   }
 
   @Get()
-  @ApiFindAll({ name: 'Artist', type: Artist })
+  @ApiFindAll({ name: 'Artist', responseType: Artist })
   private findAll(): Promise<Artist[]> {
     return this.artistsService.findAll();
   }
 
   @Get(':id')
-  @ApiFind({ name: 'Artist', type: Artist })
+  @ApiFind({ name: 'Artist', responseType: Artist })
   private async findOne(
     @Param('id', ParseUUIDV4Pipe) id: string,
   ): Promise<Artist> {
@@ -59,7 +64,11 @@ export class ArtistsController {
   }
 
   @Put(':id')
-  @ApiUpdate({ name: 'Artist', type: Artist, dto: UpdateArtistDto })
+  @ApiUpdate({
+    name: 'Artist',
+    responseType: Artist,
+    bodyType: UpdateArtistDto,
+  })
   private async update(
     @Param('id', ParseUUIDV4Pipe) id: string,
     @Body() updateArtistDto: UpdateArtistDto,

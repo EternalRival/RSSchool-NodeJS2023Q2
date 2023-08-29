@@ -25,7 +25,7 @@ export class User implements UserInterface {
   public id: string;
 
   @ApiProperty({ example: 'TestUser' })
-  @Column()
+  @Column({ unique: true })
   public login: string;
 
   @Column()

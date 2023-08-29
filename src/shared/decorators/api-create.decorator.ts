@@ -7,14 +7,17 @@ import {
 } from '@nestjs/swagger';
 import { ApiDecoratorData } from '../interfaces/api-decorator.interface';
 
-export function ApiCreate({ name, type, dto }: ApiDecoratorData) {
+export function ApiCreate({ name, responseType, bodyType }: ApiDecoratorData) {
   return applyDecorators(
     ApiOperation({
-      summary: `Add new ${name.toLowerCase()}`,
-      description: `Add new ${name.toLowerCase()} information`,
+      summary: `Create ${name.toLowerCase()}`,
+      description: `Creates a new ${name.toLowerCase()}`,
     }),
-    ApiBody({ type: dto }),
-    ApiCreatedResponse({ description: `${name} is created`, type }),
+    ApiBody({ type: bodyType }),
+    ApiCreatedResponse({
+      description: `The ${name.toLowerCase()} has been created`,
+      type: responseType,
+    }),
     ApiBadRequestResponse({
       description: 'Bad request. body does not contain required fields',
     }),

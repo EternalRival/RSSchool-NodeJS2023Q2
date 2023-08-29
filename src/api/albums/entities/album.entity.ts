@@ -3,8 +3,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   Entity,
-  OneToOne,
   JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 import { Artist } from '../../artists/entities/artist.entity';
 
@@ -31,7 +31,7 @@ export class Album implements AlbumInterface {
 
   @ApiPropertyOptional({ type: 'string', format: 'uuid', nullable: true })
   @Column({ type: 'uuid', nullable: true })
-  @OneToOne(() => Artist, { onDelete: 'SET NULL' })
+  @ManyToOne(() => Artist, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'artistId' })
   public artistId: string | null;
 }

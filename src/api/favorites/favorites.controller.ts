@@ -6,24 +6,24 @@ import {
   Param,
   HttpCode,
   HttpStatus,
-  Logger,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ParseUUIDV4Pipe } from '../../shared/pipes/parse-uuid-v4.pipe';
 import { isDatabaseError } from '../../shared/helpers/is-database-error';
 import { Favorites } from './dto/favorites-response.dto';
 import { ApiFindAll, ApiCreate, ApiDelete } from './decorators';
-import { EntityNotExistException, IsNotFavoriteException } from './exceptions';
+import { IsNotFavoriteException } from './exceptions/is-not-favorite.exception';
+import { EntityNotExistException } from '../../shared/exceptions/entity-not-exist.exception';
 
 @ApiTags('Favorites')
+@ApiBearerAuth()
 @Controller('favs')
 export class FavoritesController {
-  private logger = new Logger('Favorites');
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
-  @ApiFindAll({ name: 'Favorite', type: Favorites })
+  @ApiFindAll({ name: 'Favorite', responseType: Favorites })
   private findAll() {
     return this.favoritesService.findAll();
   }
@@ -32,23 +32,19 @@ export class FavoritesController {
   @ApiCreate({ name: 'Track' })
   private async createFavoriteTrack(
     @Param('id', ParseUUIDV4Pipe) id: string,
-  ): Promise<{ message: string }> {
+  ): Promise<string> {
     try {
       const entity = await this.favoritesService.createFavoriteTrack(id);
-      return {
-        message: `the track ${entity.favorite.id} was added to favorites`,
-      };
+      return `the track ${entity.favorite.id} was added to favorites`;
     } catch (error) {
       if (isDatabaseError(error)) {
         if (error.detail?.includes('is not present in table')) {
-          throw new EntityNotExistException(id, 'track');
+          throw new EntityNotExistException(error.detail);
         }
         if (error.detail?.includes('already exists')) {
-          return { message: `the track ${id} was added to favorites` };
+          return `the track ${id} was added to favorites`;
         }
-        this.logger.error(error.detail);
       }
-      this.logger.error(error.message);
       throw error;
     }
   }
@@ -72,23 +68,19 @@ export class FavoritesController {
   @ApiCreate({ name: 'Album' })
   private async createFavoriteAlbum(
     @Param('id', ParseUUIDV4Pipe) id: string,
-  ): Promise<{ message: string }> {
+  ): Promise<string> {
     try {
       const entity = await this.favoritesService.createFavoriteAlbum(id);
-      return {
-        message: `the album ${entity.favorite.id} was added to favorites`,
-      };
+      return `the album ${entity.favorite.id} was added to favorites`;
     } catch (error) {
       if (isDatabaseError(error)) {
         if (error.detail?.includes('is not present in table')) {
-          throw new EntityNotExistException(id, 'album');
+          throw new EntityNotExistException(error.detail);
         }
         if (error.detail?.includes('already exists')) {
-          return { message: `the album ${id} was added to favorites` };
+          return `the album ${id} was added to favorites`;
         }
-        this.logger.error(error.detail);
       }
-      this.logger.error(error.message);
       throw error;
     }
   }
@@ -112,23 +104,19 @@ export class FavoritesController {
   @ApiCreate({ name: 'Artist' })
   private async createFavoriteArtist(
     @Param('id', ParseUUIDV4Pipe) id: string,
-  ): Promise<{ message: string }> {
+  ): Promise<string> {
     try {
       const entity = await this.favoritesService.createFavoriteArtist(id);
-      return {
-        message: `the artist ${entity.favorite.id} was added to favorites`,
-      };
+      return `the artist ${entity.favorite.id} was added to favorites`;
     } catch (error) {
       if (isDatabaseError(error)) {
         if (error.detail?.includes('is not present in table')) {
-          throw new EntityNotExistException(id, 'artist');
+          throw new EntityNotExistException(error.detail);
         }
         if (error.detail?.includes('already exists')) {
-          return { message: `the artist ${id} was added to favorites` };
+          return `the artist ${id} was added to favorites`;
         }
-        this.logger.error(error.detail);
       }
-      this.logger.error(error.message);
       throw error;
     }
   }
