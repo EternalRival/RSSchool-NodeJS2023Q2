@@ -1,0 +1,13 @@
+{
+  "name": "node-file-manager",
+  "version": "1.0.0",
+  "description": "RSSchool NodeJS Task 2: File Manager",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src"
+  },
+  "keywords": [],
+  "author": "erdev",
+  "license": "MIT"
+}
